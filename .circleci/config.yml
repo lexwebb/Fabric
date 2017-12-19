@@ -16,4 +16,4 @@ jobs:
           destination: lib
       - run: cd Fabric.Tests/ && dotnet xunit -xml test/results.xml
       - store_test_results:
-          path: test/results.xml
+          path: Fabric.Tests/test/results.xml
