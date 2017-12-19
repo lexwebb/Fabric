@@ -13,6 +13,6 @@ jobs:
       - run: dotnet build
       - run: dotnet xunit -xml test/results.xml
       - store_test_results:
-        path: test/results.xml
+          path: test/results.xml
     general:
       artifacts: Fabric/bin/Debug/netstandard2.0/
