@@ -32,3 +32,4 @@ msbuild.wrn
 .vs/
 
 results.xml
+Fabric.Tests/test/results.xml

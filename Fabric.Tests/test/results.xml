@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<assemblies timestamp="12/19/2017 13:41:47">
-  <assembly name="Fabric.Tests.dll" environment="64-bit .NET Standard [collection-per-class, parallel (8 threads)]" test-framework="xUnit.net 2.3.1.3858" run-date="2017-12-19" run-time="13:41:46" total="1" passed="1" failed="0" skipped="0" time="0.110" errors="0">
-    <errors />
-    <collection total="1" passed="1" failed="0" skipped="0" name="Test collection for Fabric.Tests.CoreTests" time="0.008">
-      <test name="Fabric.Tests.CoreTests.CoreInitialise_Throws_NotImplementedException" type="Fabric.Tests.CoreTests" method="CoreInitialise_Throws_NotImplementedException" time="0.0082895" result="Pass" />
-    </collection>
-  </assembly>
-</assemblies>
