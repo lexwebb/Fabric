@@ -13,7 +13,7 @@ jobs:
       - run: dotnet restore
       - run: dotnet build
       - store_artifacts:
-          path: Fabric/bin/Debug/netstandard2.0/
+          path: Fabric.Core/bin/Debug/netstandard2.0/
           destination: lib
       - run: cd Fabric.Tests/ && dotnet xunit -xml test/results.xml
       - store_test_results:

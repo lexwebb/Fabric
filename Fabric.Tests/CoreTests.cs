@@ -1,4 +1,5 @@
 ﻿using System;
+using Fabric.Core;
 using Xunit;
 
 namespace Fabric.Tests
@@ -7,7 +8,7 @@ namespace Fabric.Tests
     {
         [Fact]
         public void CoreInitialise_Throws_NotImplementedException() {
-            var core = Core.Instance;
+            var core = Global.Instance;
 
             Assert.Throws<NotImplementedException>(() => core.Initialise());
         }
