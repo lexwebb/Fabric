@@ -11,9 +11,9 @@ jobs:
       - checkout
       - run: dotnet restore
       - run: dotnet build
-      - run: dotnet xunit -xml test/results.xml
-          pwd: "Fabric.Tests/"
+      - store_artifacts:
+          path: Fabric/bin/Debug/netstandard2.0/
+          destination: lib
+      - run: cd Fabric.Tests/ && dotnet xunit -xml test/results.xml
       - store_test_results:
           path: test/results.xml
-    general:
-      artifacts: Fabric/bin/Debug/netstandard2.0/
