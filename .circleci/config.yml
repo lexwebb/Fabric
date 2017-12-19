@@ -15,6 +15,9 @@ jobs:
       - store_artifacts:
           path: Fabric.Core/bin/Debug/netstandard2.0/
           destination: lib
+      - store_artifacts:
+          path: Fabric.Server/bin/Debug/netcoreapp2.0/
+          destination: server
       - run: cd Fabric.Tests/ && dotnet xunit -xml test/results.xml
       - store_test_results:
           path: Fabric.Tests/test/results.xml
