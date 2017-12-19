@@ -27,4 +27,6 @@ jobs:
       - run: dotnet restore
       - run: dotnet build
     steps:
-      - run: dotnet xunit
+      - run: dotnet xunit -xml test/results.xml
+      - store_test_results:
+        path: test/results.xml
