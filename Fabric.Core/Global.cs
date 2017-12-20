@@ -6,12 +6,16 @@ namespace Fabric.Core
 
         private static Global _instance;
 
-        private Global() {}
+        private Global() {
+            Initialise();
+        }
 
         public static Global Instance => _instance ?? (_instance = new Global());
 
+        public IGlobalLogger Logger { get; set; }
+
         public void Initialise() {
-            throw new NotImplementedException();
+            Logger = new ConsoleGlobalLogger();
         }
     }
 }

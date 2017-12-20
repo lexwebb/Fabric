@@ -33,3 +33,5 @@ msbuild.wrn
 
 results.xml
 Fabric.Tests/test/results.xml
+
+fabric.db
