@@ -32,6 +32,8 @@ namespace Fabric.Core.Data {
             Instance.DbStream = stream;
             Instance.IsStream = true;
             Instance.Initialised = true;
+
+            Instance.InitialiseRelationships();
         }
 
         public static void Initialise(string fileName) {
@@ -49,6 +51,15 @@ namespace Fabric.Core.Data {
             Instance.DbFileName = fileName;
             Instance.IsStream = false;
             Instance.Initialised = true;
+
+            Instance.InitialiseRelationships();
+        }
+
+        private void InitialiseRelationships() {
+            var mapper = BsonMapper.Global;
+
+            mapper.Entity<FabricProject>()
+                .DbRef(x => x.Environments, "environments");
         }
 
         private void EnsureDatabaseExists(LiteDatabase db) {
