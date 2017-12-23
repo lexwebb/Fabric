@@ -1,5 +1,6 @@
 ﻿using System;
 using Fabric.Core;
+using Fabric.Logging;
 using Xunit;
 
 namespace Fabric.Tests

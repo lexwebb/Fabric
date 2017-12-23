@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Fabric.Core.Data.Models;
+using Fabric.Logging;
 using LiteDB;
 
 namespace Fabric.Core.Data {

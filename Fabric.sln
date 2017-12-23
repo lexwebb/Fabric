@@ -14,7 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabric.Server", "Fabric.Server\Fabric.Server.csproj", "{5A2E8482-4A91-45DA-A0BC-5D11CE423351}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fabric.Server", "Fabric.Server\Fabric.Server.csproj", "{5A2E8482-4A91-45DA-A0BC-5D11CE423351}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabric.Data", "Fabric.Data\Fabric.Data.csproj", "{16A2CE51-9A96-4509-843C-4FD2F8A61488}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fabric.Logging", "Fabric.Logging\Fabric.Logging.csproj", "{997BBED9-3AA3-408D-A974-356BC22F6C51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +38,14 @@ Global
 		{5A2E8482-4A91-45DA-A0BC-5D11CE423351}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A2E8482-4A91-45DA-A0BC-5D11CE423351}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A2E8482-4A91-45DA-A0BC-5D11CE423351}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16A2CE51-9A96-4509-843C-4FD2F8A61488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16A2CE51-9A96-4509-843C-4FD2F8A61488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16A2CE51-9A96-4509-843C-4FD2F8A61488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16A2CE51-9A96-4509-843C-4FD2F8A61488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{997BBED9-3AA3-408D-A974-356BC22F6C51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{997BBED9-3AA3-408D-A974-356BC22F6C51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{997BBED9-3AA3-408D-A974-356BC22F6C51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{997BBED9-3AA3-408D-A974-356BC22F6C51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

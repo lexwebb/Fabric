@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
-namespace Fabric.Core {
+namespace Fabric.Logging {
     public class ConsoleGlobalLogger : IGlobalLogger {
         public void Info(string message) {
             Debug.WriteLine($"{DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture)}|INFO|{message}");

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Fabric.Core
+namespace Fabric.Logging
 {
     public interface IGlobalLogger {
         void Info(string message);

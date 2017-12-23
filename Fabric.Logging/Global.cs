@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Fabric.Core
+﻿namespace Fabric.Logging
 {
     public class Global {
 
