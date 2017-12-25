@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fabric.Data\Fabric.Data.csproj" />
     <ProjectReference Include="..\Fabric.Logging\Fabric.Logging.csproj" />
   </ItemGroup>
 

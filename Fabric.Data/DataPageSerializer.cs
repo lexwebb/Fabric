@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -10,10 +11,24 @@ namespace Fabric.Data
     {
         public bool PartialChildPageSerialization { get; set; }
 
-        public DataPageSerializer(bool partialChildPageSerialization = true) {
-            PartialChildPageSerialization = partialChildPageSerialization;
+        private readonly FabricDatabase _database;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataPageSerializer" /> class.
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="partialChildPageSerialization">if set to <c>true</c> [partial child page serialization].</param>
+        public DataPageSerializer(FabricDatabase database, bool partialChildPageSerialization = true) {
+            this.PartialChildPageSerialization = partialChildPageSerialization;
+            this._database = database;
         }
 
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             var jToken = JToken.FromObject(value);
 
@@ -29,13 +44,16 @@ namespace Fabric.Data
                     var type = property.PropertyType;
                     var propertyValue = property.GetValue(value);
 
-                    writer.WritePropertyName(property.Name);
+                    var nameToWrite = property.Name;
                     var valuetoWrite = propertyValue;
 
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ChildPageCollection<>)) {
+                    if (type == typeof(DataPageCollection)
+                        && propertyValue != null) {
+                        nameToWrite = "Children";
                         valuetoWrite = type.GetMethod("GetNames").Invoke(propertyValue, null);
                     }
 
+                    writer.WritePropertyName(nameToWrite);
                     serializer.Serialize(writer, valuetoWrite);
                 }
                 writer.WriteEndObject();
@@ -45,6 +63,16 @@ namespace Fabric.Data
             }
         }
 
+        /// <summary>
+        /// Reads the JSON representation of the object.
+        /// </summary>
+        /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>
+        /// The object value.
+        /// </returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
             if (PartialChildPageSerialization) {
                 var instance = existingValue ?? Activator.CreateInstance(objectType);
@@ -56,10 +84,10 @@ namespace Fabric.Data
                     var type = property.PropertyType;
                     object value = null;
 
-                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ChildPageCollection<>)) {
-                        var collection = Activator.CreateInstance(type);
+                    if (type == typeof(DataPageCollection)) {
+                        var collection = new DataPageCollection(_database, instance as DataPage);
                         var deserializedValue =
-                            properties.First(p => p.Name == property.Name).Value.ToObject<string[]>();
+                            properties.First(p => p.Name == property.Name).Value.ToObject<Dictionary<string, List<string>>>();
                         type.GetMethod("PopulateFromSerializer", BindingFlags.Instance | BindingFlags.NonPublic)
                             .Invoke(collection, new object[] {deserializedValue});
                         value = collection;
@@ -77,6 +105,13 @@ namespace Fabric.Data
             return serializer.Deserialize(reader, objectType);
         }
 
+        /// <summary>
+        /// Determines whether this instance can convert the specified object type.
+        /// </summary>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>
+        /// <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+        /// </returns>
         public override bool CanConvert(Type objectType) {
             return typeof(DataPage).IsAssignableFrom(objectType);
         }

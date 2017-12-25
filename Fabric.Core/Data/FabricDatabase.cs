@@ -59,8 +59,8 @@ namespace Fabric.Core.Data {
         private void InitialiseRelationships() {
             var mapper = BsonMapper.Global;
 
-            mapper.Entity<FabricProject>()
-                .DbRef(x => x.Environments, "environments");
+            //mapper.Entity<FabricProject>()
+            //    .DbRef(x => x.Environments, "environments");
         }
 
         private void EnsureDatabaseExists(LiteDatabase db) {

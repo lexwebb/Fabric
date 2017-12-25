@@ -14,53 +14,53 @@ namespace Fabric.Server.Controllers
     [Route("api/[controller]")]
     public class ProjectsController : Controller
     {
-        // GET api/projects
-        [HttpGet]
-        public IEnumerable<FabricProject> Get() {
-            return FabricDatabase.Projects.FindAll();
-        }
+        //// GET api/projects
+        //[HttpGet]
+        //public IEnumerable<FabricProject> Get() {
+        //    return FabricDatabase.Projects.FindAll();
+        //}
 
-        // GET api/projects/test
-        [HttpGet("{name}")]
-        public FabricProject Get(string name)
-        {
-            return FabricDatabase.Projects.Find(p => p.Name == name).FirstOrDefault()
-                ?? throw new HttpException(HttpStatusCode.NotFound, $"Could not find project with name: {name}");
-        }
+        //// GET api/projects/test
+        //[HttpGet("{name}")]
+        //public FabricProject Get(string name)
+        //{
+        //    return FabricDatabase.Projects.Find(p => p.Name == name).FirstOrDefault()
+        //        ?? throw new HttpException(HttpStatusCode.NotFound, $"Could not find project with name: {name}");
+        //}
 
-        // POST api/projects
-        [HttpPost]
-        public void Post([FromBody]FabricProject value) {
-            var projects = FabricDatabase.Projects;
+        //// POST api/projects
+        //[HttpPost]
+        //public void Post([FromBody]FabricProject value) {
+        //    var projects = FabricDatabase.Projects;
 
-            projects.Insert(value);
+        //    projects.Insert(value);
 
-            projects.EnsureIndex(x => x.Name);
-        }
+        //    projects.EnsureIndex(x => x.Name);
+        //}
 
-        // PUT api/projects/test
-        [HttpPut("{name}")]
-        public void Put(string name, [FromBody]FabricProject value) {
-            var projects = FabricDatabase.Projects;
-            var project = projects.Find(p => p.Name == name).FirstOrDefault()
-                ?? throw new HttpException(HttpStatusCode.NotFound, $"Could not find project with name: {name}");
+        //// PUT api/projects/test
+        //[HttpPut("{name}")]
+        //public void Put(string name, [FromBody]FabricProject value) {
+        //    var projects = FabricDatabase.Projects;
+        //    var project = projects.Find(p => p.Name == name).FirstOrDefault()
+        //        ?? throw new HttpException(HttpStatusCode.NotFound, $"Could not find project with name: {name}");
 
-            project.Name = value.Name;
-            project.Environments = value.Environments;
+        //    project.Name = value.Name;
+        //    project.Environments = value.Environments;
 
-            projects.EnsureIndex(x => x.Name);
-        }
+        //    projects.EnsureIndex(x => x.Name);
+        //}
 
-        // DELETE api/projects/test
-        [HttpDelete("{name}")]
-        public void Delete(string name)
-        {
-            var projects = FabricDatabase.Projects;
-            var project = projects.Find(p => p.Name == name).FirstOrDefault()
-                          ?? throw new HttpException(HttpStatusCode.NotFound, $"Could not find project with name: {name}");
-            projects.Delete(p => p.Name == name);
+        //// DELETE api/projects/test
+        //[HttpDelete("{name}")]
+        //public void Delete(string name)
+        //{
+        //    var projects = FabricDatabase.Projects;
+        //    var project = projects.Find(p => p.Name == name).FirstOrDefault()
+        //                  ?? throw new HttpException(HttpStatusCode.NotFound, $"Could not find project with name: {name}");
+        //    projects.Delete(p => p.Name == name);
 
-            projects.EnsureIndex(x => x.Name);
-        }
+        //    projects.EnsureIndex(x => x.Name);
+        //}
     }
 }

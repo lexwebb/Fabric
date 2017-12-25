@@ -1,11 +1,11 @@
-﻿namespace Fabric.Core.Data.Models
+﻿using Fabric.Data;
+
+namespace Fabric.Core.Data.Models
 {
-    public class FabricEnvironment : IModel
+    public class FabricEnvironment : DataPage
     {
-        public int Id { get; set; }
-
-        public string Name { get; set; }
-
         public bool Production { get; set; }
+
+        public FabricEnvironment(string name) : base(name) { }
     }
 }
