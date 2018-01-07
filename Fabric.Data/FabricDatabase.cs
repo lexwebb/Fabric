@@ -15,7 +15,7 @@ namespace Fabric.Data
 
         public Action<FabricDatabase> SeedDatabase { get; set; }
 
-        public RootPage Data { get; private set; }
+        public RootPage Root { get; private set; }
 
         internal List<ChangeSet> Changes { get; } = new List<ChangeSet>();
 
@@ -73,13 +73,13 @@ namespace Fabric.Data
                 Formatting = Formatting.Indented
             };
 
-            Data = new RootPage {
+            Root = new RootPage {
                 ModifiedTimestamp = DateTime.Now.GetTimestamp()
             };
 
-            Data.Children = new DataPageCollection(this, Data);
+            Root.Children = new DataPageCollection(this, Root);
 
-            var json = JsonConvert.SerializeObject(Data, settings);
+            var json = JsonConvert.SerializeObject(Root, settings);
 
             File.WriteAllText(DatabaseFile, json);
         }
@@ -94,7 +94,7 @@ namespace Fabric.Data
                 Formatting = Formatting.Indented
             };
 
-            Data = JsonConvert.DeserializeObject<RootPage>(File.ReadAllText(DatabaseFile), settings);
+            Root = JsonConvert.DeserializeObject<RootPage>(File.ReadAllText(DatabaseFile), settings);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Fabric.Data
         }
 
         internal List<DataPage> Load(DataPage parent) {
-            var parts = FindParentsRecursive(Data, new List<string>());
+            var parts = FindParentsRecursive(Root, new List<string>());
 
             return new List<DataPage>();
         }

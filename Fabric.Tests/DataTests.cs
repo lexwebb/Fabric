@@ -71,10 +71,10 @@ namespace Fabric.Tests
         public void RootPage_ShouldSerialise_Correctly() {
             var database = CreateTestingDb();
             
-            database.Data.Children.Add(new TestRootPage("TestItem1"));
-            database.Data.Children.Add(new TestRootPage("TestItem2"));
+            database.Root.Children.Add(new TestRootPage("TestItem1"));
+            database.Root.Children.Add(new TestRootPage("TestItem2"));
 
-            var json = JsonConvert.SerializeObject(database.Data, _basicSerializerSettings);
+            var json = JsonConvert.SerializeObject(database.Root, _basicSerializerSettings);
 
             var actual = JsonUtils.RemoveProperty(json, "ModifiedTimestamp", true);
             var expected = JsonUtils.RemoveProperty(_basicRootPageJson, "ModifiedTimestamp", true);
@@ -86,8 +86,8 @@ namespace Fabric.Tests
         public void RootPageChild_ShouldAdd_Correctly() {
             var database = CreateTestingDb();
 
-            database.Data.Children.Add(new TestRootPage("TestItem1"));
-            database.Data.Children.Add(new TestRootPage("TestItem2"));
+            database.Root.Children.Add(new TestRootPage("TestItem1"));
+            database.Root.Children.Add(new TestRootPage("TestItem2"));
             database.SaveChanges();
 
             Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "TestRootPage", "TestItem1", "dataPage.json")));
