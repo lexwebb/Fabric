@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Fabric.Core;
+﻿using Fabric.Core.Asp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Fabric.Server
 {
@@ -24,8 +16,8 @@ namespace Fabric.Server
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services) {
+            services.AddFabric();
             services.AddMvc();
         }
 
@@ -38,8 +30,6 @@ namespace Fabric.Server
             }
 
             app.UseMvc();
-
-            //FabricDatabase.Initialise(Path.Combine("database", "fabric.db"));
         }
     }
 }

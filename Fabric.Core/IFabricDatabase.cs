@@ -4,7 +4,8 @@ using System.Text;
 
 namespace Fabric.Core
 {
-    public class IFabricDatabase
+    public interface IFabricDatabase
     {
+        FabricOptions FabricOptions { get; }
     }
 }

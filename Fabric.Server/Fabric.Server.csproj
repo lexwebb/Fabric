@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Fabric.Core.Asp\Fabric.Core.Asp.csproj" />
     <ProjectReference Include="..\Fabric.Core\Fabric.Core.csproj" />
   </ItemGroup>
 
