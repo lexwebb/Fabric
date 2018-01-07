@@ -1,0 +1,25 @@
+﻿{
+  "Name": "root",
+  "Children": {
+    "TestRootPage": [
+      {
+        "Name": "root",
+        "Children": {
+          "TestRootPage": [
+            "TestItem1",
+            "TestItem2"
+          ]
+        }
+      },
+      {
+        "Name": "root",
+        "Children": {
+          "TestRootPage": [
+            "TestItem1",
+            "TestItem2"
+          ]
+        }
+      }
+    ]
+  }
+}

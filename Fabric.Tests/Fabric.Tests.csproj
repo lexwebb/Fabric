@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestAssets\RecursivePropertyRemove_Input.json" />
+    <None Remove="TestAssets\RecursivePropertyRemove_Result.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestAssets\RecursivePropertyRemove_Input.json" />
+    <EmbeddedResource Include="TestAssets\RecursivePropertyRemove_Result.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
