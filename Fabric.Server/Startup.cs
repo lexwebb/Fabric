@@ -39,7 +39,7 @@ namespace Fabric.Server
 
             app.UseMvc();
 
-            FabricDatabase.Initialise(Path.Combine("database", "fabric.db"));
+            //FabricDatabase.Initialise(Path.Combine("database", "fabric.db"));
         }
     }
 }

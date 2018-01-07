@@ -14,7 +14,7 @@ namespace Fabric.Server.Controllers
     {
         [HttpGet]
         public IEnumerable<FabricProject> Get() {
-            return FabricDatabase.Projects.FindAll();
+            throw new NotImplementedException();
         }
     }
 }
