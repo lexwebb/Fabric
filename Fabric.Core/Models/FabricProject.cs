@@ -1,11 +1,10 @@
 ﻿using Fabric.Data;
-using System;
-using System.Collections.Generic;
 
-namespace Fabric.Core.Data.Models
+namespace Fabric.Core.Models
 {
     public class FabricProject : DataPage
     {
+        public FabricProject() : base("Default") { }
         public FabricProject(string name) : base(name) { }
     }
 }
