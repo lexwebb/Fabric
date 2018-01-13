@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fabric.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -18,14 +19,15 @@ namespace Fabric.Server
 
             model.message = exception.Message;
             model.detail = exception.Message + (exception.InnerException == null ? "" : " | " + exception.InnerException.Message);
-#if DEBUG
-            model.stackTrace = exception.StackTrace;
-#endif
 
             if (exception is HttpException)
             {
                 model.detail = (exception as HttpException).ToString();
                 context.HttpContext.Response.StatusCode = (int)(exception as HttpException).StatusCode;
+            }
+            else if (exception is ItemNotFoundException notFoundException) {
+                model.message = exception.Message;
+                model.detail = $"ItemName: {notFoundException.ItemName}, SearchPath: {notFoundException.SearchPath}";
             }
             else
             {

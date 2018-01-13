@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Fabric.Logging;
 using Newtonsoft.Json;
 
@@ -11,7 +12,9 @@ namespace Fabric.Data
     {
         public string DatabaseRoot { get; }
 
-        public string DatabaseFile => Path.Combine(DatabaseRoot, "FabricDatabase.json");
+        private string FullDataBaseRoot { get; set; }
+
+        public string DatabaseFile => Path.Combine(FullDataBaseRoot, "FabricDatabase.json");
 
         public Action<FabricDatabase> SeedDatabase { get; set; }
 
@@ -40,11 +43,18 @@ namespace Fabric.Data
         /// <exception cref="DirectoryNotFoundException"></exception>
         private void Initialise() {
             Global.Instance.Logger.Info("Initialising database");
-
+            
             if (!Directory.Exists(DatabaseRoot)) {
-                var error = $"Could not find directory scedified to store DB: {DatabaseRoot}";
-                Global.Instance.Logger.Error(error);
-                throw new DirectoryNotFoundException(error);
+                if (Path.IsPathRooted(DatabaseRoot)) {
+                    Directory.CreateDirectory(DatabaseRoot);
+                    FullDataBaseRoot = DatabaseRoot;
+                }
+                else {
+                    var relativePathRoot = AppDomain.CurrentDomain.BaseDirectory;
+                    var relativePath = Path.Combine(relativePathRoot, DatabaseRoot);
+                    Directory.CreateDirectory(relativePath);
+                    FullDataBaseRoot = relativePath;
+                }
             }
 
             if (!File.Exists(DatabaseFile)) {
@@ -136,7 +146,7 @@ namespace Fabric.Data
                 var parts = FindParentsRecursive(changeSet.ChangedCollection.Parent, new List<string>());
                 parts.Reverse();
 
-                var path = parts.Prepend(DatabaseRoot).ToArray();
+                var path = parts.Prepend(FullDataBaseRoot).ToArray();
 
                 switch (changeSet.ChangeType) {
                     case ChangeType.Insert:
@@ -180,6 +190,39 @@ namespace Fabric.Data
 
         internal void AddChange(ChangeSet changeSet) {
             this.Changes.Add(changeSet);
+        }
+
+        public bool PathExists(string path) {
+            return false;
+        }
+
+        public bool IsPathPage(string path) {
+            return false;
+        }
+
+        public async Task<DataPage> FindChildPage(string path) {
+            try {
+                return await Task.Run(() => FindChildPageReccursive(this.Root, path));
+            }
+            catch (ItemNotFoundException ex) {
+                throw new ItemNotFoundException(ex.ItemName, path);
+            }
+        }
+
+        internal DataPage FindChildPageReccursive(DataPage root, string path) {
+            if (path == null || path.Equals(string.Empty)) {
+                return Root;
+            }
+
+            var pathParts = path.Split('/');
+            var currentPathRoot = pathParts[0];
+
+            if (root.Children.Any(c => c.Name == currentPathRoot)) {
+                var currentPage = root.Children.First(c => c.Name == currentPathRoot);
+                return pathParts.Length > 1 ? FindChildPageReccursive(currentPage, string.Join("/", pathParts.Skip(1))) : currentPage;
+            }
+
+            throw new ItemNotFoundException(currentPathRoot);
         }
     }
 }

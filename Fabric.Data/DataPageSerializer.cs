@@ -93,7 +93,13 @@ namespace Fabric.Data
                         value = collection;
                     }
                     else {
-                        value = properties.First(p => p.Name == property.Name).ToObject(type);
+                        var prop = properties.FirstOrDefault(p => p.Name == property.Name);
+                        try {
+                            value = prop?.ToObject(type);
+                        }
+                        catch {
+                            value = null;
+                        }
                     }
 
                     property.SetValue(instance, value);

@@ -10,6 +10,8 @@ namespace Fabric.Data
 
         public string ModifiedTimestamp { get; internal set; }
 
+        public dynamic PageData { get; set; }
+
         public DataPageCollection Children { get; internal set; }
 
         public IEnumerable<T> GetChildren<T>() where T : DataPage {

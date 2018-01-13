@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Fabric.Core.Models;
+﻿using System.Threading.Tasks;
 using Fabric.Data;
 
 namespace Fabric.Core
@@ -12,6 +9,6 @@ namespace Fabric.Core
 
         FabricDatabase Database { get; }
 
-        IEnumerable<FabricProject> Projects { get; }
+        Task<DataPage> GetDataPage(string path);
     }
 }

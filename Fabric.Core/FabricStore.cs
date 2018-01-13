@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using Fabric.Core.Models;
+using System.Threading.Tasks;
 using Fabric.Data;
 
 namespace Fabric.Core {
@@ -14,6 +13,8 @@ namespace Fabric.Core {
             Database = new FabricDatabase(FabricOptions.DataFolderName);
         }
 
-        public IEnumerable<FabricProject> Projects => Database.Root.GetChildren<FabricProject>();
+        public async Task<DataPage> GetDataPage(string path) {
+            return await Database.FindChildPage(path);
+        }
     }
 }

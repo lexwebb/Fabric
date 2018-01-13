@@ -1,18 +1,21 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fabric.Core.Asp
 {
     public static class AspExtensions
     {
-        public static void AddFabric(this IServiceCollection serviceCollection, Action<FabricOptions> setupOptions) {
+        public static void AddFabric(this IServiceCollection serviceCollection, Action<FabricOptions> setupOptions = null) {
             var options = new FabricOptions();
-            setupOptions.Invoke(options);
-            serviceCollection.AddSingleton(typeof(IFabricStore), new FabricStore(options));
-        }
 
-        public static void AddFabric(this IServiceCollection serviceCollection) {
-            var options = FabricOptions.Deafult();
+            if (setupOptions == null) {
+                options = FabricOptions.Deafult();
+            }
+            else {
+                setupOptions.Invoke(options);
+            }
+
             serviceCollection.AddSingleton(typeof(IFabricStore), new FabricStore(options));
         }
     }
