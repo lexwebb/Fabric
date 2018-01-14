@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fabric.Core.Debug;
+using Fabric.Core.DebugResources;
 using Fabric.Data;
 
 namespace Fabric.Core {

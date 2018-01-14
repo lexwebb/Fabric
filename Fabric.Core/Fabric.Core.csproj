@@ -5,15 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Debug\Pages\project1.json" />
-    <None Remove="Debug\Pages\project2.json" />
-    <None Remove="Debug\Schemas\project.json" />
+    <None Remove="DebugResources\Pages\project1.json" />
+    <None Remove="DebugResources\Pages\project2.json" />
+    <None Remove="DebugResources\Schemas\project.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Debug\Pages\project2.json" />
-    <EmbeddedResource Include="Debug\Pages\project1.json" />
-    <EmbeddedResource Include="Debug\Schemas\project.json" />
+    <EmbeddedResource Include="DebugResources\Pages\project2.json" />
+    <EmbeddedResource Include="DebugResources\Pages\project1.json" />
+    <EmbeddedResource Include="DebugResources\Schemas\project.json" />
   </ItemGroup>
 
   <ItemGroup>
