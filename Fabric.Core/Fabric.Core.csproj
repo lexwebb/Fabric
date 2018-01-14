@@ -5,12 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiteDB" Version="4.1.0" />
+    <None Remove="Debug\Pages\project1.json" />
+    <None Remove="Debug\Pages\project2.json" />
+    <None Remove="Debug\Schemas\project.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Debug\Pages\project2.json" />
+    <EmbeddedResource Include="Debug\Pages\project1.json" />
+    <EmbeddedResource Include="Debug\Schemas\project.json" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Fabric.Data\Fabric.Data.csproj" />
     <ProjectReference Include="..\Fabric.Logging\Fabric.Logging.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties Debug_4Pages_4project1_1json__JSONSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

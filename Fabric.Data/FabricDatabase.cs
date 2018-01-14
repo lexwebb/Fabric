@@ -6,13 +6,33 @@ using System.Threading.Tasks;
 using Fabric.Logging;
 using Newtonsoft.Json;
 
-namespace Fabric.Data
-{
-    public class FabricDatabase
-    {
+namespace Fabric.Data {
+    public class FabricDatabase {
+        public JsonSerializerSettings SerializerSettings { get; }
+
+        public FabricDatabase(string databaseRoot) {
+            DatabaseRoot = databaseRoot;
+
+            if (Path.IsPathRooted(DatabaseRoot)) {
+                FullDataBaseRoot = DatabaseRoot;
+            }
+            else {
+                var relativePathRoot = AppDomain.CurrentDomain.BaseDirectory;
+                var relativePath = Path.Combine(relativePathRoot, DatabaseRoot);
+                FullDataBaseRoot = relativePath;
+            }
+
+            SerializerSettings = new JsonSerializerSettings {
+                Converters = new List<JsonConverter> {
+                    new DataPageSerializer(this)
+                },
+                Formatting = Formatting.Indented
+            };
+        }
+
         public string DatabaseRoot { get; }
 
-        private string FullDataBaseRoot { get; set; }
+        public string FullDataBaseRoot { get; }
 
         public string DatabaseFile => Path.Combine(FullDataBaseRoot, "FabricDatabase.json");
 
@@ -20,42 +40,18 @@ namespace Fabric.Data
 
         public RootPage Root { get; private set; }
 
+        public ISchemaManager SchemaManager { get; private set; }
+
         internal List<ChangeSet> Changes { get; } = new List<ChangeSet>();
 
-        private readonly JsonSerializerSettings _serializerSettings;
-
-        public FabricDatabase(string databaseRoot) {
-            this.DatabaseRoot = databaseRoot;
-
-            _serializerSettings = new JsonSerializerSettings() {
-                Converters = new List<JsonConverter>() {
-                    new DataPageSerializer(this)
-                },
-                Formatting = Formatting.Indented
-            };
-
-            Initialise();
-        }
-
         /// <summary>
-        /// Initialises this instance.
+        ///     Initialises this instance.
         /// </summary>
         /// <exception cref="DirectoryNotFoundException"></exception>
-        private void Initialise() {
+        public void Initialise() {
             Global.Instance.Logger.Info("Initialising database");
-            
-            if (!Directory.Exists(DatabaseRoot)) {
-                if (Path.IsPathRooted(DatabaseRoot)) {
-                    Directory.CreateDirectory(DatabaseRoot);
-                    FullDataBaseRoot = DatabaseRoot;
-                }
-                else {
-                    var relativePathRoot = AppDomain.CurrentDomain.BaseDirectory;
-                    var relativePath = Path.Combine(relativePathRoot, DatabaseRoot);
-                    Directory.CreateDirectory(relativePath);
-                    FullDataBaseRoot = relativePath;
-                }
-            }
+
+            if (!Directory.Exists(FullDataBaseRoot)) Directory.CreateDirectory(FullDataBaseRoot);
 
             if (!File.Exists(DatabaseFile)) {
                 Global.Instance.Logger.Info("Database not found, performing first time setup");
@@ -66,24 +62,27 @@ namespace Fabric.Data
                 LoadDatabase();
             }
 
+            SchemaManager = new SchemaManager(this);
+            SchemaManager.LoadSchemas();
+
             Global.Instance.Logger.Info("Finished initialising database");
         }
 
         /// <summary>
-        /// Creates the database.
+        ///     Creates the database.
         /// </summary>
         private void CreateDatabase() {
             Global.Instance.Logger.Info("Creating database file");
             File.Create(DatabaseFile).Close();
 
-            var settings = new JsonSerializerSettings() {
-                Converters = new List<JsonConverter>() {
+            var settings = new JsonSerializerSettings {
+                Converters = new List<JsonConverter> {
                     new DataPageSerializer(this)
                 },
                 Formatting = Formatting.Indented
             };
 
-            Root = new RootPage {
+            Root = new RootPage(this) {
                 ModifiedTimestamp = DateTime.Now.GetTimestamp()
             };
 
@@ -97,8 +96,8 @@ namespace Fabric.Data
         private void LoadDatabase() {
             Global.Instance.Logger.Info("Loading database file");
 
-            var settings = new JsonSerializerSettings() {
-                Converters = new List<JsonConverter>() {
+            var settings = new JsonSerializerSettings {
+                Converters = new List<JsonConverter> {
                     new DataPageSerializer(this)
                 },
                 Formatting = Formatting.Indented
@@ -108,7 +107,7 @@ namespace Fabric.Data
         }
 
         /// <summary>
-        /// Seeds the database.
+        ///     Seeds the database.
         /// </summary>
         private void InternalSeedDatabase() {
             SeedDatabase?.Invoke(this);
@@ -138,7 +137,8 @@ namespace Fabric.Data
 
                         break;
                     default:
-                        throw new InvalidOperationException($"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPage)}");
+                        throw new InvalidOperationException(
+                            $"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPage)}");
                 }
             }
 
@@ -146,18 +146,22 @@ namespace Fabric.Data
                 var parts = FindParentsRecursive(changeSet.ChangedCollection.Parent, new List<string>());
                 parts.Reverse();
 
+                if (parts[0] == "root")
+                    parts = parts.Skip(1).ToList();
+
                 var path = parts.Prepend(FullDataBaseRoot).ToArray();
 
                 switch (changeSet.ChangeType) {
                     case ChangeType.Insert:
-                        foreach (var dataPageGroup in changeSet.ChangedCollection.GroupBy(d => d.GetType().Name)) {
+                        foreach (var dataPageGroup in changeSet.ChangedCollection.GroupBy(d => d.SchemaName)) {
                             var folderPath = Path.Combine(path.Append(dataPageGroup.Key).ToArray());
 
-                            if(!Directory.Exists(folderPath))
+                            if (!Directory.Exists(folderPath))
                                 Directory.CreateDirectory(folderPath);
 
                             foreach (var dataPage in dataPageGroup) {
-                                var pageFolderPath = Path.Combine(path.Append(dataPageGroup.Key).Append(dataPage.Name).ToArray());
+                                var pageFolderPath =
+                                    Path.Combine(path.Append(dataPageGroup.Key).Append(dataPage.Name).ToArray());
 
                                 if (!Directory.Exists(pageFolderPath))
                                     Directory.CreateDirectory(pageFolderPath);
@@ -169,40 +173,45 @@ namespace Fabric.Data
 
                                 dataPage.ModifiedTimestamp = changesTimestamp;
 
-                                File.WriteAllText(filePath, JsonConvert.SerializeObject(dataPage, _serializerSettings));
+                                File.WriteAllText(filePath, JsonConvert.SerializeObject(dataPage, SerializerSettings));
                             }
                         }
                         break;
                     case ChangeType.Delete:
                         break;
                     default:
-                        throw new InvalidOperationException($"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPageCollection)}");
+                        throw new InvalidOperationException(
+                            $"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPageCollection)}");
                 }
 
                 var collectionRootFilePath = Path.Combine(path.Append("dataPage.json").ToArray());
 
-                if(changeSet.ChangedCollection.Parent is RootPage)
+                if (changeSet.ChangedCollection.Parent is RootPage)
                     collectionRootFilePath = Path.Combine(path.Append("FabricDatabase.json").ToArray());
 
-                File.WriteAllText(collectionRootFilePath, JsonConvert.SerializeObject(changeSet.ChangedCollection.Parent, _serializerSettings));
+                File.WriteAllText(collectionRootFilePath,
+                    JsonConvert.SerializeObject(changeSet.ChangedCollection.Parent, SerializerSettings));
             }
         }
 
         internal void AddChange(ChangeSet changeSet) {
-            this.Changes.Add(changeSet);
+            Changes.Add(changeSet);
         }
 
-        public bool PathExists(string path) {
-            return false;
-        }
-
-        public bool IsPathPage(string path) {
-            return false;
+        public bool IsPathCollection(string path) {
+            path = path?.TrimEnd('/');
+            if (string.IsNullOrEmpty(path))
+                return false;
+            return path.Split('/').Length % 2 != 0;
         }
 
         public async Task<DataPage> FindChildPage(string path) {
+            path = path?.TrimEnd('/');
             try {
-                return await Task.Run(() => FindChildPageReccursive(this.Root, path));
+                if (IsPathCollection(path)) {
+                    throw new ArgumentException("Provided path points to a collection not a page.");
+                }
+                return await Task.Run(() => FindChildPageReccursive(Root, path));
             }
             catch (ItemNotFoundException ex) {
                 throw new ItemNotFoundException(ex.ItemName, path);
@@ -210,16 +219,57 @@ namespace Fabric.Data
         }
 
         internal DataPage FindChildPageReccursive(DataPage root, string path) {
-            if (path == null || path.Equals(string.Empty)) {
-                return Root;
+            path = path?.TrimEnd('/');
+            if (path == null || path.Equals(string.Empty)) return Root;
+
+            var pathParts = path.Split('/');
+            var schemaName = pathParts[0];
+            var itemName = pathParts[1];
+
+            if (root.Children.Any(c => c.Name == itemName)) {
+                var currentPage = root.Children.First(c=> c.SchemaName == schemaName && c.Name == itemName);
+                return pathParts.Length > 2
+                    ? FindChildPageReccursive(currentPage, string.Join("/", pathParts.Skip(2)))
+                    : currentPage;
             }
+
+            throw new ItemNotFoundException(itemName);
+        }
+
+        public async Task<IEnumerable<DataPage>> FindChildCollection(string path) {
+            path = path?.TrimEnd('/');
+            try {
+
+                if (!IsPathCollection(path)) {
+                    throw new ArgumentException("Provided path points to a page not a collection.");
+                }
+                return await Task.Run(() => FindChildCollectionReccursive(Root, path));
+            } catch (ItemNotFoundException ex) {
+                throw new ItemNotFoundException(ex.ItemName, path);
+            }
+        }
+
+        internal IEnumerable<DataPage> FindChildCollectionReccursive(DataPage root, string path) {
+            path = path?.TrimEnd('/');
+            if (path == null || path.Equals(string.Empty)) {
+                throw new ItemNotFoundException(path);
+            };
 
             var pathParts = path.Split('/');
             var currentPathRoot = pathParts[0];
+            
+            if (root.Children.Any(c => c.SchemaName == currentPathRoot)) {
+                if (pathParts.Length == 1) {
+                    return root.Children.Where(c => c.SchemaName == currentPathRoot);
+                }
 
-            if (root.Children.Any(c => c.Name == currentPathRoot)) {
-                var currentPage = root.Children.First(c => c.Name == currentPathRoot);
-                return pathParts.Length > 1 ? FindChildPageReccursive(currentPage, string.Join("/", pathParts.Skip(1))) : currentPage;
+                var nextCollectionName = pathParts[2];
+                var itemName = pathParts[1];
+
+                if (root.Children.Any(c => c.SchemaName == currentPathRoot && c.Name == itemName)) {
+                    var item = root.Children.First(c => c.SchemaName == currentPathRoot && c.Name == itemName);
+                    return FindChildCollectionReccursive(item, nextCollectionName);
+                }
             }
 
             throw new ItemNotFoundException(currentPathRoot);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Fabric.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fabric.Core.Asp

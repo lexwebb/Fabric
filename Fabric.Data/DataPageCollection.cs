@@ -62,19 +62,18 @@ namespace Fabric.Data
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
-        public void Add(DataPage item) {
+        internal void Add(DataPage item) {
             item.Parent = this;
             DateTime.Now.GetTimestamp();
             item.Children = new DataPageCollection(Database, Parent);
 
             _internalList.Add(item);
-
-            var name = item.GetType().Name;
-            var exists = _internalNameList.TryGetValue(name, out var subList);
+            
+            var exists = _internalNameList.TryGetValue(item.SchemaName, out var subList);
 
             if (!exists) {
                 subList = new List<string>();
-                _internalNameList.Add(name, subList);
+                _internalNameList.Add(item.SchemaName, subList);
             }
 
             subList?.Add(item.Name);
@@ -90,7 +89,7 @@ namespace Fabric.Data
         /// <returns>
         /// true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
-        public bool Delete(DataPage item) {
+        internal bool Delete(DataPage item) {
             if (!CanDelete.Invoke(item)) return false;
 
             var result = _internalList.Remove(item);

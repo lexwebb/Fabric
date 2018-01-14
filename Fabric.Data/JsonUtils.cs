@@ -11,7 +11,7 @@ namespace Fabric.Data {
             if (!(JsonConvert.DeserializeObject(jsonInput) is JObject jObject))
                 throw new Exception("Failed to create json object from input string.");
 
-            jObject.Property(propertyName).Remove();
+            jObject.Property(propertyName)?.Remove();
 
             if (recursive) {
                 jObject = RemovePorpertyRecursive(jObject, propertyName);
