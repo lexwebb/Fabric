@@ -10,7 +10,7 @@ jobs:
     steps:
       - checkout
       - run: dotnet --version
-      - run: cd Fabric.server
+      - run: cd Fabric.Server/
       - run: npm install
       - run: cd ../
       - run: dotnet restore
