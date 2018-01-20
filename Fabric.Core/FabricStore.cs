@@ -14,8 +14,10 @@ namespace Fabric.Core {
 #if DEBUG
             var directoryInfo = new DirectoryInfo(Database.FullDataBaseRoot);
 
-            foreach (var file in directoryInfo.GetFiles()) file.Delete();
-            foreach (var dir in directoryInfo.GetDirectories()) dir.Delete(true);
+            if (directoryInfo.Exists) {
+                foreach (var file in directoryInfo.GetFiles()) file.Delete();
+                foreach (var dir in directoryInfo.GetDirectories()) dir.Delete(true);
+            }
 #endif
 
             Database.Initialise();
