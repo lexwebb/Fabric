@@ -53,7 +53,7 @@ namespace Fabric.Tests {
             var expected = GetFileContents("RecursivePropertyRemove_Result.json");
             var actual = JsonUtils.RemoveProperty(input, "ModifiedTimestamp", true);
 
-            Assert.Equal(JsonUtils.Uglify(expected), JsonUtils.Uglify(actual));
+            Assert.Equal(JsonUtils.Uglify(expected), JsonUtils.Uglify(actual), true);
         }
 
         [Fact]
@@ -65,10 +65,10 @@ namespace Fabric.Tests {
 
             var json = JsonConvert.SerializeObject(database.Root, _basicSerializerSettings);
 
-            var actual = JsonUtils.Uglify(JsonUtils.RemoveProperty(json, "ModifiedTimestamp", true));
-            var expected = JsonUtils.Uglify(JsonUtils.RemoveProperty(_basicRootPageJson, "ModifiedTimestamp", true));
+            var actual = JsonUtils.Uglify(JsonUtils.RemoveProperty(json, "modifiedTimestamp", true));
+            var expected = JsonUtils.Uglify(JsonUtils.RemoveProperty(_basicRootPageJson, "modifiedTimestamp", true));
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected, actual, true);
         }
 
         [Fact]
