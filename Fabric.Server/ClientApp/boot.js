@@ -1,35 +1,25 @@
-import './css/site.css';
 import 'bootstrap';
-import app from './app.vue';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import TreeView from 'vue-json-tree-view';
+import './css/site.css';
+
+import app from './app.vue';
+import router from './routes';
+
 Vue.use(VueRouter);
 Vue.use(TreeView);
 
-const routes = [
-    {
-        path: '/',
-        component: require('./components/home.vue'),
-        meta: { title: 'Home' }
-    },
-    {
-        path: '/browse',
-        component: require('./components/browse.vue'),
-        meta: { title: 'Browse' }
-    }
-];
-
-const router = new VueRouter({ mode: 'history', routes: routes });
 router.beforeEach((to, from, next) => {
     document.title = `${to.meta.title} - Fabric.Server`;
     next();
 });
 
 // ReSharper disable once ConstructorCallNotUsed
+/* eslint-disable no-new */
 new Vue({
     el: '#app-root',
-    router: router,
+    router,
     template: '<app/>',
-    components: { app }
+    components: { app },
 });
