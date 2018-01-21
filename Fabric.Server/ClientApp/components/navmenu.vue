@@ -23,7 +23,7 @@
                     </li>
                     <li>
                         <router-link to="/browse">
-                            <span class="glyphicon glyphicon-folder-close"></span> Counter
+                            <span class="glyphicon glyphicon-folder-close"></span> Browse
                         </router-link>
                     </li>
                 </ul>

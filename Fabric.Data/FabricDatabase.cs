@@ -5,11 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fabric.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Fabric.Data {
     public class FabricDatabase {
-        public JsonSerializerSettings SerializerSettings { get; }
-
         public FabricDatabase(string databaseRoot) {
             DatabaseRoot = databaseRoot;
 
@@ -26,9 +25,13 @@ namespace Fabric.Data {
                 Converters = new List<JsonConverter> {
                     new DataPageSerializer(this)
                 },
-                Formatting = Formatting.Indented
+                Formatting = Formatting.Indented,
+                ContractResolver =
+                    new CamelCasePropertyNamesContractResolver()
             };
         }
+
+        public JsonSerializerSettings SerializerSettings { get; }
 
         public string DatabaseRoot { get; }
 
@@ -208,9 +211,8 @@ namespace Fabric.Data {
         public async Task<DataPage> FindChildPage(string path) {
             path = path?.TrimEnd('/');
             try {
-                if (IsPathCollection(path)) {
+                if (IsPathCollection(path))
                     throw new ArgumentException("Provided path points to a collection not a page.");
-                }
                 return await Task.Run(() => FindChildPageReccursive(Root, path));
             }
             catch (ItemNotFoundException ex) {
@@ -227,7 +229,7 @@ namespace Fabric.Data {
             var itemName = pathParts[1];
 
             if (root.Children.Any(c => c.Name == itemName)) {
-                var currentPage = root.Children.First(c=> c.SchemaName == schemaName && c.Name == itemName);
+                var currentPage = root.Children.First(c => c.SchemaName == schemaName && c.Name == itemName);
                 return pathParts.Length > 2
                     ? FindChildPageReccursive(currentPage, string.Join("/", pathParts.Skip(2)))
                     : currentPage;
@@ -239,29 +241,25 @@ namespace Fabric.Data {
         public async Task<IEnumerable<DataPage>> FindChildCollection(string path) {
             path = path?.TrimEnd('/');
             try {
-
-                if (!IsPathCollection(path)) {
+                if (!IsPathCollection(path))
                     throw new ArgumentException("Provided path points to a page not a collection.");
-                }
                 return await Task.Run(() => FindChildCollectionReccursive(Root, path));
-            } catch (ItemNotFoundException ex) {
+            }
+            catch (ItemNotFoundException ex) {
                 throw new ItemNotFoundException(ex.ItemName, path);
             }
         }
 
         internal IEnumerable<DataPage> FindChildCollectionReccursive(DataPage root, string path) {
             path = path?.TrimEnd('/');
-            if (path == null || path.Equals(string.Empty)) {
-                throw new ItemNotFoundException(path);
-            };
+            if (path == null || path.Equals(string.Empty)) throw new ItemNotFoundException(path);
+            ;
 
             var pathParts = path.Split('/');
             var currentPathRoot = pathParts[0];
-            
+
             if (root.Children.Any(c => c.SchemaName == currentPathRoot)) {
-                if (pathParts.Length == 1) {
-                    return root.Children.Where(c => c.SchemaName == currentPathRoot);
-                }
+                if (pathParts.Length == 1) return root.Children.Where(c => c.SchemaName == currentPathRoot);
 
                 var nextCollectionName = pathParts[2];
                 var itemName = pathParts[1];

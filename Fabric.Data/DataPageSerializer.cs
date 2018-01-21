@@ -53,7 +53,7 @@ namespace Fabric.Data
                         valuetoWrite = type.GetMethod("GetNames").Invoke(propertyValue, null);
                     }
 
-                    writer.WritePropertyName(nameToWrite);
+                    writer.WritePropertyName(FirstLetterToLowerCase(nameToWrite));
                     serializer.Serialize(writer, valuetoWrite);
                 }
                 writer.WriteEndObject();
@@ -120,6 +120,15 @@ namespace Fabric.Data
         /// </returns>
         public override bool CanConvert(Type objectType) {
             return typeof(DataPage).IsAssignableFrom(objectType);
+        }
+
+        public static string FirstLetterToLowerCase(string s) {
+            if (string.IsNullOrEmpty(s))
+                throw new ArgumentException("There is no first letter");
+
+            var a = s.ToCharArray();
+            a[0] = char.ToLower(a[0]);
+            return new string(a);
         }
     }
 }

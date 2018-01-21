@@ -3,9 +3,13 @@
         <h1>Browse</h1>
         <div class="row">
             <div class="col-md-3">
-                <tree-view :data="rootNode" :options="{maxDepth: 3}"></tree-view>
+                <h3>Data Tree</h3>
+                <div class="round-border">
+                    <treeView :treeData ="rootNode"></treeView>
+                </div>
             </div>
             <div class="col-md-9">
+                <h3>Page info</h3>
                 One of three columns
             </div>
         </div>
@@ -13,11 +17,16 @@
 </template>
 
 <script>
+    import treeView from './treeView/treeView.vue';
+
     export default {
         name: 'browse',
+        components: {
+            treeView
+        },
         data() {
             return {
-                rootnode: {},
+                rootNode: {},
             };
         },
         mounted() {
@@ -29,3 +38,10 @@
         }
     }
 </script>
+
+<style scoped>
+    .round-border {
+        border: 1px solid #333;
+        border-radius: 5px;
+    }
+</style>
