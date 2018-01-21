@@ -1,19 +1,22 @@
 import './css/site.css';
 import 'bootstrap';
+import app from './app.vue';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-Vue.use((VueRouter) as any);
+import TreeView from 'vue-json-tree-view';
+Vue.use(VueRouter);
+Vue.use(TreeView);
 
 const routes = [
     {
         path: '/',
-        component: require('./components/home/home.vue.html'),
-        meta: { title: 'Home'}
+        component: require('./components/home.vue'),
+        meta: { title: 'Home' }
     },
     {
         path: '/browse',
-        component: require('./components/browse/browse.vue.html'),
-        meta: { title: 'Browse' } 
+        component: require('./components/browse.vue'),
+        meta: { title: 'Browse' }
     }
 ];
 
@@ -23,9 +26,10 @@ router.beforeEach((to, from, next) => {
     next();
 });
 
-// ReSharper disable once WrongExpressionStatement
+// ReSharper disable once ConstructorCallNotUsed
 new Vue({
     el: '#app-root',
     router: router,
-    render: h => h(require('./components/app/app.vue.html'))
+    template: '<app/>',
+    components: { app }
 });

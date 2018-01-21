@@ -32,4 +32,10 @@
     </div>
 </template>
 
-<style src="./navmenu.css" />
+<script>
+    export default {
+        name: 'navmenu',
+    }
+</script>
+
+<style src="./navmenu.css"></style>

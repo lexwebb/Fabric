@@ -1,8 +1,8 @@
-<template>
+﻿<template>
     <div id='app-root' class="container-fluid">
         <div class="row">
             <div class="col-sm-2">
-                <menu-component />
+                <navmenu />
             </div>
             <div class="col-sm-10">
                 <router-view></router-view>
@@ -11,4 +11,13 @@
     </div>
 </template>
 
-<script src="./app.ts"></script>
+<script>
+    import navmenu from './components/navmenu.vue';
+
+    export default {
+        name: 'app',
+        components: {
+            navmenu,
+        },
+    }
+</script>
