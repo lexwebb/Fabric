@@ -34,6 +34,8 @@
                 .then(response => response.json())
                 .then((data) => {
                     this.rootNode = data;
+                }).catch((e) => {
+                    alert(e); // TODO replace alert with toast
                 });
         },
     };
