@@ -22,7 +22,7 @@
     export default {
         name: 'browse',
         components: {
-            treeView
+            treeView,
         },
         data() {
             return {
@@ -32,11 +32,11 @@
         mounted() {
             fetch('api/config/')
                 .then(response => response.json())
-                .then(data => {
+                .then((data) => {
                     this.rootNode = data;
                 });
-        }
-    }
+        },
+    };
 </script>
 
 <style scoped>

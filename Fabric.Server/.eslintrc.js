@@ -4,10 +4,12 @@
         "ecmaVersion": 2017,
         "sourceType": "module"
     },
+    env: {
+        "browser": true
+    },
     extends: [
         // add more generic rulesets here, such as:
         // 'eslint:recommended',
-        'plugin:vue/essential',
         'airbnb-base'
     ],
     plugins: [
@@ -17,6 +19,7 @@
         // override/add rules settings here, such as:
         // 'vue/no-unused-vars': 'error'
         'indent': ["error", 4],
-        'linebreak-style': 0
+        'linebreak-style': 0,
+        "globals": { "fetch": false }
     }
 }

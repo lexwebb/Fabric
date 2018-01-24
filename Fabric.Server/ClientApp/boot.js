@@ -19,6 +19,7 @@ Vue.prototype.$pluralize = pluralize;
 Vue.prototype.$moment = moment;
 
 router.beforeEach((to, from, next) => {
+    /* eslint-disable no-undef */
     document.title = `${to.meta.title} - Fabric.Server`;
     next();
 });

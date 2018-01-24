@@ -35,7 +35,7 @@
 <script>
     export default {
         name: 'navmenu',
-    }
+    };
 </script>
 
 <style src="./navmenu.css"></style>

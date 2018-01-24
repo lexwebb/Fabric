@@ -34,11 +34,12 @@
             model: Object,
             path: {
                 type: String,
-                required: false
-            }, open: {
+                required: false,
+            },
+            open: {
                 type: Boolean,
                 default: false,
-                required: false
+                required: false,
             },
         },
         computed: {
@@ -46,39 +47,38 @@
                 return this.path ? `${this.path}/${this.model.name}` : this.model.name;
             },
             nonChildProperties() {
-                var properties = [];
-                for (var propertyName in this.model) {
-                    if (propertyName != 'children' && propertyName != 'name') {
-                        var value = this.model[propertyName];
+                const properties = [];
+                Object.keys(this.model).forEach((propertyName) => {
+                    if (propertyName !== 'children' && propertyName !== 'name') {
+                        let value = this.model[propertyName];
                         if (propertyName.includes('Timestamp')) {
-                            debugger;
-                            value = this.$moment.unix(parseInt(value) / 1000).format('DD/MM/YY HH:MM');
+                            value = this.$moment.unix(parseInt(value, 10) / 1000).format('DD/MM/YY HH:MM');
                         }
 
                         properties.push({
                             name: propertyName,
                             displayName: this.$utils.unCamelCase(propertyName),
-                            value
-                        })
+                            value,
+                        });
                     }
-                }
+                });
                 return properties;
             },
             childGroups() {
-                var groups = [];
-                for (var group in this.model.children) {
+                const groups = [];
+                Object.keys(this.model.children).forEach((group) => {
                     groups.push({
                         name: group,
                         displayName: this.$pluralize(group),
-                        children: this.model.children[group]
+                        children: this.model.children[group],
                     });
-                }
+                });
                 return groups;
             },
         },
         methods: {
             toggle() {
-                this.open = !this.open
+                this.open = !this.open;
             },
         },
     };

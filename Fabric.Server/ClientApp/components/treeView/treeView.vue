@@ -5,7 +5,7 @@
 </template>
 
 <script>
-    import treeViewItem from './treeViewItem.vue'
+    import treeViewItem from './treeViewItem.vue';
 
     export default {
         name: 'treeView',
@@ -13,9 +13,9 @@
             treeViewItem,
         },
         props: {
-            treeData: Object
+            treeData: Object,
         },
-    }
+    };
 </script>
 
 <style scoped>

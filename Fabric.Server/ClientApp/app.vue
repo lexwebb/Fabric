@@ -19,5 +19,5 @@
         components: {
             navmenu,
         },
-    }
+    };
 </script>
