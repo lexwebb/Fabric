@@ -86,7 +86,7 @@ namespace Fabric.Data {
             };
 
             Root = new RootPage(this) {
-                ModifiedTimestamp = DateTime.Now.GetTimestamp()
+                ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds())
             };
 
             Root.Children = new DataPageCollection(this, Root);
@@ -131,7 +131,7 @@ namespace Fabric.Data {
         }
 
         public void SaveChanges() {
-            var changesTimestamp = DateTime.Now.GetTimestamp();
+            var changesTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds());
 
             foreach (var changeSet in Changes.Where(c => c.ChangedPage != null)) {
                 var parts = FindParentsRecursive(changeSet.ChangedPage, new List<string>());

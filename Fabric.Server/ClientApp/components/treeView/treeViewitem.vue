@@ -10,16 +10,16 @@
 
         <div v-if="open" class="item-properties">
             <div v-for="property in nonChildProperties">
-                {{property.name}} :
+                {{property.displayName}} :
                 <span v-if="property.value">{{property.value}}</span>
                 <span v-else class="null-value">null</span>
             </div>
             <b>Children:</b>
             <div v-for="childGroup in childGroups">
                 <div class="child-list-item">
-                    {{childGroup.name}}:
-                    <div v-for="child in childGroup.children" class="child-list-item">
-                        {{child}}
+                    {{childGroup.displayName}}:
+                    <div v-for="child in childGroup.children" class="child-list-item" :data-child-name="`${childGroup.name}/${child}`">
+                        <treeViewItem :model="{name: child}" :path="`${path}/${childGroup.name}/${child}`"></treeViewItem>
                     </div>
                 </div>
             </div>
@@ -31,19 +31,31 @@
     export default {
         name: 'treeViewItem',
         props: {
-            model: Object
-        },
-        data() {
-            return {
-                open: true
-            }
+            model: Object,
+            path: {
+                type: String,
+                required: false
+            }, open: {
+                type: Boolean,
+                default: false,
+                required: false
+            },
         },
         computed: {
+            currentPath() {
+                return this.path ? `${this.path}/${this.model.name}` : this.model.name;
+            },
             nonChildProperties() {
                 var properties = [];
                 for (var propertyName in this.model) {
                     if (propertyName != 'children' && propertyName != 'name') {
-                        properties.push({ name: propertyName, value: this.model[propertyName] })
+                        var value = this.model[propertyName];
+                        if (propertyName.includes('Timestamp')) {
+                            debugger;
+                            value = this.$moment.unix(parseInt(value) / 1000).format('DD/MM/YY HH:MM');
+                        }
+
+                        properties.push({ name: propertyName, displayName: this.$utils.unCamelCase(propertyName), value })
                     }
                 }
                 return properties;
@@ -51,7 +63,7 @@
             childGroups() {
                 var groups = [];
                 for (var group in this.model.children) {
-                    groups.push({ name: this.$pluralize(group), children: this.model.children[group] });
+                    groups.push({ name: group, displayName: this.$pluralize(group), children: this.model.children[group] });
                 }
                 return groups;
             },
@@ -60,19 +72,7 @@
             toggle() {
                 this.open = !this.open
             },
-            changeType() {
-                if (!this.isFolder) {
-                    Vue.set(this.model, 'children', [])
-                    this.addChild()
-                    this.open = true
-                }
-            },
-            addChild() {
-                this.model.children.push({
-                    name: 'new stuff'
-                })
-            }
-        }
+        },
     };
 </script>
 

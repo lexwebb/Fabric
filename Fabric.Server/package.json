@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "bootstrap": "^3.3.6",
+    "moment": "^2.20.1",
     "pluralize": "^7.0.0",
     "vue": "^2.2.2",
     "vue-json-tree-view": "^2.1.3",
