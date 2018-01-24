@@ -55,7 +55,11 @@
                             value = this.$moment.unix(parseInt(value) / 1000).format('DD/MM/YY HH:MM');
                         }
 
-                        properties.push({ name: propertyName, displayName: this.$utils.unCamelCase(propertyName), value })
+                        properties.push({
+                            name: propertyName,
+                            displayName: this.$utils.unCamelCase(propertyName),
+                            value
+                        })
                     }
                 }
                 return properties;
@@ -63,7 +67,11 @@
             childGroups() {
                 var groups = [];
                 for (var group in this.model.children) {
-                    groups.push({ name: group, displayName: this.$pluralize(group), children: this.model.children[group] });
+                    groups.push({
+                        name: group,
+                        displayName: this.$pluralize(group),
+                        children: this.model.children[group]
+                    });
                 }
                 return groups;
             },
