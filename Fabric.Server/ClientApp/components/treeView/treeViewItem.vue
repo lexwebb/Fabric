@@ -7,7 +7,7 @@
                 <b>{{currentModel.name}}</b>
             </div>
         </div>
-
+        <a v-if="internalOpen" class="edit_button noselect" @click="edit">edit..</a>
         <div v-if="internalOpen" class="item-properties">
             <div v-for="property in nonChildProperties">
                 {{property.displayName}} :
@@ -65,7 +65,7 @@
                     if (propertyName !== 'children' && propertyName !== 'name') {
                         let value = this.currentModel[propertyName];
                         if (propertyName.includes('Timestamp')) {
-                            value = this.$moment.unix(parseInt(value, 10) / 1000).format('DD/MM/YY HH:MM');
+                            value = this.$moment.unix(parseInt(value, 10) / 1000).format('gggg/MM/DD LT');
                         }
 
                         properties.push({
@@ -105,6 +105,12 @@
                         });
                 }
             },
+            edit() {
+                this.$emit('page-edit', this.currentPath);
+            },
+            onPageEdit(e) {
+                this.$emit('page-edit', e);
+            },
         },
     };
 </script>
@@ -129,5 +135,28 @@
     .child-list-item {
         padding-left: 1em;
         border-left: 1px dashed lightgrey;
+    }
+
+    .edit_button {
+        float: right;
+        margin-top: -1.5em;
+        margin-right: 0.5em;
+        color: grey;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .edit_button:hover {
+        color: darkgrey;
+    }
+
+    .noselect {
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
     }
 </style>

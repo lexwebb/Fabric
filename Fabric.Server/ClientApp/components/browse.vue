@@ -5,12 +5,12 @@
             <div class="col-md-3">
                 <h3>Data Tree</h3>
                 <div class="round-border">
-                    <treeView :treeData ="rootNode"></treeView>
+                    <treeView :treeData ="rootNode" @page-edit="onPageEdit"></treeView>
                 </div>
             </div>
-            <div class="col-md-9">
-                <h3>Page info</h3>
-                One of three columns
+            <div v-if="currentEditItem" class="col-md-9">
+                <h3>Edit page</h3>
+                <h4>{{currentEditItem.name}}</h4>
             </div>
         </div>
     </div>
@@ -27,6 +27,7 @@
         data() {
             return {
                 rootNode: {},
+                currentEditItem: undefined,
             };
         },
         mounted() {
@@ -37,6 +38,17 @@
                 }).catch((e) => {
                     alert(e); // TODO replace alert with toast
                 });
+        },
+        methods: {
+            onPageEdit(name) {
+                fetch(`api/config/${name.replace(/^(root\/|root)/, '')}`)
+                    .then(response => response.json())
+                    .then((data) => {
+                        this.currentEditItem = data;
+                    }).catch((e) => {
+                        alert(e); // TODO replace alert with toast
+                    });
+            },
         },
     };
 </script>
