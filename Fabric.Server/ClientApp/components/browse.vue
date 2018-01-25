@@ -1,14 +1,14 @@
 <template>
     <div>
         <h1>Browse</h1>
-        <div class="row">
-            <div class="col-md-3">
+        <div class="md-layout md-gutter ">
+            <div class="md-layout-item md-size-30 right-border">
                 <h3>Data Tree</h3>
-                <div class="round-border">
-                    <treeView :treeData ="rootNode" @page-edit="onPageEdit"></treeView>
+                <div>
+                    <treeView :treeData="rootNode" @page-edit="onPageEdit"></treeView>
                 </div>
             </div>
-            <div v-if="currentEditItem" class="col-md-9">
+            <div class="md-layout-item" v-if="currentEditItem">
                 <h3>Edit page</h3>
                 <h4>{{currentEditItem.name}}</h4>
             </div>
@@ -54,8 +54,8 @@
 </script>
 
 <style scoped>
-    .round-border {
-        border: 1px solid #333;
-        border-radius: 5px;
+    .right-border {
+        border-right: 1px solid #ddd;
+        min-width: 300px;
     }
 </style>

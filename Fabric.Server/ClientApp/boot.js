@@ -1,5 +1,7 @@
-import 'bootstrap';
 import Vue from 'vue';
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.min.css';
+import 'vue-material/dist/theme/black-green-light.css';
 import VueRouter from 'vue-router';
 import TreeView from 'vue-json-tree-view';
 import pluralize from 'pluralize';
@@ -11,6 +13,7 @@ import app from './app.vue';
 import router from './routes';
 
 Vue.use(VueRouter);
+Vue.use(VueMaterial);
 Vue.use(TreeView);
 Vue.use(utils);
 

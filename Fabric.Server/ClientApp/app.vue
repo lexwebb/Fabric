@@ -1,13 +1,19 @@
 ﻿<template>
-    <div id='app-root' class="container-fluid">
-        <div class="row">
-            <div class="col-sm-2">
+    <div id='app-root' class="page-container md-layout-row">
+        <md-app>
+            <md-app-toolbar class="md-primary">
+                <span class="md-title">
+                    <img src="assets/Fabric-Logo-Mini.png" style="height: 30px; width: 30px; display: inline-block;" />
+                    Fabric
+                </span>
+            </md-app-toolbar>
+            <md-app-drawer md-permanent="clipped">
                 <navmenu />
-            </div>
-            <div class="col-sm-10">
+            </md-app-drawer>
+            <md-app-content>
                 <router-view></router-view>
-            </div>
-        </div>
+            </md-app-content>
+        </md-app>
     </div>
 </template>
 
@@ -21,3 +27,19 @@
         },
     };
 </script>
+
+<style>
+    html,
+    body,
+    #app-root{
+        height: 100%;
+    }
+
+    #app-root .md-app {
+        height: 100%;
+    }
+
+    .md-drawer {
+        max-width: 300px;
+    }
+</style>
