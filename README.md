@@ -1,4 +1,4 @@
-# FABRIC
+# ![fabric](https://raw.githubusercontent.com/lexwebb/Fabric/dev/assets/Fabric-Logo-Mini-50x.png)FABRIC
 
 Build Status:  [![CircleCI](https://circleci.com/gh/lexwebb/Fabric/tree/dev.svg?style=svg)](https://circleci.com/gh/lexwebb/Fabric/tree/dev)
 
