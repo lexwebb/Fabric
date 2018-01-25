@@ -1,8 +1,8 @@
 ﻿<template>
     <li>
         <div class="item-title" @click="toggle">
-            <span v-if="!internalOpen" class="glyphicon glyphicon-chevron-right"></span>
-            <span v-else class="glyphicon glyphicon-chevron-down"></span>
+            <md-icon v-if="!internalOpen">keyboard_arrow_right</md-icon>
+            <md-icon v-else>keyboard_arrow_down</md-icon>
             <div class="title-name bold">
                 <b>{{currentModel.name}}</b>
             </div>
