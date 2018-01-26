@@ -4,13 +4,11 @@
         <div class="md-layout md-gutter ">
             <div class="md-layout-item md-size-30 right-border">
                 <h3>Data Tree</h3>
-                <div>
-                    <treeView :treeData="rootNode" @page-edit="onPageEdit"></treeView>
-                </div>
+                <treeView :treeData="rootNode" @page-edit="onPageEdit"></treeView>
             </div>
             <div class="md-layout-item" v-if="currentEditItem">
                 <h3>Edit page</h3>
-                <h4>{{currentEditItem.name}}</h4>
+                <pageEditor :model="currentEditItem"></pageEditor>
             </div>
         </div>
     </div>
@@ -18,11 +16,13 @@
 
 <script>
     import treeView from './treeView/treeView.vue';
+    import pageEditor from './pageEditor.vue';
 
     export default {
         name: 'browse',
         components: {
             treeView,
+            pageEditor,
         },
         data() {
             return {

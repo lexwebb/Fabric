@@ -42,4 +42,8 @@
     .md-drawer {
         max-width: 300px;
     }
+
+    .md-toolbar.md-theme-default.md-primary {
+        background: repeating-linear-gradient( 45deg, #272727, #272727 10px, #222 10px, #222 20px );
+    }
 </style>
