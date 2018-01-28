@@ -14,16 +14,37 @@
                 <router-view></router-view>
             </md-app-content>
         </md-app>
+        <md-snackbar md-position="center" :md-duration="snack.duration" :md-active.sync="snack.showSnackbar" md-persistent>
+            <span>{{snack.text}}</span>
+            <md-button class="md-accent" @click="snack.showSnackbar = false">Close</md-button>
+        </md-snackbar>
     </div>
 </template>
 
 <script>
     import navmenu from './components/navmenu.vue';
+    import { EventBus } from './event-bus';
 
     export default {
         name: 'app',
         components: {
             navmenu,
+        },
+        data() {
+            return {
+                snack: {
+                    showSnackbar: false,
+                    duration: 5000,
+                    text: 'An unexpected error occured',
+                },
+            };
+        },
+        mounted() {
+            // Listen for the show-error event and its payload.
+            EventBus.$on('show-error', (message) => {
+                this.snack.text = message;
+                this.snack.showSnackbar = true;
+            });
         },
     };
 </script>
@@ -31,13 +52,13 @@
 <style>
     html,
     body,
-    #app-root{
+    #app-root {
         height: 100%;
     }
 
-    #app-root .md-app {
-        height: 100%;
-    }
+        #app-root .md-app {
+            height: 100%;
+        }
 
     .md-drawer {
         max-width: 300px;

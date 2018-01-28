@@ -24,8 +24,17 @@ module.exports = (env) => {
                     loader: 'eslint-loader',
                     enforce: 'pre',
                     include: /ClientApp/,
-                    options: {
-                        formatter: require('eslint-friendly-formatter')
+                    //options: {
+                    //    formatter: require('eslint-friendly-formatter')
+                    //}
+                },
+                {
+                    test: /\.js$/,
+                    exclude: /(node_modules|bower_components)/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                        }
                     }
                 },
                 { test: /\.vue$/, include: /ClientApp/, loader: 'vue-loader' },

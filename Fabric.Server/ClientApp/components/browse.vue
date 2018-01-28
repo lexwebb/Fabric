@@ -18,6 +18,9 @@
     import treeView from './treeView/treeView.vue';
     import pageEditor from './pageEditor.vue';
 
+    // Import the EventBus.
+    import { EventBus } from '../event-bus';
+
     export default {
         name: 'browse',
         components: {
@@ -35,8 +38,8 @@
                 .then(response => response.json())
                 .then((data) => {
                     this.rootNode = data;
-                }).catch((e) => {
-                    alert(e); // TODO replace alert with toast
+                }).catch(() => {
+                    EventBus.$emit('show-error', 'Error loading configs');
                 });
         },
         methods: {
@@ -45,8 +48,8 @@
                     .then(response => response.json())
                     .then((data) => {
                         this.currentEditItem = data;
-                    }).catch((e) => {
-                        alert(e); // TODO replace alert with toast
+                    }).catch(() => {
+                        EventBus.$emit('show-error', 'Error loading config');
                     });
             },
         },

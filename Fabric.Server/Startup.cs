@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Fabric.Core.Asp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,11 +55,21 @@ namespace Fabric.Server
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
             });
+
+            // this serves my index.html from the wwwroot folder when 
+            // a route not containing a file extension is not handled by MVC.  
+            // If the route contains a ".", a 404 will be returned instead.
+            app.MapWhen(context => context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value),
+                branch => {
+                    branch.Use((context, next) => {
+                        context.Request.Path = new PathString("/home/index");
+                        Console.WriteLine("Path changed to:" + context.Request.Path.Value);
+                        return next();
+                    });
+
+                    branch.UseStaticFiles();
+                });
         }
     }
 }

@@ -28,6 +28,9 @@
 </template>
 
 <script>
+    // Import the EventBus.
+    import { EventBus } from '../../event-bus';
+
     export default {
         name: 'treeViewItem',
         props: {
@@ -100,8 +103,8 @@
                         .then(response => response.json())
                         .then((data) => {
                             this.newModel = data;
-                        }).catch((e) => {
-                            alert(e); // TODO replace alert with toast
+                        }).catch(() => {
+                            EventBus.$emit('show-error', 'Error loading config');
                         });
                 }
             },
