@@ -1,7 +1,8 @@
 ﻿<template>
     <div>
+        <h1>Schemas</h1>
         <div class="md-layout-item md-size-30 right-border">
-            <h3>Schemas</h3>
+            <h3>Choose a schema</h3>
             <md-list class="md-double-line">
                 <md-list-item v-for="schema in schemas" @click="onEditSchema(schema.schemaName)">
                     <md-avatar>
