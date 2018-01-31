@@ -6,7 +6,7 @@ namespace Fabric.Data {
 
         internal string SchemaRaw { get; set; }
 
-        internal JSchema Schema { get; set; }
+        public JSchema Schema { get; set; }
 
         public DataPageSchema(string schemaName, string schemaRawJson) {
             this.SchemaName = schemaName;
