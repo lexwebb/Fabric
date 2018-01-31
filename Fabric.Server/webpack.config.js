@@ -52,6 +52,11 @@ module.exports = (env) => {
             filename: '[name].js',
             publicPath: 'dist/'
         },
+        resolveLoader: {
+            alias: {
+                'scss-loader': 'sass-loader'
+            }
+        },
         plugins: [
             new webpack.DefinePlugin({
                 'process.env': {
