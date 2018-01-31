@@ -9,16 +9,16 @@
         </div>
         <a v-if="internalOpen" class="edit_button noselect" @click="edit">edit..</a>
         <div v-if="internalOpen" class="item-properties">
-            <div v-for="property in nonChildProperties">
+            <div v-for="property in nonChildProperties" :key="property.name">
                 {{property.displayName}} :
                 <span v-if="property.value">{{property.value}}</span>
                 <span v-else class="null-value">null</span>
             </div>
             <b v-if="childGroups.length > 0">Children:</b>
-            <div v-for="childGroup in childGroups">
+            <div v-for="childGroup in childGroups" :key="childGroup.name">
                 <div class="child-list-item">
                     {{childGroup.displayName}}:
-                    <div v-for="child in childGroup.children" class="child-list-item">
+                    <div v-for="child in childGroup.children" :key="child.name" class="child-list-item">
                         <treeViewItem :model="{name: child}" :path="`${currentPath}/${childGroup.name}/${child}`"></treeViewItem>
                     </div>
                 </div>
@@ -68,7 +68,9 @@
                     if (propertyName !== 'children' && propertyName !== 'name') {
                         let value = this.currentModel[propertyName];
                         if (propertyName.includes('Timestamp')) {
-                            value = this.$moment.unix(parseInt(value, 10) / 1000).format('gggg/MM/DD LT');
+                            value = this.$moment
+                                .unix(parseInt(value, 10) / 1000)
+                                .format('gggg/MM/DD LT');
                         }
 
                         properties.push({
@@ -103,7 +105,8 @@
                         .then(response => response.json())
                         .then((data) => {
                             this.newModel = data;
-                        }).catch(() => {
+                        })
+                        .catch(() => {
                             EventBus.$emit('show-error', 'Error loading config');
                         });
                 }
@@ -118,33 +121,36 @@
     };
 </script>
 
-<style scoped>
-    .item-title > * {
-        display: inline;
-        cursor: pointer;
-        position: relative;
-    }
+<style scoped lang=scss>
+    $color_1: rebeccapurple;
+    $color_2: grey;
 
-    .item-properties > * {
-        display: block;
-        margin-left: 1.5em;
+    .item-title {
+        > * {
+            display: inline;
+            cursor: pointer;
+            position: relative;
+        }
     }
-
+    .item-properties {
+        > * {
+            display: block;
+            margin-left: 1.5em;
+        }
+    }
     .null-value {
-        color: rebeccapurple;
+        color: $color_1;
         font-style: oblique;
     }
-
     .child-list-item {
         padding-left: 1em;
         border-left: 1px dashed lightgrey;
     }
-
     .edit_button {
         float: right;
         margin-top: -1.5em;
         margin-right: 0.5em;
-        color: grey;
+        color: $color_2;
         text-decoration: none;
         cursor: pointer;
     }

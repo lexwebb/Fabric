@@ -76,6 +76,7 @@
         primary: #1C8D7D,
         accent: #21B6A4
     )); 
+    
     @import "~vue-material/dist/theme/all"; // Apply the theme 
 
     html,

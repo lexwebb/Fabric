@@ -23,7 +23,7 @@
     };
 </script>
 
-<style scoped>
+<style scoped lang=scss>
     ul {
         padding-left: 1em;
         line-height: 1.5em;

@@ -72,7 +72,8 @@
                 .then(response => response.json())
                 .then((data) => {
                     this.schemas = data;
-                }).catch(() => {
+                })
+                .catch(() => {
                     EventBus.$emit('show-error', 'Error loading schemas');
                 });
         },
@@ -82,46 +83,40 @@
                     .then(response => response.json())
                     .then((data) => {
                         this.currentSchema = data;
-                    }).catch(() => {
+                    })
+                    .catch(() => {
                         EventBus.$emit('show-error', 'Error loading schema');
                     });
             },
-            onSaveSchema() {
-
-            },
+            onSaveSchema() { },
         },
     };
 </script>
 
-<style scoped>
+<style scoped lang=scss>
     .right-border {
         border-right: 1px solid #ddd;
         min-width: 300px;
     }
-
     .edit-schema-raw-container {
         display: flex;
         flex-direction: column;
     }
-
     .edit-schema-raw-editor {
         flex-grow: 1;
-    }
-
-        .edit-schema-raw-editor textarea {
+        textarea {
             height: 100%;
             overflow-y: auto;
             overflow-x: auto;
             resize: none !important;
             max-height: none !important;
         }
-
+    }
     .schema-title {
         display: flex;
         flex-direction: row;
-    }
-
-        .schema-title h3 {
+        h3 {
             flex-grow: 1;
         }
+    }
 </style>
