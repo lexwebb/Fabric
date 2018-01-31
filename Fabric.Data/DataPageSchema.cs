@@ -4,14 +4,16 @@ namespace Fabric.Data {
     public struct DataPageSchema {
         public string SchemaName { get; set; }
 
-        internal string SchemaRaw { get; set; }
+        public string SchemaRaw {
+            get => Schema.ToString();
+            set => Schema = JSchema.Parse(value);
+        }
 
-        public JSchema Schema { get; set; }
+        internal JSchema Schema { get; set; }
 
         public DataPageSchema(string schemaName, string schemaRawJson) {
             this.SchemaName = schemaName;
-            this.SchemaRaw = schemaRawJson;
-            this.Schema = JSchema.Parse(SchemaRaw);
+            this.Schema = JSchema.Parse(schemaRawJson);
         }
     }
 }

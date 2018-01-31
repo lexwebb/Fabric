@@ -21,8 +21,10 @@
                 </md-toolbar>
                 <navmenu />
             </md-app-drawer>
-            <md-app-content>
-                <router-view></router-view>
+            <md-app-content class="hide-overflow">
+                <transition name="fade">
+                    <router-view></router-view>
+                </transition>
             </md-app-content>
         </md-app>
         <md-snackbar md-position="center" :md-duration="snack.duration" :md-active.sync="snack.showSnackbar" md-persistent>
@@ -83,5 +85,33 @@
 
     .md-toolbar.md-theme-default.md-primary {
         background: repeating-linear-gradient( 45deg, #272727, #272727 10px, #222 10px, #222 20px );
+    }
+
+    .md-app-content > * {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+        .md-app-content > * > .md-layout {
+            flex-grow: 1
+        }
+
+    .fade-enter-active, .fade-leave-active {
+        transition: opacity .2s;
+    }
+
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0;
+    }
+
+    .hide-overflow {
+        overflow: hidden;
+    }
+
+    .flex-row-right {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
     }
 </style>
