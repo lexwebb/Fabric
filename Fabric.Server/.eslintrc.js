@@ -21,5 +21,6 @@
         'indent': ["error", 4],
         'linebreak-style': 0,
         'no-debugger': 0,
+        'prefer-destructuring': 0,
     }
 }

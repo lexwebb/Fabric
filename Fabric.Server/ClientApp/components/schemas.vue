@@ -5,7 +5,7 @@
             <div class="md-layout-item md-size-20 right-border">
                 <h3>Choose a schema</h3>
                 <md-list class="md-double-line">
-                    <md-list-item v-for="schema in schemas" @click="onEditSchema(schema.schemaName)" :key="schema.schemaName">
+                    <md-list-item v-for="schema in schemas" @click="onOpenSchema(schema.schemaName)" :key="schema.schemaName">
                         <md-avatar>
                             <md-icon>code</md-icon>
                         </md-avatar>
@@ -20,7 +20,7 @@
                 <div class="md-layout-item" v-if="currentSchema">
                     <div class="schema-title">
                         <h3>Schema - {{currentSchema.schemaName}}</h3>
-                        <md-button class="md-icon-button md-dense md-raised md-primary edit-schema-button" @click="editMode = true">
+                        <md-button class="md-icon-button md-dense md-raised md-primary edit-schema-button" @click="onEditSchema()">
                             <md-icon>edit</md-icon>
                         </md-button>
                     </div>
@@ -40,7 +40,7 @@
                         <md-textarea v-model="currentSchema.schemaRaw"></md-textarea>
                     </md-field>
                     <div class="flex-row-right">
-                        <md-button class="md-raised" @click="onEditSchema(currentSchema.schemaName); editMode = false;">Cancel</md-button>
+                        <md-button class="md-raised" @click="onEditSchema(false)">Cancel</md-button>
                         <md-button class="md-raised md-primary" @click="onSaveSchema">Save</md-button>
                     </div>
                 </div>
@@ -68,27 +68,56 @@
             },
         },
         mounted() {
-            fetch('api/schema/')
-                .then(response => response.json())
-                .then((data) => {
-                    this.schemas = data;
-                })
-                .catch(() => {
-                    EventBus.$emit('show-error', 'Error loading schemas');
-                });
+            this.onRoute();
         },
         methods: {
-            onEditSchema(schemaName) {
-                fetch(`api/schema/${schemaName}`)
+            onRoute(to) {
+                const route = to || this.$route;
+
+                this.schemas = [];
+                this.currentSchema = undefined;
+                this.editMode = false;
+
+                fetch('api/schema/')
                     .then(response => response.json())
                     .then((data) => {
-                        this.currentSchema = data;
+                        this.schemas = data;
                     })
                     .catch(() => {
-                        EventBus.$emit('show-error', 'Error loading schema');
+                        EventBus.$emit('show-error', 'Error loading schemas');
                     });
+
+                if (route.params.schemaName) {
+                    fetch(`api/schema/${route.params.schemaName}`)
+                        .then(response => response.json())
+                        .then((data) => {
+                            this.currentSchema = data;
+                        })
+                        .catch(() => {
+                            EventBus.$emit('show-error', 'Error loading schema');
+                        });
+                }
+
+                if (route.query.edit) {
+                    this.editMode = route.query.edit;
+                }
+            },
+            onOpenSchema(schemaName) {
+                this.$router.push({ name: 'schemas', params: { schemaName } });
+            },
+            onEditSchema(edit) {
+                if (edit === false) {
+                    this.$router.push({ name: 'schemas', params: { schemaName: this.currentSchema.schemaName } });
+                } else {
+                    this.$router.push({ name: 'schemas', params: { schemaName: this.currentSchema.schemaName }, query: { edit: true } });
+                }
             },
             onSaveSchema() { },
+        },
+        watch: {
+            $route(to) {
+                this.onRoute(to);
+            },
         },
     };
 </script>

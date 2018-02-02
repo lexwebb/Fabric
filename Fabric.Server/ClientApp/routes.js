@@ -11,16 +11,19 @@ const routes = [
     {
         path: '/',
         component: home,
+        name: 'home',
         meta: { title: 'Home' },
     },
     {
-        path: '/browse',
+        path: '/browse/:path?',
         component: browse,
+        name: 'browse',
         meta: { title: 'Browse' },
     },
     {
-        path: '/schemas',
+        path: '/schemas/:schemaName?',
         component: schemas,
+        name: 'schemas',
         meta: { title: 'Schemas' },
     },
 ];
