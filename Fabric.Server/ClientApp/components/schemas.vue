@@ -73,10 +73,6 @@
             onRoute(to) {
                 const route = to || this.$route;
 
-                this.schemas = [];
-                this.currentSchema = undefined;
-                this.editMode = false;
-
                 fetch('api/schema/')
                     .then(response => response.json())
                     .then((data) => {
@@ -99,6 +95,8 @@
 
                 if (route.query.edit) {
                     this.editMode = route.query.edit;
+                } else {
+                    this.editMode = false;
                 }
             },
             onOpenSchema(schemaName) {
