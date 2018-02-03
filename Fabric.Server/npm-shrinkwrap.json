@@ -7524,9 +7524,9 @@
       "integrity": "sha1-nKWKbg35B4VUzhcIaItleHVNht4=",
       "dev": true
     },
-    "vue-json-tree-view": {
+    "vue-json-treeView": {
       "version": "2.1.3",
-      "resolved": "https://registry.npmjs.org/vue-json-tree-view/-/vue-json-tree-view-2.1.3.tgz",
+      "resolved": "https://registry.npmjs.org/vue-json-treeView/-/vue-json-treeView-2.1.3.tgz",
       "integrity": "sha512-Pw3b7NRX9GoPRyoRvtEnmQqEEX5bimXet6U9sbhDD0D4vGSQUQ6GdwmkcXnkowcNnHNSafkLZIqHIQGqorFc9w==",
       "requires": {
         "lodash": "4.17.4",

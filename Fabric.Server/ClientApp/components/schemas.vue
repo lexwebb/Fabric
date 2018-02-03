@@ -3,7 +3,7 @@
         <h1>Schemas</h1>
         <div class="md-layout md-gutter ">
             <div class="md-layout-item md-size-20 right-border">
-                <h3>Choose a schema</h3>
+                <buttonTitle :title="'Choose a schema'" :icon="'add'" @onClick="onAddSchema()"/>
                 <md-list class="md-double-line">
                     <md-list-item v-for="schema in schemas" @click="onOpenSchema(schema.schemaName)" :key="schema.schemaName">
                         <md-avatar>
@@ -18,12 +18,7 @@
             </div>
             <transition name="fade">
                 <div class="md-layout-item" v-if="currentSchema">
-                    <div class="schema-title">
-                        <h3>Schema - {{currentSchema.schemaName}}</h3>
-                        <md-button class="md-icon-button md-dense md-raised md-primary edit-schema-button" @click="onEditSchema()">
-                            <md-icon>edit</md-icon>
-                        </md-button>
-                    </div>
+                    <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" @onClick="onEditSchema()"/>
                     <tree-view :data="currentSchemaJsonObj"></tree-view>
                 </div>
             </transition>
@@ -52,9 +47,13 @@
 <script>
     // Import the EventBus.
     import { EventBus } from '../event-bus';
+    import buttonTitle from './buttonTitle.vue';
 
     export default {
         name: 'schemas',
+        components: {
+            buttonTitle,
+        },
         data() {
             return {
                 schemas: [],
@@ -139,13 +138,6 @@
             overflow-x: auto;
             resize: none !important;
             max-height: none !important;
-        }
-    }
-    .schema-title {
-        display: flex;
-        flex-direction: row;
-        h3 {
-            flex-grow: 1;
         }
     }
 </style>

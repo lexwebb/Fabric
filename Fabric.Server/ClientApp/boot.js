@@ -3,7 +3,7 @@ import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/black-green-light.css';
 import VueRouter from 'vue-router';
-import TreeView from 'vue-json-tree-view';
+import treeView from 'vue-json-tree-view';
 import pluralize from 'pluralize';
 import moment from 'moment';
 import './css/site.css';
@@ -14,7 +14,7 @@ import router from './routes';
 
 Vue.use(VueRouter);
 Vue.use(VueMaterial);
-Vue.use(TreeView);
+Vue.use(treeView);
 Vue.use(utils);
 
 // Custom imports
