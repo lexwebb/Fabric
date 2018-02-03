@@ -11,11 +11,15 @@ import utils from './utils';
 
 import app from './app.vue';
 import router from './routes';
+import config from './config';
+import services from './services';
 
 Vue.use(VueRouter);
 Vue.use(VueMaterial);
 Vue.use(treeView);
 Vue.use(utils);
+Vue.use(config);
+Vue.use(services);
 
 // Custom imports
 Vue.prototype.$pluralize = pluralize;

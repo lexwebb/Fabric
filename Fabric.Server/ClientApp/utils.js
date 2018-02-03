@@ -8,8 +8,41 @@ function unCamelCase(input) {
         .replace(/^./, str => str.toUpperCase());
 }
 
+function trimLeft(input, charlist) {
+    let newCharList = charlist;
+    if (charlist === undefined) {
+        /* eslint-disable no-useless-escape */
+        newCharList = '\s';
+    }
+
+    return input.replace(new RegExp(`^[${newCharList}]`), '');
+}
+
+function trimRight(input, charlist) {
+    let newCharList = charlist;
+    if (charlist === undefined) {
+        /* eslint-disable no-useless-escape */
+        newCharList = '\s';
+    }
+
+    return input.replace(new RegExp(`[${newCharList}$`), '');
+}
+
+function trim(input, charlist) {
+    let newCharList = charlist;
+    if (charlist === undefined) {
+        /* eslint-disable no-useless-escape */
+        newCharList = '\s';
+    }
+
+    return input.replace(new RegExp(`^[${newCharList}]|[${newCharList}]$`), '');
+}
+
 const utils = {
     unCamelCase,
+    trimLeft,
+    trimRight,
+    trim,
 };
 
 export default {

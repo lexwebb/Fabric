@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fabric.Core;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace Fabric.Server.Controllers {
     [ExceptionHandlerFilter]
@@ -22,6 +23,14 @@ namespace Fabric.Server.Controllers {
                 }
                 return _fabricStore.Database.SchemaManager.Schemas;
             })));
+        }
+
+        [HttpPut("{schemaName}")]
+        public async Task<ActionResult> UpdateAsync(string schemaName, [FromBody] JObject schemaRaw) {
+            return await Task.Run(new Func<ActionResult>(() => {
+                _fabricStore.Database.SchemaManager.Update(schemaName, schemaRaw.ToString());
+                return Ok();
+            }));
         }
     }
 }

@@ -3,7 +3,7 @@
         <h1>Schemas</h1>
         <div class="md-layout md-gutter ">
             <div class="md-layout-item md-size-20 right-border">
-                <buttonTitle :title="'Choose a schema'" :icon="'add'" @onClick="onAddSchema()"/>
+                <buttonTitle :title="'Choose a schema'" :icon="'add'" @onClick="onAddSchema()" />
                 <md-list class="md-double-line">
                     <md-list-item v-for="schema in schemas" @click="onOpenSchema(schema.schemaName)" :key="schema.schemaName">
                         <md-avatar>
@@ -18,7 +18,7 @@
             </div>
             <transition name="fade">
                 <div class="md-layout-item" v-if="currentSchema">
-                    <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" @onClick="onEditSchema()"/>
+                    <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" @onClick="onEditSchema()" />
                     <tree-view :data="currentSchemaJsonObj"></tree-view>
                 </div>
             </transition>
@@ -109,7 +109,9 @@
                     this.$router.push({ name: 'schemas', params: { schemaName: this.currentSchema.schemaName }, query: { edit: true } });
                 }
             },
-            onSaveSchema() { },
+            onSaveSchema() {
+
+            },
         },
         watch: {
             $route(to) {
