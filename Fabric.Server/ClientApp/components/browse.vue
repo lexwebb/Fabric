@@ -1,7 +1,6 @@
 <template>
     <div>
-        <h1>Browse</h1>
-        <div class="md-layout md-gutter ">
+        <div class="md-layout">
             <div class="md-layout-item md-size-30 right-border">
                 <h3>Data Tree</h3>
                 <treeView :treeData="rootNode"></treeView>

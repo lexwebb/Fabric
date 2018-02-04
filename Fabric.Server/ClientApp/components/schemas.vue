@@ -1,7 +1,6 @@
 ﻿<template>
     <div>
-        <h1>Schemas</h1>
-        <div class="md-layout md-gutter ">
+        <div class="md-layout">
             <div class="md-layout-item md-size-20 right-border">
                 <buttonTitle :title="'Choose a schema'" :icon="'add'" @onClick="onAddSchema()" />
                 <md-list class="md-double-line">

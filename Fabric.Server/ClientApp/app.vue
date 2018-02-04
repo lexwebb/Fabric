@@ -7,10 +7,11 @@
                 </md-button>
                 <div class="md-title">
                     <img src="assets/Fabric-Logo-Mini.png" class="title-image" />
-                    <span class="title-text">Fabric</span>
+                    <span v-if="this.$route.name === 'home'" class="title-text">Fabric</span>
+                    <span v-else class="title-text">Fabric > {{this.$route.meta.title}}</span>
                 </div>
             </md-app-toolbar>
-            <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
+            <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini" class="nav-draw">
                 <md-toolbar class="md-transparent" md-elevation="0">
                     Navigation
                     <div class="md-toolbar-section-end">
@@ -81,9 +82,9 @@
 
     // Import the theme engine
     @include md-register-theme('default', ( 
-                                primary: #1c8d7d,
-                                accent: #21b6a4
-                            ));
+                                        primary: #1c8d7d,
+                                        accent: #21b6a4
+                                    ));
 
     @import '~vue-material/dist/theme/all';
     // Apply the theme
@@ -95,8 +96,27 @@
     #app-root .md-app {
         height: 100%;
     }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        margin: 0.5em 0;
+    }
+    .md-title {
+        margin-left: 3px !important;
+    }
     .md-drawer {
         max-width: 300px;
+        background-color: #424242 !important;
+        border-right: none !important;
+        ul {
+            background-color: transparent !important;
+            button,
+            button i {
+                color: white !important;
+            }
+        }
     }
     .md-toolbar.md-theme-default.md-primary {
         background: repeating-linear-gradient(
@@ -111,6 +131,12 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+    }
+    .md-content {
+        padding: 0px;
+    }
+    .md-layout-item {
+        padding: 0.5em !important;
     }
     .md-app-content > * > .md-layout {
         flex-grow: 1;

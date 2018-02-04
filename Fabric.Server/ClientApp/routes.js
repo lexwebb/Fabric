@@ -12,18 +12,21 @@ const routes = [
         path: '/',
         component: home,
         name: 'home',
+        displayName: 'Home',
         meta: { title: 'Home' },
     },
     {
         path: '/browse/:path?',
         component: browse,
         name: 'browse',
+        displayName: 'Browse',
         meta: { title: 'Browse' },
     },
     {
         path: '/schemas/:schemaName?',
         component: schemas,
         name: 'schemas',
+        displayName: 'Schemas',
         meta: { title: 'Schemas' },
     },
 ];
