@@ -5,9 +5,10 @@
                 <md-button class="md-icon-button" @click="toggleMenu" v-if="!menuVisible">
                     <md-icon>menu</md-icon>
                 </md-button>
-                <span class="md-title">
-                    <img src="assets/Fabric-Logo-Mini.png" style="height: 30px; width: 30px; display: inline-block;" /> Fabric
-                </span>
+                <div class="md-title">
+                    <img src="assets/Fabric-Logo-Mini.png" class="title-image" />
+                    <span class="title-text">Fabric</span>
+                </div>
             </md-app-toolbar>
             <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
                 <md-toolbar class="md-transparent" md-elevation="0">
@@ -72,9 +73,9 @@
 
     // Import the theme engine
     @include md-register-theme('default', ( 
-            primary: #1c8d7d,
-            accent: #21b6a4
-        ));
+                        primary: #1c8d7d,
+                        accent: #21b6a4
+                    ));
 
     @import '~vue-material/dist/theme/all';
     // Apply the theme
@@ -125,5 +126,18 @@
     .error-message {
         color: #f44336;
         font-style: italic;
+    }
+    .md-title {
+        height: 40px;
+        line-height: 40px;
+        .title-image {
+            height: 40px;
+            display: inline-block;
+            padding: 5px;
+        }
+        .title-text {
+            height: 40px;
+            line-height: 40px;
+        }
     }
 </style>
