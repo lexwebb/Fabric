@@ -1,6 +1,6 @@
 ﻿<template>
     <ul>
-        <treeViewItem :model="treeData" :open="true" @page-edit="onPageEdit"></treeViewItem>
+        <treeViewItem :model="treeData" :open="true"></treeViewItem>
     </ul>
 </template>
 
@@ -14,11 +14,6 @@
         },
         props: {
             treeData: Object,
-        },
-        methods: {
-            onPageEdit(e) {
-                this.$emit('page-edit', e);
-            },
         },
     };
 </script>

@@ -163,7 +163,7 @@
     };
 </script>
 
-<style scoped lang=scss>
+<style scoped lang="scss">
     .right-border {
         border-right: 1px solid #ddd;
         min-width: 300px;

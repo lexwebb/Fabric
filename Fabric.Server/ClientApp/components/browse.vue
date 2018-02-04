@@ -4,11 +4,20 @@
         <div class="md-layout md-gutter ">
             <div class="md-layout-item md-size-30 right-border">
                 <h3>Data Tree</h3>
-                <treeView :treeData="rootNode" @page-edit="onPageEdit"></treeView>
+                <treeView :treeData="rootNode"></treeView>
             </div>
-            <div class="md-layout-item" v-if="currentEditItem">
-                <h3>Edit page</h3>
-                <pageEditor :model="currentEditItem"></pageEditor>
+            <div class="md-layout-item edit-container" v-if="currentEditItem">
+                <h3>Edit page - {{currentEditItem.name}}</h3>
+                <md-tabs>
+                    <md-tab id="edit-page" md-label="Edit page">
+                        <pageEditor :model="currentEditItem"></pageEditor>
+                    </md-tab>
+                    <md-tab id="edit-raw" md-label="Edit raw"></md-tab>
+                </md-tabs>
+                <div class="flex-row-right">
+                    <md-button class="md-raised">Cancel</md-button>
+                    <md-button class="md-raised md-primary">Save</md-button>
+                </div>
             </div>
         </div>
     </div>
@@ -40,23 +49,35 @@
                 }).catch(() => {
                     EventBus.$emit('show-error', 'Error loading configs');
                 });
-        },
-        methods: {
-            onPageEdit(name) {
-                this.$services.config.get(name.replace(/^(root\/|root)/, ''))
+
+            EventBus.$on('browse-edit', (path) => {
+                this.$services.config.get(path.replace(/^(root\/|root)/, ''))
                     .then((data) => {
                         this.currentEditItem = data;
                     }).catch(() => {
                         EventBus.$emit('show-error', 'Error loading config');
                     });
-            },
+            });
         },
     };
 </script>
 
-<style scoped lang=scss>
+<style scoped lang="scss">
     .right-border {
         border-right: 1px solid #ddd;
         min-width: 300px;
+    }
+</style>
+
+<style lang="scss">
+    .edit-container {
+        display: flex;
+        flex-direction: column;
+        .md-tabs {
+            flex-grow: 1;
+            .md-content {
+                height: 100% !important;
+            }
+        }
     }
 </style>

@@ -7,7 +7,7 @@
                 <b>{{currentModel.name}}</b>
             </div>
         </div>
-        <a v-if="internalOpen" class="edit_button noselect" @click="edit">edit..</a>
+        <a v-if="internalOpen && currentModel.name !== 'root'" class="edit_button noselect" @click="edit">edit..</a>
         <div v-if="internalOpen" class="item-properties">
             <div v-for="property in nonChildProperties" :key="property.name">
                 {{property.displayName}} :
@@ -112,10 +112,7 @@
                 }
             },
             edit() {
-                this.$emit('page-edit', this.currentPath);
-            },
-            onPageEdit(e) {
-                this.$emit('page-edit', e);
+                EventBus.$emit('browse-edit', this.currentPath);
             },
         },
     };
