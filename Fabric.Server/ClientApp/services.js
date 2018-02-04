@@ -3,7 +3,8 @@ import RestServiceBase from './restServiceBase';
 
 function createServices(vue) {
     return {
-        schemas: new RestServiceBase(vue, 'schemas'),
+        schemas: new RestServiceBase(vue, 'schema'),
+        config: new RestServiceBase(vue, 'config'),
     };
 }
 

@@ -73,8 +73,7 @@
             onRoute(to) {
                 const route = to || this.$route;
 
-                fetch('api/schema/')
-                    .then(response => response.json())
+                this.$services.schemas.get()
                     .then((data) => {
                         this.schemas = data;
                     })
@@ -83,8 +82,7 @@
                     });
 
                 if (route.params.schemaName) {
-                    fetch(`api/schema/${route.params.schemaName}`)
-                        .then(response => response.json())
+                    this.$services.schemas.get(route.params.schemaName)
                         .then((data) => {
                             this.currentSchema = data;
                         })

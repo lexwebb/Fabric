@@ -34,8 +34,7 @@
             };
         },
         mounted() {
-            fetch('api/config/')
-                .then(response => response.json())
+            this.$services.config.get()
                 .then((data) => {
                     this.rootNode = data;
                 }).catch(() => {
@@ -44,8 +43,7 @@
         },
         methods: {
             onPageEdit(name) {
-                fetch(`api/config/${name.replace(/^(root\/|root)/, '')}`)
-                    .then(response => response.json())
+                this.$services.config.get(name.replace(/^(root\/|root)/, ''))
                     .then((data) => {
                         this.currentEditItem = data;
                     }).catch(() => {
