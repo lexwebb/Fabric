@@ -1,6 +1,5 @@
 import RestServiceBase from './restServiceBase';
 
-
 function createServices(vue) {
     return {
         schemas: new RestServiceBase(vue, 'schema'),

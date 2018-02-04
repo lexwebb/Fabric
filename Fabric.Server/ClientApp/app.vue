@@ -6,8 +6,7 @@
                     <md-icon>menu</md-icon>
                 </md-button>
                 <span class="md-title">
-                    <img src="assets/Fabric-Logo-Mini.png" style="height: 30px; width: 30px; display: inline-block;" />
-                    Fabric
+                    <img src="assets/Fabric-Logo-Mini.png" style="height: 30px; width: 30px; display: inline-block;" /> Fabric
                 </span>
             </md-app-toolbar>
             <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
@@ -69,59 +68,62 @@
 </script>
 
 <style lang="scss">
-    @import "~vue-material/dist/theme/engine";
+    @import '~vue-material/dist/theme/engine';
 
-    // Import the theme engine 
-    @include md-register-theme("default", ( 
-        primary: #1C8D7D,
-        accent: #21B6A4
-    )); 
-    
-    @import "~vue-material/dist/theme/all"; // Apply the theme 
+    // Import the theme engine
+    @include md-register-theme('default', ( 
+            primary: #1c8d7d,
+            accent: #21b6a4
+        ));
 
+    @import '~vue-material/dist/theme/all';
+    // Apply the theme
     html,
     body,
     #app-root {
         height: 100%;
     }
-
-        #app-root .md-app {
-            height: 100%;
-        }
-
+    #app-root .md-app {
+        height: 100%;
+    }
     .md-drawer {
         max-width: 300px;
     }
-
     .md-toolbar.md-theme-default.md-primary {
-        background: repeating-linear-gradient( 45deg, #272727, #272727 10px, #222 10px, #222 20px );
+        background: repeating-linear-gradient(
+            45deg,
+            #272727,
+            #272727 10px,
+            #222 10px,
+            #222 20px
+        );
     }
-
     .md-app-content > * {
         display: flex;
         flex-direction: column;
         height: 100%;
     }
-
-        .md-app-content > * > .md-layout {
-            flex-grow: 1
-        }
-
-    .fade-enter-active, .fade-leave-active {
-        transition: opacity .2s;
+    .md-app-content > * > .md-layout {
+        flex-grow: 1;
     }
-
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity 0.2s;
+    }
+    .fade-enter,
+    .fade-leave-to {
         opacity: 0;
     }
-
     .hide-overflow {
         overflow: hidden;
     }
-
     .flex-row-right {
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
+    }
+    .error-message {
+        color: #f44336;
+        font-style: italic;
     }
 </style>

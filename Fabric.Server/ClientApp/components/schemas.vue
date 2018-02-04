@@ -19,7 +19,9 @@
             <transition name="fade">
                 <div class="md-layout-item" v-if="currentSchema">
                     <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" @onClick="onEditSchema()" />
-                    <tree-view :data="currentSchemaJsonObj"></tree-view>
+                    <transition name="fade">
+                        <tree-view v-if="currentSchemaJsonObj" :data="currentSchemaJsonObj"></tree-view>
+                    </transition>
                 </div>
             </transition>
             <transition name="fade">
@@ -30,10 +32,13 @@
                         <md-input v-model="currentSchema.schemaName"></md-input>
                     </md-field>
                     <label>Json</label>
-                    <md-field class="edit-schema-raw-editor">
+                    <md-field class="edit-schema-raw-editor" :class="{ error: !schemaValidation.isValid }">
                         <label>Schema</label>
                         <md-textarea v-model="currentSchema.schemaRaw"></md-textarea>
                     </md-field>
+                    <span v-if="!this.schemaValidation.isValid" class="error-message">
+                        <b>Error parsing schema:</b> {{schemaValidation.validationMessage}}
+                    </span>
                     <div class="flex-row-right">
                         <md-button class="md-raised" @click="onEditSchema(false)">Cancel</md-button>
                         <md-button class="md-raised md-primary" @click="onSaveSchema">Save</md-button>
@@ -59,15 +64,29 @@
                 schemas: [],
                 currentSchema: undefined,
                 editMode: false,
+                schemaValidation: {
+                    isValid: true,
+                    validationMessage: '',
+                },
             };
         },
         computed: {
             currentSchemaJsonObj() {
-                return JSON.parse(this.currentSchema.schemaRaw);
+                let schema;
+                try {
+                    schema = JSON.parse(this.currentSchema.schemaRaw);
+                } catch (e) {
+                    return undefined;
+                }
+                return schema;
+            },
+            schemaRaw() {
+                return this.currentSchema ? this.currentSchema.schemaRaw : undefined;
             },
         },
         mounted() {
             this.onRoute();
+            this.lastEditTimeStamp = (new Date()).getTime();
         },
         methods: {
             onRoute(to) {
@@ -115,6 +134,23 @@
             $route(to) {
                 this.onRoute(to);
             },
+            schemaRaw(newVal) {
+                let schema;
+                try {
+                    schema = JSON.parse(newVal);
+                } catch (e) {
+                    this.schemaValidation.isValid = false;
+                    this.schemaValidation.validationMessage = e.message;
+                    return;
+                }
+                try {
+                    this.$ajv.new.compile(schema);
+                    this.schemaValidation.isValid = true;
+                } catch (e) {
+                    this.schemaValidation.isValid = false;
+                    this.schemaValidation.validationMessage = e.message;
+                }
+            },
         },
     };
 </script>
@@ -136,6 +172,12 @@
             overflow-x: auto;
             resize: none !important;
             max-height: none !important;
+        }
+        &.error {
+            &::before,
+            &::after {
+                border-color: #f44336 !important;
+            }
         }
     }
 </style>

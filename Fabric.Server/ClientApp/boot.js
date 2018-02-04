@@ -8,6 +8,7 @@ import pluralize from 'pluralize';
 import moment from 'moment';
 import './css/site.css';
 import utils from './utils';
+import ajvPlugin from './ajv-plugin';
 
 import app from './app.vue';
 import router from './routes';
@@ -17,6 +18,7 @@ import services from './services';
 Vue.use(VueRouter);
 Vue.use(VueMaterial);
 Vue.use(treeView);
+Vue.use(ajvPlugin);
 Vue.use(utils);
 Vue.use(config);
 Vue.use(services);
