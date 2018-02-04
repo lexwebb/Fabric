@@ -18,7 +18,7 @@
             </div>
             <transition name="fade">
                 <div class="md-layout-item" v-if="currentSchema">
-                    <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" @onClick="onEditSchema()" />
+                    <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" :showButton="!editMode" @onClick="onEditSchema()" />
                     <transition name="fade">
                         <tree-view v-if="currentSchemaJsonObj" :data="currentSchemaJsonObj"></tree-view>
                     </transition>
@@ -41,7 +41,7 @@
                     </span>
                     <div class="flex-row-right">
                         <md-button class="md-raised" @click="onEditSchema(false)">Cancel</md-button>
-                        <md-button class="md-raised md-primary" @click="onSaveSchema">Save</md-button>
+                        <md-button class="md-raised md-primary" :disabled="!schemaValidation.isValid" @click="onSaveSchema">Save</md-button>
                     </div>
                 </div>
             </transition>
@@ -127,7 +127,15 @@
                 }
             },
             onSaveSchema() {
-
+                if (this.schemaValidation.isValid) {
+                    this.$services.schemas.put(this.currentSchema.schemaName, this.schemaRaw)
+                        .then(() => {
+                            EventBus.$emit('show-message', 'Schema saved successfully');
+                        })
+                        .catch(() => {
+                            EventBus.$emit('show-error', 'Error saving schema');
+                        });
+                }
             },
         },
         watch: {

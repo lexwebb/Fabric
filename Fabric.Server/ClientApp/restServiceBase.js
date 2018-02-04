@@ -15,8 +15,7 @@ class RestServiceBase {
             headers: this.headers,
         });
 
-        return fetch(request)
-            .then(response => response.json());
+        return RestServiceBase.doRequest(request);
     }
 
     put(resourceName, data) {
@@ -26,8 +25,7 @@ class RestServiceBase {
             body: data,
         });
 
-        return fetch(request)
-            .then(response => response.json());
+        return RestServiceBase.doRequest(request);
     }
 
     post(resourceName, data) {
@@ -37,8 +35,7 @@ class RestServiceBase {
             body: data,
         });
 
-        return fetch(request)
-            .then(response => response.json());
+        return RestServiceBase.doRequest(request);
     }
 
     delete(resourceName) {
@@ -47,8 +44,17 @@ class RestServiceBase {
             headers: this.headers,
         });
 
+        return RestServiceBase.doRequest(request);
+    }
+
+    static doRequest(request) {
         return fetch(request)
-            .then(response => response.json());
+            .then((response) => {
+                if (!response.ok) {
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            });
     }
 }
 

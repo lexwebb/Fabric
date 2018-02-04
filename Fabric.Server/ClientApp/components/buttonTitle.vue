@@ -1,7 +1,7 @@
 <template>
     <div class="title-button">
         <h3>{{title}}</h3>
-        <div class="button-container">
+        <div v-if="showButton" class="button-container">
             <md-button class="md-icon-button md-dense md-raised md-primary edit-schema-button" @click="onClick()">
                 <md-icon>{{icon}}</md-icon>
             </md-button>
@@ -15,6 +15,10 @@
         props: {
             title: String,
             icon: String,
+            showButton: {
+                default: true,
+                type: Boolean,
+            },
         },
         methods: {
             onClick() {

@@ -26,11 +26,11 @@ namespace Fabric.Server.Controllers {
         }
 
         [HttpPut("{schemaName}")]
-        public async Task<ActionResult> UpdateAsync(string schemaName, [FromBody] JObject schemaRaw) {
-            return await Task.Run(new Func<ActionResult>(() => {
+        public async Task<JsonResult> UpdateAsync(string schemaName, [FromBody] JObject schemaRaw) {
+            return Json(await Task.Run(new Func<object>(() => {
                 _fabricStore.Database.SchemaManager.Update(schemaName, schemaRaw.ToString());
-                return Ok();
-            }));
+                return "success";
+            })));
         }
     }
 }

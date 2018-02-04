@@ -27,9 +27,9 @@
                 </transition>
             </md-app-content>
         </md-app>
-        <md-snackbar md-position="center" :md-duration="snack.duration" :md-active.sync="snack.showSnackbar" md-persistent>
+        <md-snackbar md-position="center" :md-duration="snack.duration" :md-active.sync="snack.showSnackbar" md-persistent :class="{ error: snack.isError}">
             <span>{{snack.text}}</span>
-            <md-button class="md-accent" @click="snack.showSnackbar = false">Close</md-button>
+            <md-button :class="{ 'md-accent': !snack.isError, error: snack.isError }" @click="snack.showSnackbar = false">Close</md-button>
         </md-snackbar>
     </div>
 </template>
@@ -50,6 +50,7 @@
                     showSnackbar: false,
                     duration: 5000,
                     text: 'An unexpected error occured',
+                    isError: false,
                 },
             };
         },
@@ -57,6 +58,13 @@
             // Listen for the show-error event and its payload.
             EventBus.$on('show-error', (message) => {
                 this.snack.text = message;
+                this.snack.isError = true;
+                this.snack.showSnackbar = true;
+            });
+
+            EventBus.$on('show-message', (message) => {
+                this.snack.text = message;
+                this.snack.isError = false;
                 this.snack.showSnackbar = true;
             });
         },
@@ -73,9 +81,9 @@
 
     // Import the theme engine
     @include md-register-theme('default', ( 
-                        primary: #1c8d7d,
-                        accent: #21b6a4
-                    ));
+                                primary: #1c8d7d,
+                                accent: #21b6a4
+                            ));
 
     @import '~vue-material/dist/theme/all';
     // Apply the theme
@@ -138,6 +146,12 @@
         .title-text {
             height: 40px;
             line-height: 40px;
+        }
+    }
+    .md-snackbar.error {
+        background: #f44336;
+        .md-button.error {
+            color: white;
         }
     }
 </style>
