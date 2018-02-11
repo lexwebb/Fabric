@@ -1,16 +1,22 @@
 ﻿<template>
     <div>
-        <json-editor class="main" v-if="schemaLoaded" :schema="schemaObj" :initial-value="dataObj" @update-value="updateValue($event)" theme="bootstrap3" icon="fontawesome4">
-        </json-editor>
+        <!-- <json-editor class="main" v-if="schemaLoaded" :schema="schemaObj" :initial-value="dataObj" @update-value="updateValue($event)" theme="bootstrap3" icon="fontawesome4">
+        </json-editor> -->
+        <jsonEditor  v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name"/>
     </div>
 </template>
 
 <script>
+    import jsonEditor from './jsonEditor/jsonEditor.vue';
+
     // Import the EventBus.
     import { EventBus } from '../event-bus';
 
     export default {
         name: 'pageEditor',
+        components: {
+            jsonEditor,
+        },
         props: {
             model: Object,
         },
@@ -67,7 +73,8 @@
             }
         }
         .row {
-            box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
+            box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+                0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
             margin: 0.5em;
             padding: 0.2em;
             .btn-group {

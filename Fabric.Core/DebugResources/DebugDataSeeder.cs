@@ -13,7 +13,7 @@ namespace Fabric.Core.DebugResources {
 
             CreateTestProjects(database);
 
-            CreateTestCards(database);
+            CreateTestDoors(database);
         }
 
         private static IEnumerable<(string schemaName, string schemaRawJson)> GetDebugSchemas() {
@@ -39,13 +39,13 @@ namespace Fabric.Core.DebugResources {
             database.SaveChanges();
         }
 
-        private static void CreateTestCards(FabricDatabase database) {
+        private static void CreateTestDoors(FabricDatabase database) {
             const string schemaPath = "Fabric.Core.DebugResources.Pages.";
-            var cardNames = new [] {"card1", "card2"};
+            var doorNames = new [] {"door1", "door2"};
 
-            foreach(var cardName in cardNames) {
-                var json = GetJsonFromResourcePath($"{schemaPath}{cardName}.json");
-                database.Root.AddChild(cardName, "card", json);
+            foreach(var doorName in doorNames) {
+                var json = GetJsonFromResourcePath($"{schemaPath}{doorName}.json");
+                database.Root.AddChild(doorName, "door", json);
             }
 
             database.SaveChanges();
