@@ -8,12 +8,18 @@
     <None Remove="DebugResources\Pages\project1.json" />
     <None Remove="DebugResources\Pages\project2.json" />
     <None Remove="DebugResources\Schemas\project.json" />
+    <None Remove="DebugResources\Pages\card1.json" />
+    <None Remove="DebugResources\Pages\card2.json" />
+    <None Remove="DebugResources\Schemas\card.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="DebugResources\Pages\project2.json" />
     <EmbeddedResource Include="DebugResources\Pages\project1.json" />
     <EmbeddedResource Include="DebugResources\Schemas\project.json" />
+    <EmbeddedResource Include="DebugResources\Pages\card2.json" />
+    <EmbeddedResource Include="DebugResources\Pages\card1.json" />
+    <EmbeddedResource Include="DebugResources\Schemas\card.json" />
   </ItemGroup>
 
   <ItemGroup>

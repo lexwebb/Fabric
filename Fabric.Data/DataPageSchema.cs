@@ -13,7 +13,8 @@ namespace Fabric.Data {
 
         public DataPageSchema(string schemaName, string schemaRawJson) {
             this.SchemaName = schemaName;
-            this.Schema = JSchema.Parse(schemaRawJson);
+            var resolver = new JSchemaUrlResolver();
+            this.Schema = JSchema.Parse(schemaRawJson, resolver);
         }
     }
 }

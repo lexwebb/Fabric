@@ -16,22 +16,24 @@
                 </md-list>
             </div>
             <transition name="fade">
-                <div class="md-layout-item" v-if="currentSchema">
+                <div class="md-layout-item edit-schema-container" v-if="currentSchema">
                     <buttonTitle :title="`Schema - ${currentSchema.schemaName}`" :icon="'edit'" :showButton="!editMode" @onClick="onEditSchema()" />
                     <transition name="fade">
-                        <tree-view v-if="currentSchemaJsonObj" :data="currentSchemaJsonObj"></tree-view>
+                        <div v-if="currentSchemaJsonObj" class="scrollable edit-schema-editor">
+                            <tree-view :data="currentSchemaJsonObj"></tree-view>
+                        </div>
                     </transition>
                 </div>
             </transition>
             <transition name="fade">
-                <div class="md-layout-item edit-schema-raw-container" v-if="currentSchema && editMode">
+                <div class="md-layout-item edit-schema-container" v-if="currentSchema && editMode">
                     <h3>Edit schema</h3>
                     <md-field>
                         <label>Schema name</label>
                         <md-input v-model="currentSchema.schemaName"></md-input>
                     </md-field>
                     <label>Json</label>
-                    <md-field class="edit-schema-raw-editor" :class="{ error: !schemaValidation.isValid }">
+                    <md-field class="edit-schema-editor" :class="{ error: !schemaValidation.isValid }">
                         <label>Schema</label>
                         <md-textarea v-model="currentSchema.schemaRaw"></md-textarea>
                     </md-field>
@@ -167,12 +169,15 @@
         border-right: 1px solid #ddd;
         min-width: 300px;
     }
-    .edit-schema-raw-container {
+    .edit-schema-container {
         display: flex;
         flex-direction: column;
     }
-    .edit-schema-raw-editor {
+    .edit-schema-editor {
         flex-grow: 1;
+        .tree-view-wrapper {
+            height: 100%;
+        }
         textarea {
             height: 100%;
             overflow-y: auto;

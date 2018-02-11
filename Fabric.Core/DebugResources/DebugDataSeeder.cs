@@ -12,6 +12,8 @@ namespace Fabric.Core.DebugResources {
             foreach (var schema in schemas) database.SchemaManager.Add(schema.schemaName, schema.schemaRawJson);
 
             CreateTestProjects(database);
+
+            CreateTestCards(database);
         }
 
         private static IEnumerable<(string schemaName, string schemaRawJson)> GetDebugSchemas() {
@@ -32,6 +34,18 @@ namespace Fabric.Core.DebugResources {
             foreach (var projectName in projectNames) {
                 var json = GetJsonFromResourcePath($"{schemaPath}{projectName}.json");
                 database.Root.AddChild(projectName, "project", json);
+            }
+
+            database.SaveChanges();
+        }
+
+        private static void CreateTestCards(FabricDatabase database) {
+            const string schemaPath = "Fabric.Core.DebugResources.Pages.";
+            var cardNames = new [] {"card1", "card2"};
+
+            foreach(var cardName in cardNames) {
+                var json = GetJsonFromResourcePath($"{schemaPath}{cardName}.json");
+                database.Root.AddChild(cardName, "card", json);
             }
 
             database.SaveChanges();

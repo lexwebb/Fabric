@@ -1,6 +1,6 @@
 ﻿<template>
     <div id='app-root' class="page-container md-layout-row">
-        <md-app>
+        <md-app md-waterfall md-mode="fixed">
             <md-app-toolbar class="md-primary" md-elevation="0">
                 <md-button class="md-icon-button" @click="toggleMenu" v-if="!menuVisible">
                     <md-icon>menu</md-icon>
@@ -22,7 +22,7 @@
                 </md-toolbar>
                 <navmenu />
             </md-app-drawer>
-            <md-app-content class="hide-overflow">
+            <md-app-content>
                 <transition name="fade">
                     <router-view></router-view>
                 </transition>
@@ -95,6 +95,12 @@
     }
     #app-root .md-app {
         height: 100%;
+        .md-layout {
+            height: 100%;
+            .md-layout-item {
+                height: 100%;
+            }
+        }
     }
     h1,
     h2,
@@ -149,9 +155,6 @@
     .fade-leave-to {
         opacity: 0;
     }
-    .hide-overflow {
-        overflow: hidden;
-    }
     .flex-row-right {
         display: flex;
         flex-direction: row;
@@ -179,5 +182,8 @@
         .md-button.error {
             color: white;
         }
+    }
+    .scrollable {
+        overflow: auto;
     }
 </style>
