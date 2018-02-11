@@ -5,7 +5,10 @@
             <md-input v-model="data"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <md-checkbox v-if="type === 'boolean'" v-model="data">{{name}}</md-checkbox>
+        <md-field v-if="type === 'boolean'">
+            <md-checkbox v-model="data">{{name}}</md-checkbox>
+            <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
+        </md-field>
         <md-field v-if="type === 'number' || type === 'integer'">
             <label>{{name}}</label>
             <md-input v-model="data" type="number"></md-input>
@@ -68,6 +71,14 @@
     .md-list-item {
         .md-content {
             width: 100%;
+        }
+    }
+</style>
+
+<style lang=scss>
+    .md-field {
+        .md-checkbox-label {
+            top: 0 !important;
         }
     }
 </style>
