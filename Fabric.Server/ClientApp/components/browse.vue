@@ -72,10 +72,20 @@
     .edit-container {
         display: flex;
         flex-direction: column;
+        height: 100%;
         .md-tabs {
             flex-grow: 1;
+            min-height: 100px;
             .md-content {
                 height: 100% !important;
+                max-height: 100%;
+                .md-tabs-container {
+                    height: 100%;
+                    .md-tab {
+                        height: 100%;
+                        overflow: auto;
+                    }
+                }
             }
         }
     }

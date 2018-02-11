@@ -1,6 +1,6 @@
 ﻿<template>
     <div>
-        <json-editor v-if="schemaLoaded" :schema="schemaObj" :initial-value="dataObj" @update-value="updateValue($event)" theme="bootstrap3" icon="fontawesome4">
+        <json-editor class="main" v-if="schemaLoaded" :schema="schemaObj" :initial-value="dataObj" @update-value="updateValue($event)" theme="bootstrap3" icon="fontawesome4">
         </json-editor>
     </div>
 </template>
@@ -49,27 +49,51 @@
 </script>
 
 <style scopred lang="scss">
-    .well.bootstrap3-row-container {
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        padding: 0.5em;
-    }
-    .control-label {
-        display: flex;
-        flex-direction: row;
-    }
-    .help-block {
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        &:before {
-            content: 'About:';
-            position: absolute;
-            margin-top: -16px;
-            color: grey;
-        }
-        padding-top: 15px;
-    }
-    .row h3 {
+    .main > h3 {
         display: none;
+    }
+    .well.bootstrap3-row-container {
+        .control-label {
+            display: flex;
+            flex-direction: row;
+        }
+        .help-block:not(:empty) {
+            margin: 0;
+            &:before {
+                content: 'Description:';
+                position: relative;
+                margin-right: 0.5em;
+                color: grey;
+            }
+        }
+        .row {
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin: 0.5em;
+            padding: 0.2em;
+            .btn-group {
+                display: inline-block;
+                .btn {
+                    border: none;
+                    background: none;
+                    color: #1c8d7d;
+                }
+            }
+        }
+        .checkbox {
+            label {
+                visibility: hidden;
+                font-size: 0;
+                width: 18px;
+                input {
+                    visibility: visible;
+                }
+            }
+            &:after {
+                content: 'null';
+                color: grey;
+                margin-right: 0.5em;
+            }
+        }
     }
 </style>
