@@ -11,6 +11,8 @@
     <None Remove="DebugResources\Pages\door1.json" />
     <None Remove="DebugResources\Pages\door2.json" />
     <None Remove="DebugResources\Schemas\door.json" />
+    <None Remove="DebugResources\Pages\workflow1.json" />
+    <None Remove="DebugResources\Schemas\workflow.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +22,8 @@
     <EmbeddedResource Include="DebugResources\Pages\door2.json" />
     <EmbeddedResource Include="DebugResources\Pages\door1.json" />
     <EmbeddedResource Include="DebugResources\Schemas\door.json" />
+    <EmbeddedResource Include="DebugResources\Pages\workflow1.json" />
+    <EmbeddedResource Include="DebugResources\Schemas\workflow.json" />
   </ItemGroup>
 
   <ItemGroup>

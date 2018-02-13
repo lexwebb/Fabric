@@ -14,6 +14,8 @@ namespace Fabric.Core.DebugResources {
             CreateTestProjects(database);
 
             CreateTestDoors(database);
+
+            CreateTestWorkflows(database);
         }
 
         private static IEnumerable<(string schemaName, string schemaRawJson)> GetDebugSchemas() {
@@ -46,6 +48,18 @@ namespace Fabric.Core.DebugResources {
             foreach(var doorName in doorNames) {
                 var json = GetJsonFromResourcePath($"{schemaPath}{doorName}.json");
                 database.Root.AddChild(doorName, "door", json);
+            }
+
+            database.SaveChanges();
+        }
+
+        private static void CreateTestWorkflows(FabricDatabase database) {
+            const string schemaPath = "Fabric.Core.DebugResources.Pages.";
+            var workflowNames = new [] {"workflow1"};
+
+            foreach(var workflowName in workflowNames) {
+                var json = GetJsonFromResourcePath($"{schemaPath}{workflowName}.json");
+                database.Root.AddChild(workflowName, "workflow", json);
             }
 
             database.SaveChanges();

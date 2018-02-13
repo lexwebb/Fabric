@@ -1,5 +1,5 @@
 <template>
-     <jsonElement :name="name" :schema="schema" :data="data" :type="object"></jsonElement>
+     <jsonElement :name="name" :schema="schema" :data="data" :type="object" :depth="0"></jsonElement>
 </template>
 
 <script>
