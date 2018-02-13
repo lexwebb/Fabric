@@ -1,20 +1,28 @@
 <template>
     <div>
-        <md-field v-if="type === 'string'" md-clearable>
+        <div v-if="hasEnum">
+            <md-field>
+                <label :for="compName + depth">{{compName}}</label>
+                <md-select v-model="data" :name="compName + depth" :id="compName + depth">
+                    <md-option v-for="option in enumOptions" :key="option" :value="option">{{option}}</md-option>
+                </md-select>
+            </md-field>
+        </div>
+        <md-field v-else-if="type === 'string'" md-clearable>
             <label>{{compName}}</label>
             <md-input v-model="data"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <md-field v-if="type === 'boolean'" md-clearable>
+        <md-field v-else-if="type === 'boolean'" md-clearable>
             <md-checkbox v-model="data">{{name}}</md-checkbox>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <md-field v-if="type === 'number' || type === 'integer'" md-clearable>
+        <md-field v-else-if="type === 'number' || type === 'integer'" md-clearable>
             <label>{{compName}}</label>
             <md-input v-model="data" type="number"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <div v-if="type === 'object'">
+        <div v-else-if="type === 'object'">
             <md-toolbar :md-elevation="1" :style="{ 'border-color': borderColor}" style="border-left: 3px solid;">
                 <span class="md-title">
                     <md-button class="md-icon-button" @click="toggleOpen">
@@ -30,7 +38,7 @@
                 </md-list-item>
             </md-list>
         </div>
-        <div v-if="type === 'array'">
+        <div v-else-if="type === 'array'">
             <md-toolbar :md-elevation="1" :style="{ 'border-color': borderColor}" style="border-left: 3px solid;">
                 <span class="md-title">
                     <md-button class="md-icon-button" @click="toggleOpen">
@@ -85,6 +93,12 @@
             },
             type() {
                 return this.schema.type ? this.schema.type : 'object';
+            },
+            hasEnum() {
+                return !!this.schema.enum;
+            },
+            enumOptions() {
+                return this.schema.enum;
             },
             children() {
                 if (this.type !== 'object') {
