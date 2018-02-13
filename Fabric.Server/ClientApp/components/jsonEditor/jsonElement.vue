@@ -1,27 +1,27 @@
 <template>
-    <md-content>
-        <md-field v-if="type === 'string'">
+    <div>
+        <md-field v-if="type === 'string'" md-clearable>
             <label>{{compName}}</label>
             <md-input v-model="data"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <md-field v-if="type === 'boolean'">
+        <md-field v-if="type === 'boolean'" md-clearable>
             <md-checkbox v-model="data">{{name}}</md-checkbox>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <md-field v-if="type === 'number' || type === 'integer'">
+        <md-field v-if="type === 'number' || type === 'integer'" md-clearable>
             <label>{{compName}}</label>
             <md-input v-model="data" type="number"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
-        <md-content v-if="type === 'object'">
+        <div v-if="type === 'object'">
             <md-toolbar :md-elevation="1" :style="{ 'border-color': borderColor}" style="border-left: 3px solid;">
                 <span class="md-title">
                     <md-button class="md-icon-button" @click="toggleOpen">
                         <md-icon v-if="open">keyboard_arrow_down</md-icon>
                         <md-icon v-else>keyboard_arrow_right</md-icon>
                     </md-button>
-                    {{compName}}
+                    <span>{{compName}}</span>
                 </span>
             </md-toolbar>
             <md-list class="md-elevation-1" v-if="open">
@@ -29,24 +29,27 @@
                     <jsonElement :name="element.name" :required="element.required" :schema="element.schema" :data="element.data" :depth="childDepth"></jsonElement>
                 </md-list-item>
             </md-list>
-        </md-content>
-        <md-content v-if="type === 'array'">
+        </div>
+        <div v-if="type === 'array'">
             <md-toolbar :md-elevation="1" :style="{ 'border-color': borderColor}" style="border-left: 3px solid;">
                 <span class="md-title">
                     <md-button class="md-icon-button" @click="toggleOpen">
                         <md-icon v-if="open">keyboard_arrow_down</md-icon>
                         <md-icon v-else>keyboard_arrow_right</md-icon>
                     </md-button>
-                    {{compName}}
+                    <span>{{compName}}</span>
+                    <md-button class="md-icon-button md-dense md-raised md-primary" @click="arrayAdd">
+                        <md-icon>add</md-icon>
+                    </md-button>
                 </span>
             </md-toolbar>
             <md-list class="md-elevation-1" v-if="open">
                 <md-list-item v-for="element in data" :key="element.name">
-                    <jsonElement :schema="schema.items" :data="element" :depth="childDepth"></jsonElement>
+                    <jsonElement :schema="schema.items" :data="element" :depth="childDepth" :isParentArray=true></jsonElement>
                 </md-list-item>
             </md-list>
-        </md-content>
-    </md-content>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -57,7 +60,14 @@
             required: Boolean,
             schema: Object,
             data: null,
-            depth: Number,
+            depth: {
+                default: -1,
+                type: Number,
+            },
+            isParentArray: {
+                default: false,
+                type: Boolean,
+            },
         },
         data() {
             return {
@@ -81,7 +91,8 @@
                     return undefined;
                 }
 
-                const required = this.schema.required;
+                const required = !this.schema.required ? false
+                    : this.schema.required.includes(this.name);
                 return Object.entries(this.schema.properties).map(obj => ({
                     name: obj[0],
                     required,
@@ -120,7 +131,10 @@
         },
         methods: {
             toggleOpen() {
-                this.open = !this.open;
+                this.open = !this.open ? true : !this.open;
+            },
+            arrayAdd() {
+
             },
         },
     };
@@ -128,8 +142,16 @@
 
 <style scoped lang=scss>
     .md-list-item {
-        .md-content {
+        div {
             width: 100%;
+        }
+    }
+    .md-title {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        span:not(.md-title) {
+            flex: 1;
         }
     }
 </style>
