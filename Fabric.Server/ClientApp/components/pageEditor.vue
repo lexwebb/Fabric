@@ -1,8 +1,6 @@
 ﻿<template>
     <div>
-        <!-- <json-editor class="main" v-if="schemaLoaded" :schema="schemaObj" :initial-value="dataObj" @update-value="updateValue($event)" theme="bootstrap3" icon="fontawesome4">
-        </json-editor> -->
-        <jsonEditor  v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name"/>
+        <jsonEditor v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name" />
     </div>
 </template>
 
@@ -35,20 +33,28 @@
             },
         },
         mounted() {
-            if (this.model.schemaName) {
-                this.$services.schemas.get(this.model.schemaName)
-                    .then((data) => {
-                        this.schema = data;
-                        this.schemaLoaded = true;
-                    })
-                    .catch(() => {
-                        EventBus.$emit('show-error', 'Error loading schema');
-                    });
-            }
+            this.getSchema();
         },
         methods: {
+            getSchema() {
+                if (this.model.schemaName) {
+                    this.$services.schemas.get(this.model.schemaName)
+                        .then((data) => {
+                            this.schema = data;
+                            this.schemaLoaded = true;
+                        })
+                        .catch(() => {
+                            EventBus.$emit('show-error', 'Error loading schema');
+                        });
+                }
+            },
             updateValue() {
 
+            },
+        },
+        watch: {
+            model() {
+                this.getSchema();
             },
         },
     };

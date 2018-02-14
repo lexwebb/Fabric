@@ -3,23 +3,23 @@
         <div v-if="hasEnum">
             <md-field>
                 <label :for="compName + depth">{{compName}}</label>
-                <md-select v-model="data" :name="compName + depth" :id="compName + depth">
+                <md-select v-model="internalData" :name="compName + depth" :id="compName + depth">
                     <md-option v-for="option in enumOptions" :key="option" :value="option">{{option}}</md-option>
                 </md-select>
             </md-field>
         </div>
         <md-field v-else-if="type === 'string'" md-clearable>
             <label>{{compName}}</label>
-            <md-input v-model="data"></md-input>
+            <md-input v-model="internalData"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
         <md-field v-else-if="type === 'boolean'" md-clearable>
-            <md-checkbox v-model="data">{{name}}</md-checkbox>
+            <md-checkbox v-model="internalData">{{name}}</md-checkbox>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
         <md-field v-else-if="type === 'number' || type === 'integer'" md-clearable>
             <label>{{compName}}</label>
-            <md-input v-model="data" type="number"></md-input>
+            <md-input v-model="internalData" type="number"></md-input>
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
         <div v-else-if="type === 'object'">
@@ -34,7 +34,7 @@
             </md-toolbar>
             <md-list class="md-elevation-1" v-if="open">
                 <md-list-item v-for="element in children" :key="element.name">
-                    <jsonElement :name="element.name" :required="element.required" :schema="element.schema" :data="element.data" :depth="childDepth"></jsonElement>
+                    <jsonElement :name="element.name" :path="element.name" :required="element.required" :schema="element.schema" :data="element.data" :depth="childDepth" @dataChanged="childDataChanged"></jsonElement>
                 </md-list-item>
             </md-list>
         </div>
@@ -52,8 +52,8 @@
                 </span>
             </md-toolbar>
             <md-list class="md-elevation-1" v-if="open">
-                <md-list-item v-for="element in data" :key="element.name">
-                    <jsonElement :schema="schema.items" :data="element" :depth="childDepth" :isParentArray=true></jsonElement>
+                <md-list-item v-for="(element, index) in internalData" :key="element.name">
+                    <jsonElement :schema="schema.items" :path="index" :data="element" :depth="childDepth" :isParentArray=true @dataChanged="childDataChanged"></jsonElement>
                 </md-list-item>
             </md-list>
         </div>
@@ -65,6 +65,7 @@
         name: 'jsonElement',
         props: {
             name: String,
+            path: null,
             required: Boolean,
             schema: Object,
             data: null,
@@ -79,6 +80,8 @@
         },
         data() {
             return {
+                internalData: this.data,
+                canWatch: false,
                 open: true,
             };
         },
@@ -86,10 +89,12 @@
             if (this.depth > 3) {
                 this.open = false;
             }
+
+            this.canWatch = true;
         },
         computed: {
             compName() {
-                return this.name ? this.name : this.data.name;
+                return this.name ? this.name : this.internalData.name;
             },
             type() {
                 return this.schema.type ? this.schema.type : 'object';
@@ -111,7 +116,7 @@
                     name: obj[0],
                     required,
                     schema: obj[1],
-                    data: this.data[obj[0]],
+                    data: this.internalData[obj[0]],
                 }));
             },
             childDepth() {
@@ -149,6 +154,20 @@
             },
             arrayAdd() {
 
+            },
+            childDataChanged(e) {
+                if (this.path) {
+                    this.$emit('dataChanged', { path: `${this.path}/${e.path}`, data: e.data });
+                } else {
+                    this.$emit('dataChanged', { path: e.path, data: e.data });
+                }
+            },
+        },
+        watch: {
+            internalData() {
+                if (this.canWatch) {
+                    this.$emit('dataChanged', { path: this.path, data: this.internalData });
+                }
             },
         },
     };
