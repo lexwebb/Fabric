@@ -168,6 +168,9 @@
             flex: 1;
         }
     }
+    .md-toolbar {
+        min-height: 40px;
+    }
 </style>
 
 <style lang=scss>
