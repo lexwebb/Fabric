@@ -80,8 +80,8 @@
         },
         data() {
             return {
-                internalData: this.data,
-                canWatch: false,
+                // Perform clone of object to avoid mutating property
+                internalData: JSON.parse(JSON.stringify(this.data)),
                 open: true,
             };
         },
@@ -89,8 +89,6 @@
             if (this.depth > 3) {
                 this.open = false;
             }
-
-            this.canWatch = true;
         },
         computed: {
             compName() {
@@ -165,9 +163,7 @@
         },
         watch: {
             internalData() {
-                if (this.canWatch) {
-                    this.$emit('dataChanged', { path: this.path, data: this.internalData });
-                }
+                this.$emit('dataChanged', { path: this.path, data: this.internalData });
             },
         },
     };

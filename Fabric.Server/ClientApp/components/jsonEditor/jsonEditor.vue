@@ -1,5 +1,5 @@
 <template>
-    <jsonElement :name="name" :schema="schema" :data="data" :type="object" :depth="0" @dataChanged="childDataChanged"></jsonElement>
+    <jsonElement :name="name" :schema="schema" :data="modifiedData" :type="object" :depth="0" @dataChanged="childDataChanged"></jsonElement>
 </template>
 
 <script>
@@ -20,7 +20,7 @@
                 modifiedData: {},
             };
         },
-        mounted() {
+        created() {
             this.modifiedData = this.data;
         },
         methods: {
