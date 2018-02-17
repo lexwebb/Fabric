@@ -7,12 +7,7 @@
             </div>
             <div class="md-layout-item edit-container" v-if="currentEditItem">
                 <h3>Edit page - {{currentEditItem.name}}</h3>
-                <md-tabs>
-                    <md-tab id="edit-page" md-label="Edit page">
-                        <pageEditor :model="currentEditItem"></pageEditor>
-                    </md-tab>
-                    <md-tab id="edit-raw" md-label="Edit raw"></md-tab>
-                </md-tabs>
+                <pageEditor :model="currentEditItem"></pageEditor>
                 <div class="flex-row-right">
                     <md-button class="md-raised">Cancel</md-button>
                     <md-button class="md-raised md-primary">Save</md-button>

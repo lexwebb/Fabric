@@ -122,26 +122,6 @@
         "to-fast-properties": "2.0.0"
       }
     },
-    "@types/dragula": {
-      "version": "2.1.32",
-      "resolved": "https://registry.npmjs.org/@types/dragula/-/dragula-2.1.32.tgz",
-      "integrity": "sha512-67nXH/pjZPTrbQ+Sr/Wy/luKVJPOOy7ErML58TgoO4A0vokIvvSt3+x1FHwp6Q455Kj03xGjCyHkhaelAdQMWA=="
-    },
-    "@types/highlight.js": {
-      "version": "9.12.2",
-      "resolved": "https://registry.npmjs.org/@types/highlight.js/-/highlight.js-9.12.2.tgz",
-      "integrity": "sha512-y5x0XD/WXDaGSyiTaTcKS4FurULJtSiYbGTeQd0m2LYZGBcZZ/7fM6t5H/DzeUF+kv8y6UfmF6yJABQsHcp9VQ=="
-    },
-    "@types/markdown-it": {
-      "version": "0.0.4",
-      "resolved": "https://registry.npmjs.org/@types/markdown-it/-/markdown-it-0.0.4.tgz",
-      "integrity": "sha512-FWR7QB7EqBRq1s9BMk0ccOSOuRLfVEWYpHQYpFPaXtCoqN6dJx2ttdsdQbUxLLnAlKpYeVjveGGhQ3583TTa7g=="
-    },
-    "@types/node": {
-      "version": "9.4.0",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-9.4.0.tgz",
-      "integrity": "sha512-zkYho6/4wZyX6o9UQ8rd0ReEaiEYNNCqYFIAACe2Tf9DrYlgzWW27OigYHnnztnnZQwVRpwWmZKegFmDpinIsA=="
-    },
     "abbrev": {
       "version": "1.1.0",
       "resolved": "https://registry.npmjs.org/abbrev/-/abbrev-1.1.0.tgz",
@@ -1582,6 +1562,11 @@
       "integrity": "sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=",
       "dev": true
     },
+    "codemirror": {
+      "version": "5.34.0",
+      "resolved": "https://registry.npmjs.org/codemirror/-/codemirror-5.34.0.tgz",
+      "integrity": "sha512-7ke9DJB350sChxq1skTmotVZsJtiJo1ihC41rq8IyOMZv47Z1AQygoevWHs0PJTw2eBphmB7gA3AbPrVrnfwPw=="
+    },
     "color": {
       "version": "0.11.4",
       "resolved": "https://registry.npmjs.org/color/-/color-0.11.4.tgz",
@@ -2070,6 +2055,11 @@
       "requires": {
         "repeating": "2.0.1"
       }
+    },
+    "diff-match-patch": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/diff-match-patch/-/diff-match-patch-1.0.0.tgz",
+      "integrity": "sha1-HMPIOkkNZ/ldkeOfatHy4Ia2MEg="
     },
     "diffie-hellman": {
       "version": "5.0.2",
@@ -4912,16 +4902,6 @@
         "lodash._root": "3.0.1"
       }
     },
-    "lodash.isinteger": {
-      "version": "4.0.4",
-      "resolved": "https://registry.npmjs.org/lodash.isinteger/-/lodash.isinteger-4.0.4.tgz",
-      "integrity": "sha1-YZwK89A/iwTDH1iChAt3sRzWg0M="
-    },
-    "lodash.isobject": {
-      "version": "3.0.2",
-      "resolved": "https://registry.npmjs.org/lodash.isobject/-/lodash.isobject-3.0.2.tgz",
-      "integrity": "sha1-PI+41bW/S/kK4G4U8qUwpO2TXh0="
-    },
     "lodash.memoize": {
       "version": "4.1.2",
       "resolved": "https://registry.npmjs.org/lodash.memoize/-/lodash.memoize-4.1.2.tgz",
@@ -4939,16 +4919,6 @@
       "resolved": "https://registry.npmjs.org/lodash.tail/-/lodash.tail-4.1.1.tgz",
       "integrity": "sha1-0jM6NtnncXyK0vfKyv7HwytERmQ=",
       "dev": true
-    },
-    "lodash.tointeger": {
-      "version": "4.0.4",
-      "resolved": "https://registry.npmjs.org/lodash.tointeger/-/lodash.tointeger-4.0.4.tgz",
-      "integrity": "sha1-ZeZVrKpyTibT/vV+/8RpcOHNF+Y="
-    },
-    "lodash.tonumber": {
-      "version": "4.0.3",
-      "resolved": "https://registry.npmjs.org/lodash.tonumber/-/lodash.tonumber-4.0.3.tgz",
-      "integrity": "sha1-C5azGzVnJ5Prf1pj7nkfG56QJdk="
     },
     "lodash.uniq": {
       "version": "4.5.0",
@@ -5025,24 +4995,6 @@
       "resolved": "https://registry.npmjs.org/map-obj/-/map-obj-1.0.1.tgz",
       "integrity": "sha1-2TPOuSBdgr3PSIb2dCvcK03qFG0=",
       "dev": true
-    },
-    "markdown-tip": {
-      "version": "6.1.1",
-      "resolved": "https://registry.npmjs.org/markdown-tip/-/markdown-tip-6.1.1.tgz",
-      "integrity": "sha512-mwrvUeBY+lgp5A8cTcNvA7p2g+9it3WQXUYzzG06qq/tZlwVxVWGE+QJT0GZVj7nJmdrla0gOyXvsZcN4v4m8g==",
-      "requires": {
-        "tslib": "1.9.0"
-      }
-    },
-    "markdown-tip-vue": {
-      "version": "6.1.2",
-      "resolved": "https://registry.npmjs.org/markdown-tip-vue/-/markdown-tip-vue-6.1.2.tgz",
-      "integrity": "sha512-2tFoHRZdbhBGgmW+5U6r6gWM/9ZaPXHLDoygC1jb9Gk8Y2RDYz8ZSF55VKNKVsofqRebvrze+FGNnBZKcAufmQ==",
-      "requires": {
-        "markdown-tip": "6.1.1",
-        "vue": "2.5.13",
-        "vue-class-component": "6.1.2"
-      }
     },
     "math-expression-evaluator": {
       "version": "1.2.17",
@@ -6768,20 +6720,6 @@
       "integrity": "sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==",
       "dev": true
     },
-    "schema-based-json-editor": {
-      "version": "7.2.1",
-      "resolved": "https://registry.npmjs.org/schema-based-json-editor/-/schema-based-json-editor-7.2.1.tgz",
-      "integrity": "sha512-oiyWoJqpC2NSAaV4TZfDKtPdWIqxfgZRpY08RT23Yo9Fw3j9CNNgFT35e+s2ne2elVJ6aj4XieoC2n2JxITPQQ==",
-      "requires": {
-        "lodash.isinteger": "4.0.4",
-        "lodash.isobject": "3.0.2",
-        "lodash.tointeger": "4.0.4",
-        "lodash.tonumber": "4.0.3",
-        "markdown-tip": "6.1.1",
-        "select2-component": "5.1.2",
-        "tslib": "1.9.0"
-      }
-    },
     "schema-utils": {
       "version": "0.3.0",
       "resolved": "https://registry.npmjs.org/schema-utils/-/schema-utils-0.3.0.tgz",
@@ -6824,26 +6762,6 @@
             "amdefine": "1.0.1"
           }
         }
-      }
-    },
-    "select2-component": {
-      "version": "5.1.2",
-      "resolved": "https://registry.npmjs.org/select2-component/-/select2-component-5.1.2.tgz",
-      "integrity": "sha512-BHfHnFL7Fk7efZ98BXR/1cxrv8onF1U4NcQA4TjkhADwdbxoJP/S28NIDzEreLjbSMRRCZRTU6BkWx7603irAQ==",
-      "requires": {
-        "@types/node": "9.4.0",
-        "tslib": "1.9.0"
-      }
-    },
-    "select2-vue-component": {
-      "version": "5.1.2",
-      "resolved": "https://registry.npmjs.org/select2-vue-component/-/select2-vue-component-5.1.2.tgz",
-      "integrity": "sha512-PphOj5VjYvBsR6bNcun063V+VYP+SptOuBuaSn+8kgLZOSPb3wJcvAgpHQ0iaOZRs5gk4EPrTfChIh+cPVyq9A==",
-      "requires": {
-        "@types/node": "9.4.0",
-        "select2-component": "5.1.2",
-        "vue": "2.5.13",
-        "vue-class-component": "6.1.2"
       }
     },
     "semver": {
@@ -7384,11 +7302,6 @@
         }
       }
     },
-    "tslib": {
-      "version": "1.9.0",
-      "resolved": "https://registry.npmjs.org/tslib/-/tslib-1.9.0.tgz",
-      "integrity": "sha512-f/qGG2tUkrISBlQZEjEqoZ3B2+npJjIf04H1wuAv9iA8i04Icp+61KRXxFdha22670NJopsZCIjhC3SnjPRKrQ=="
-    },
     "tty-browserify": {
       "version": "0.0.0",
       "resolved": "https://registry.npmjs.org/tty-browserify/-/tty-browserify-0.0.0.tgz",
@@ -7594,10 +7507,14 @@
       "resolved": "https://registry.npmjs.org/vue/-/vue-2.5.13.tgz",
       "integrity": "sha512-3D+lY7HTkKbtswDM4BBHgqyq+qo8IAEE8lz8va1dz3LLmttjgo0FxairO4r1iN2OBqk8o1FyL4hvzzTFEdQSEw=="
     },
-    "vue-class-component": {
-      "version": "6.1.2",
-      "resolved": "https://registry.npmjs.org/vue-class-component/-/vue-class-component-6.1.2.tgz",
-      "integrity": "sha512-DF0PIhpBDiQdr+Rofd3HQ79N722hMVPQ8PDMt9vCD4Q7vCnOE3Dgn75ZuvRPYrNvkJtn26HWgwgR83XcJGmxGA=="
+    "vue-codemirror": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/vue-codemirror/-/vue-codemirror-4.0.3.tgz",
+      "integrity": "sha512-cWc8wR05NaiG6dTkfjVYwQHd1DhO1XpGJJ8MqJ+w9pT5jM1fqI8K8fjR8xwuMm51Y11r2NT8fdtB5eNy9otAWg==",
+      "requires": {
+        "codemirror": "5.34.0",
+        "diff-match-patch": "1.0.0"
+      }
     },
     "vue-eslint-parser": {
       "version": "2.0.2",
@@ -7690,21 +7607,6 @@
       "version": "2.6.0",
       "resolved": "https://registry.npmjs.org/vue-router/-/vue-router-2.6.0.tgz",
       "integrity": "sha512-V9VynDSnJL1+2UPltjDUq0qhBDp8Xt2k5L19+8XjoNHZp15c3GweEDepP+yq3ebX/KCY6sLaHlSt40I6Hvmy3g=="
-    },
-    "vue-schema-based-json-editor": {
-      "version": "7.2.1",
-      "resolved": "https://registry.npmjs.org/vue-schema-based-json-editor/-/vue-schema-based-json-editor-7.2.1.tgz",
-      "integrity": "sha512-SoxXdMtMi0yD9QYqwaQv4vuSUO+MqFpkO7rHfoZgOMlIxSy4nHHLeU82Vaw+rCWxnFbxEGL6uwTlVywCVCmrYg==",
-      "requires": {
-        "@types/dragula": "2.1.32",
-        "@types/highlight.js": "9.12.2",
-        "@types/markdown-it": "0.0.4",
-        "markdown-tip-vue": "6.1.2",
-        "schema-based-json-editor": "7.2.1",
-        "select2-vue-component": "5.1.2",
-        "vue": "2.5.13",
-        "vue-class-component": "6.1.2"
-      }
     },
     "vue-style-loader": {
       "version": "2.0.5",

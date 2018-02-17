@@ -1,7 +1,12 @@
 ﻿<template>
-    <div>
-        <jsonEditor v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name" />
-    </div>
+    <md-tabs>
+        <md-tab id="edit-page" md-label="Edit page">
+            <jsonEditor v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name" />
+        </md-tab>
+        <md-tab id="edit-raw" md-label="Edit raw">
+            <codemirror :code="jsonData" :options="cmOptions"></codemirror>
+        </md-tab>
+    </md-tabs>
 </template>
 
 <script>
@@ -22,6 +27,13 @@
             return {
                 schema: {},
                 schemaLoaded: false,
+                cmOptions: {
+                    tabSize: 4,
+                    mode: { name: 'javascript', json: true },
+                    theme: 'elegant',
+                    lineNumbers: true,
+                    line: true,
+                },
             };
         },
         computed: {
@@ -30,6 +42,9 @@
             },
             dataObj() {
                 return JSON.parse(this.model.pageData);
+            },
+            jsonData() {
+                return this.model.pageData;
             },
         },
         mounted() {
@@ -106,6 +121,14 @@
                 color: grey;
                 margin-right: 0.5em;
             }
+        }
+    }
+</style>
+<style lang=scss>
+    .vue-codemirror {
+        height: 100%;
+        .CodeMirror {
+            height: 100%;
         }
     }
 </style>
