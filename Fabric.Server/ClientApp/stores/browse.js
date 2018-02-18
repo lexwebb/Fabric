@@ -5,25 +5,27 @@ const browse = {
     namespaced: true,
     state: {
         rootNode: {},
-        currentEditItem: undefined,
+        currentPage: undefined,
     },
     mutations: {
         setRootNode(state, value) {
             state.rootNode = value;
         },
-        setCurrentItem(state, value) {
-            state.currentEditItem = value;
+        setCurrentPage(state, value) {
+            state.currentPage = value;
         },
     },
     actions: {
-        getRootNode({
-            commit,
-        }) {
+        getRootNode({ commit }) {
+            return services.config.get().then((data) => {
+                commit('setRootNode', data);
+            });
+        },
+        getPage({ commit }, path) {
             debugger;
-            return services.config.get()
-                .then((data) => {
-                    commit('setRootNode', data);
-                });
+            return services.config.get(path.replace(/^(root\/|root)/, '')).then((data) => {
+                commit('setCurrentPage', data);
+            });
         },
     },
 };

@@ -34,31 +34,18 @@
         computed: {
             ...mapState({
                 rootNode: state => state.browse.rootNode,
+                currentEditItem: state => state.browse.currentPage,
             }),
-        },
-        data() {
-            return {
-                currentEditItem: undefined,
-            };
         },
         mounted() {
             this.$store.dispatch('browse/getRootNode')
                 .catch(() => {
                     EventBus.$emit('show-error', 'Error loading configs');
                 });
-    
-            // this.$services.config.get()
-            //     .then((data) => {
-            //         this.rootNode = data;
-            //     }).catch(() => {
-            //         EventBus.$emit('show-error', 'Error loading configs');
-            //     });
 
             EventBus.$on('browse-edit', (path) => {
-                this.$services.config.get(path.replace(/^(root\/|root)/, ''))
-                    .then((data) => {
-                        this.currentEditItem = data;
-                    }).catch(() => {
+                this.$store.dispatch('browse/getPage', path)
+                    .catch(() => {
                         EventBus.$emit('show-error', 'Error loading config');
                     });
             });
