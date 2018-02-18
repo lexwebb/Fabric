@@ -12,6 +12,7 @@ const browse = {
             state.rootNode = value;
         },
         setCurrentPage(state, value) {
+            state.currentPage = undefined;
             state.currentPage = value;
         },
     },
@@ -22,7 +23,6 @@ const browse = {
             });
         },
         getPage({ commit }, path) {
-            debugger;
             return services.config.get(path.replace(/^(root\/|root)/, '')).then((data) => {
                 commit('setCurrentPage', data);
             });

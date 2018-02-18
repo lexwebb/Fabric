@@ -16,7 +16,7 @@ const routes = [
         meta: { title: 'Home' },
     },
     {
-        path: '/browse/:path?',
+        path: '/browse/:path*',
         component: browse,
         name: 'browse',
         displayName: 'Browse',

@@ -1,5 +1,5 @@
 <template>
-    <jsonElement :name="name" :schema="schema" :data="modifiedData" :type="'object'" :depth="0" @dataChanged="childDataChanged"></jsonElement>
+    <jsonElement ref="editor" :name="name" :schema="schema" :data="modifiedData" :type="'object'" :depth="0" @dataChanged="childDataChanged"></jsonElement>
 </template>
 
 <script>
@@ -18,6 +18,7 @@
         data() {
             return {
                 modifiedData: {},
+                reloading: false,
             };
         },
         created() {
@@ -25,21 +26,30 @@
         },
         methods: {
             childDataChanged(e) {
-                let schema = this.modifiedData;
-                const pList = e.path.split('/');
-                const len = pList.length;
-                for (let i = 0; i < len - 1; i += 1) {
-                    const elem = pList[i];
-                    if (!schema[elem]) schema[elem] = {};
-                    schema = schema[elem];
-                }
+                if (!this.reloading) {
+                    let schema = this.modifiedData;
+                    const pList = e.path.split('/');
+                    const len = pList.length;
+                    for (let i = 0; i < len - 1; i += 1) {
+                        const elem = pList[i];
+                        if (!schema[elem]) schema[elem] = {};
+                        schema = schema[elem];
+                    }
 
-                schema[pList[len - 1]] = e.data;
+                    schema[pList[len - 1]] = e.data;
+
+                    this.$emit('changed', this.modifiedData);
+                }
             },
         },
         watch: {
             data() {
+                this.reloading = true;
                 this.modifiedData = this.data;
+
+                this.$nextTick(() => {
+                    this.reloading = false;
+                });
             },
         },
     };

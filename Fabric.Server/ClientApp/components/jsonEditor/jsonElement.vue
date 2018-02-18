@@ -83,6 +83,7 @@
                 // Perform clone of object to avoid mutating property
                 internalData: JSON.parse(JSON.stringify(this.data)),
                 open: true,
+                reloading: false,
             };
         },
         mounted() {
@@ -154,16 +155,29 @@
 
             },
             childDataChanged(e) {
-                if (this.path) {
-                    this.$emit('dataChanged', { path: `${this.path}/${e.path}`, data: e.data });
-                } else {
-                    this.$emit('dataChanged', { path: e.path, data: e.data });
+                if (e && e.path) {
+                    if (this.path ||
+                        (!Number.isNaN(parseFloat(this.path)) && Number.isFinite(this.path))) {
+                        this.$emit('dataChanged', { path: `${this.path}/${e.path}`, data: e.data });
+                    } else {
+                        this.$emit('dataChanged', { path: e.path, data: e.data });
+                    }
                 }
             },
         },
         watch: {
+            data() {
+                this.reloading = true;
+                this.internalData = this.data;
+
+                this.$nextTick(() => {
+                    this.reloading = false;
+                });
+            },
             internalData() {
-                this.$emit('dataChanged', { path: this.path, data: this.internalData });
+                if (!this.reloading) {
+                    this.$emit('dataChanged', { path: this.path, data: this.internalData });
+                }
             },
         },
     };

@@ -38,17 +38,32 @@
             }),
         },
         mounted() {
-            this.$store.dispatch('browse/getRootNode')
-                .catch(() => {
-                    EventBus.$emit('show-error', 'Error loading configs');
-                });
-
+            this.onRoute();
             EventBus.$on('browse-edit', (path) => {
-                this.$store.dispatch('browse/getPage', path)
-                    .catch(() => {
-                        EventBus.$emit('show-error', 'Error loading config');
-                    });
+                this.$router.push({ name: 'browse', params: { path: this.$utils.trim(path, 'root/') } });
             });
+        },
+        methods: {
+            onRoute(to) {
+                const route = to || this.$route;
+
+                this.$store.dispatch('browse/getRootNode')
+                    .catch(() => {
+                        EventBus.$emit('show-error', 'Error loading configs');
+                    });
+
+                if (route.params.path) {
+                    this.$store.dispatch('browse/getPage', `root/${route.params.path}`)
+                        .catch(() => {
+                            EventBus.$emit('show-error', 'Error loading config');
+                        });
+                }
+            },
+        },
+        watch: {
+            $route(to) {
+                this.onRoute(to);
+            },
         },
     };
 </script>

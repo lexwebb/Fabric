@@ -1,10 +1,14 @@
 ﻿<template>
     <md-tabs>
         <md-tab id="edit-page" md-label="Edit page">
-            <jsonEditor v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name" />
+            <transition name="fade">
+                <jsonEditor v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name" @changed="editorChanged" />
+            </transition>
         </md-tab>
         <md-tab id="edit-raw" md-label="Edit raw">
-            <codemirror :code="jsonData" :options="cmOptions"></codemirror>
+            <transition name="fade">
+                <codemirror v-if="schemaLoaded" :code="dataJson" :options="cmOptions" @input="textEditorChanged"></codemirror>
+            </transition>
         </md-tab>
     </md-tabs>
 </template>
@@ -25,7 +29,10 @@
         },
         data() {
             return {
-                schema: {},
+                schemaJson: '',
+                schemaObj: {},
+                dataJson: '',
+                dataObj: {},
                 schemaLoaded: false,
                 cmOptions: {
                     tabSize: 4,
@@ -34,18 +41,9 @@
                     lineNumbers: true,
                     line: true,
                 },
+                editingCode: false,
+                editingObj: false,
             };
-        },
-        computed: {
-            schemaObj() {
-                return JSON.parse(this.schema.schemaRaw);
-            },
-            dataObj() {
-                return JSON.parse(this.model.pageData);
-            },
-            jsonData() {
-                return this.model.pageData;
-            },
         },
         mounted() {
             this.getSchema();
@@ -55,7 +53,10 @@
                 if (this.model.schemaName) {
                     this.$services.schemas.get(this.model.schemaName)
                         .then((data) => {
-                            this.schema = data;
+                            this.schemaJson = data.schemaRaw;
+                            this.schemaObj = JSON.parse(data.schemaRaw);
+                            this.dataJson = this.model.pageData;
+                            this.dataObj = JSON.parse(this.model.pageData);
                             this.schemaLoaded = true;
                         })
                         .catch(() => {
@@ -63,12 +64,36 @@
                         });
                 }
             },
-            updateValue() {
+            editorChanged(data) {
+                if (!this.editingCode) {
+                    this.editingObj = true;
+                    this.editingCode = false;
 
+                    this.dataJson = JSON.stringify(data, undefined, 4);
+
+                    this.$nextTick(() => {
+                        this.editingObj = false;
+                        this.editingCode = false;
+                    });
+                }
+            },
+            textEditorChanged(data) {
+                if (!this.editingObj) {
+                    this.editingObj = false;
+                    this.editingCode = true;
+
+                    this.dataObj = JSON.parse(data);
+
+                    this.$nextTick(() => {
+                        this.editingObj = false;
+                        this.editingCode = false;
+                    });
+                }
             },
         },
         watch: {
             model() {
+                this.schemaLoaded = false;
                 this.getSchema();
             },
         },
@@ -78,50 +103,6 @@
 <style scopred lang="scss">
     .main > h3 {
         display: none;
-    }
-    .well.bootstrap3-row-container {
-        .control-label {
-            display: flex;
-            flex-direction: row;
-        }
-        .help-block:not(:empty) {
-            margin: 0;
-            &:before {
-                content: 'Description:';
-                position: relative;
-                margin-right: 0.5em;
-                color: grey;
-            }
-        }
-        .row {
-            box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-                0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-            margin: 0.5em;
-            padding: 0.2em;
-            .btn-group {
-                display: inline-block;
-                .btn {
-                    border: none;
-                    background: none;
-                    color: #1c8d7d;
-                }
-            }
-        }
-        .checkbox {
-            label {
-                visibility: hidden;
-                font-size: 0;
-                width: 18px;
-                input {
-                    visibility: visible;
-                }
-            }
-            &:after {
-                content: 'null';
-                color: grey;
-                margin-right: 0.5em;
-            }
-        }
     }
 </style>
 <style lang=scss>
