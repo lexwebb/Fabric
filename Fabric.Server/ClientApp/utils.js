@@ -52,3 +52,7 @@ export default {
         Vue.prototype.$utils = utils;
     },
 };
+
+export {
+    utils,
+};

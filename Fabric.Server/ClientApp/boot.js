@@ -1,3 +1,4 @@
+// Regular imports
 import Vue from 'vue';
 import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
@@ -11,22 +12,27 @@ import treeView from 'vue-json-tree-view';
 import pluralize from 'pluralize';
 import moment from 'moment';
 import './css/site.css';
-import utils from './utils';
 import ajvPlugin from './ajv-plugin';
 
+// Plugins
 import app from './app.vue';
 import router from './routes';
-import config from './config';
-import services from './services';
+import store from './store';
+
+// Custom Plugins
+import protoConfig from './config';
+import protoServices from './services';
+import protoUtils from './utils';
 
 Vue.use(VueRouter);
 Vue.use(VueMaterial);
 Vue.use(CodeMirror);
 Vue.use(treeView);
 Vue.use(ajvPlugin);
-Vue.use(utils);
-Vue.use(config);
-Vue.use(services);
+
+Vue.use(protoUtils);
+Vue.use(protoConfig);
+Vue.use(protoServices);
 
 // Custom imports
 Vue.prototype.$pluralize = pluralize;
@@ -43,6 +49,9 @@ router.beforeEach((to, from, next) => {
 new Vue({
     el: '#app-root',
     router,
+    store,
     template: '<app/>',
-    components: { app },
+    components: {
+        app,
+    },
 });

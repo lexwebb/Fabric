@@ -9,3 +9,7 @@ export default {
         Vue.prototype.$config = config;
     },
 };
+
+export {
+    config,
+};

@@ -1,15 +1,18 @@
 import RestServiceBase from './restServiceBase';
 
-function createServices(vue) {
-    return {
-        schemas: new RestServiceBase(vue, 'schema'),
-        config: new RestServiceBase(vue, 'config'),
-    };
-}
+const services = {
+    schemas: new RestServiceBase('schema'),
+    config: new RestServiceBase('config'),
+};
 
 export default {
+    services,
     /* eslint-disable no-param-reassign */
     install(Vue) {
-        Vue.prototype.$services = createServices(Vue);
+        Vue.prototype.$services = services;
     },
+};
+
+export {
+    services,
 };

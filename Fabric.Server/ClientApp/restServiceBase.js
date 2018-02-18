@@ -1,8 +1,10 @@
+import { config } from './config';
+import { utils } from './utils';
+
 class RestServiceBase {
-    constructor(vueInstance, resourceUrl) {
-        this.$vue = vueInstance;
-        this.apiUrlbase = this.$vue.prototype.$config.apiUrlbase;
-        this.resourceUrl = this.$vue.prototype.$utils.trim(resourceUrl, '/');
+    constructor(resourceUrl) {
+        this.apiUrlbase = config.apiUrlbase;
+        this.resourceUrl = utils.trim(resourceUrl, '/');
 
         this.headers = new Headers();
         this.headers.append('Accept', 'application/json, text/plain, */*');

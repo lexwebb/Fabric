@@ -18,6 +18,7 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
     import treeView from './treeView/treeView.vue';
     import pageEditor from './pageEditor.vue';
 
@@ -30,19 +31,28 @@
             treeView,
             pageEditor,
         },
+        computed: {
+            ...mapState({
+                rootNode: state => state.browse.rootNode,
+            }),
+        },
         data() {
             return {
-                rootNode: {},
                 currentEditItem: undefined,
             };
         },
         mounted() {
-            this.$services.config.get()
-                .then((data) => {
-                    this.rootNode = data;
-                }).catch(() => {
+            this.$store.dispatch('browse/getRootNode')
+                .catch(() => {
                     EventBus.$emit('show-error', 'Error loading configs');
                 });
+    
+            // this.$services.config.get()
+            //     .then((data) => {
+            //         this.rootNode = data;
+            //     }).catch(() => {
+            //         EventBus.$emit('show-error', 'Error loading configs');
+            //     });
 
             EventBus.$on('browse-edit', (path) => {
                 this.$services.config.get(path.replace(/^(root\/|root)/, ''))
