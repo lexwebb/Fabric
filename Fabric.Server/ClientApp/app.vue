@@ -82,9 +82,9 @@
 
     // Import the theme engine
     @include md-register-theme('default', ( 
-                                        primary: #1c8d7d,
-                                        accent: #21b6a4
-                                    ));
+                                            primary: #1c8d7d,
+                                            accent: #21b6a4
+                                        ));
 
     @import '~vue-material/dist/theme/all';
     // Apply the theme
@@ -146,6 +146,7 @@
     }
     .md-app-content > * > .md-layout {
         flex-grow: 1;
+        flex-wrap: nowrap;
     }
     .fade-enter-active,
     .fade-leave-active {

@@ -54,6 +54,12 @@
 
                 if (route.params.path) {
                     this.$store.dispatch('browse/getPage', `root/${route.params.path}`)
+                        .then(() => {
+                            this.$store.dispatch('browse/loadEditor')
+                                .catch(() => {
+                                    EventBus.$emit('show-error', 'Error loading editor');
+                                });
+                        })
                         .catch(() => {
                             EventBus.$emit('show-error', 'Error loading config');
                         });

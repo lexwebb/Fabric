@@ -2,38 +2,28 @@
     <md-tabs>
         <md-tab id="edit-page" md-label="Edit page">
             <transition name="fade">
-                <jsonEditor v-if="schemaLoaded" :schema="schemaObj" :data="dataObj" :name="model.name" @changed="editorChanged" />
+                <jsonEditor v-if="isSchemaLoaded" :schema="schemaObj" :data="dataObj" :name="dataObj.name" @changed="editorChanged" />
             </transition>
         </md-tab>
         <md-tab id="edit-raw" md-label="Edit raw">
             <transition name="fade">
-                <codemirror v-if="schemaLoaded" :code="dataJson" :options="cmOptions" @input="textEditorChanged"></codemirror>
+                <codemirror v-if="isSchemaLoaded" :code="dataJson" :options="cmOptions" @input="textEditorChanged" @beforeChange="beforeEditorChange"></codemirror>
             </transition>
         </md-tab>
     </md-tabs>
 </template>
 
 <script>
+    import { mapState, mapGetters } from 'vuex';
     import jsonEditor from './jsonEditor/jsonEditor.vue';
-
-    // Import the EventBus.
-    import { EventBus } from '../event-bus';
 
     export default {
         name: 'pageEditor',
         components: {
             jsonEditor,
         },
-        props: {
-            model: Object,
-        },
         data() {
             return {
-                schemaJson: '',
-                schemaObj: {},
-                dataJson: '',
-                dataObj: {},
-                schemaLoaded: false,
                 cmOptions: {
                     tabSize: 4,
                     mode: { name: 'javascript', json: true },
@@ -41,60 +31,56 @@
                     lineNumbers: true,
                     line: true,
                 },
-                editingCode: false,
-                editingObj: false,
             };
         },
         mounted() {
-            this.getSchema();
+            this.resize();
+        },
+        computed: {
+            ...mapState('browse', {
+                schemaJson: state => state.editor.schemaJson,
+                schemaObj: state => state.editor.schemaObj,
+                dataJson: state => state.editor.dataJson,
+                dataObj: state => state.editor.dataObj,
+                rootNode: state => state.editor.rootNode,
+                currentEditItem: state => state.editor.currentPage,
+            }),
+            ...mapGetters('browse', [
+                'isEditingCode',
+                'isEditingObj',
+                'isSchemaLoaded',
+            ]),
         },
         methods: {
-            getSchema() {
-                if (this.model.schemaName) {
-                    this.$services.schemas.get(this.model.schemaName)
-                        .then((data) => {
-                            this.schemaJson = data.schemaRaw;
-                            this.schemaObj = JSON.parse(data.schemaRaw);
-                            this.dataJson = this.model.pageData;
-                            this.dataObj = JSON.parse(this.model.pageData);
-                            this.schemaLoaded = true;
-                        })
-                        .catch(() => {
-                            EventBus.$emit('show-error', 'Error loading schema');
-                        });
-                }
-            },
             editorChanged(data) {
-                if (!this.editingCode) {
-                    this.editingObj = true;
-                    this.editingCode = false;
-
-                    this.dataJson = JSON.stringify(data, undefined, 4);
+                if (!this.isEditingCode) {
+                    this.$store.dispatch('browse/onEditorChanged', data);
 
                     this.$nextTick(() => {
-                        this.editingObj = false;
-                        this.editingCode = false;
+                        this.$store.dispatch('browse/resetEditingFlags', data);
                     });
                 }
             },
             textEditorChanged(data) {
-                if (!this.editingObj) {
-                    this.editingObj = false;
-                    this.editingCode = true;
-
-                    this.dataObj = JSON.parse(data);
+                if (!this.isEditingObj) {
+                    this.$store.dispatch('browse/onTextEditorChanged', data);
 
                     this.$nextTick(() => {
-                        this.editingObj = false;
-                        this.editingCode = false;
+                        this.$store.dispatch('browse/resetEditingFlags', data);
                     });
                 }
             },
-        },
-        watch: {
-            model() {
-                this.schemaLoaded = false;
-                this.getSchema();
+            beforeEditorChange() {
+                // this.resize();
+            },
+            resize() {
+                const tab = document.getElementById('edit-raw');
+                const toResize = document.querySelectorAll('.vue-codemirror,.CodeMirror,.CodeMirror-scroll');
+
+                toResize.forEach((element) => {
+                    /* eslint-disable no-param-reassign */
+                    element.style.maxWidth = `${tab.clientWidth}px`;
+                });
             },
         },
     };
@@ -108,8 +94,13 @@
 <style lang=scss>
     .vue-codemirror {
         height: 100%;
+        max-width: 1000px;
         .CodeMirror {
             height: 100%;
+            max-width: 1000px;
+        }
+        .CodeMirror-scroll {
+            max-width: 1000px;
         }
     }
 </style>
