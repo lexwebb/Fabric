@@ -12,12 +12,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 
-namespace Fabric.Server
-{
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
+namespace Fabric.Server {
+    public class Startup {
+        public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
 
@@ -26,32 +23,28 @@ namespace Fabric.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             services.AddFabric();
-            services.AddMvc().AddJsonOptions(options => {
+            services.AddMvc(options => {
+                options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
+            }).AddJsonOptions(options => {
                 options.SerializerSettings.ContractResolver =
                     new CamelCasePropertyNamesContractResolver();
-            }); ;
+            });;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                {
+                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions {
                     HotModuleReplacement = true
                 });
-            }
-            else
-            {
+            } else {
                 app.UseExceptionHandler("/Home/Error");
             }
 
             app.UseStaticFiles();
 
-            app.UseMvc(routes =>
-            {
+            app.UseMvc(routes => {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

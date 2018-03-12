@@ -14,8 +14,7 @@ namespace Fabric.Data {
 
             if (Path.IsPathRooted(DatabaseRoot)) {
                 FullDataBaseRoot = DatabaseRoot;
-            }
-            else {
+            } else {
                 var relativePathRoot = AppDomain.CurrentDomain.BaseDirectory;
                 var relativePath = Path.Combine(relativePathRoot, DatabaseRoot);
                 FullDataBaseRoot = relativePath;
@@ -23,11 +22,11 @@ namespace Fabric.Data {
 
             SerializerSettings = new JsonSerializerSettings {
                 Converters = new List<JsonConverter> {
-                    new DataPageSerializer(this)
+                new DataPageSerializer(this)
                 },
                 Formatting = Formatting.Indented,
                 ContractResolver =
-                    new CamelCasePropertyNamesContractResolver()
+                new CamelCasePropertyNamesContractResolver()
             };
         }
 
@@ -60,8 +59,7 @@ namespace Fabric.Data {
                 Global.Instance.Logger.Info("Database not found, performing first time setup");
                 CreateDatabase();
                 InternalSeedDatabase();
-            }
-            else {
+            } else {
                 LoadDatabase();
             }
 
@@ -80,7 +78,7 @@ namespace Fabric.Data {
 
             var settings = new JsonSerializerSettings {
                 Converters = new List<JsonConverter> {
-                    new DataPageSerializer(this)
+                new DataPageSerializer(this)
                 },
                 Formatting = Formatting.Indented
             };
@@ -101,7 +99,7 @@ namespace Fabric.Data {
 
             var settings = new JsonSerializerSettings {
                 Converters = new List<JsonConverter> {
-                    new DataPageSerializer(this)
+                new DataPageSerializer(this)
                 },
                 Formatting = Formatting.Indented
             };
@@ -133,19 +131,40 @@ namespace Fabric.Data {
         public void SaveChanges() {
             var changesTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds());
 
-            foreach (var changeSet in Changes.Where(c => c.ChangedPage != null)) {
-                var parts = FindParentsRecursive(changeSet.ChangedPage, new List<string>());
+            for (int i = Changes.Where(c => c.ChangedPage != null).Count() - 1; i >= 0; i--) {
+                var changeSet = Changes.Where(c => c.ChangedPage != null).ToList() [i];
+
                 switch (changeSet.ChangeType) {
                     case ChangeType.Update:
+                        var parts = FindParentsRecursive(changeSet.ChangedPage.Parent.Parent, new List<string>());
+                        parts.Reverse();
 
+                        if (parts[0] == "root")
+                            parts = parts.Skip(1).ToList();
+
+                        parts.Add(FullDataBaseRoot);
+                        parts.Add(changeSet.ChangedPage.SchemaName);
+                        parts.Add(changeSet.ChangedPage.Name);
+
+                        var dirPath = Path.Combine(parts.ToArray());
+
+                        var filePath = Path.Combine(dirPath, "dataPage.json");
+
+                        changeSet.ChangedPage.ModifiedTimestamp = changesTimestamp;
+
+                        File.WriteAllText(filePath, JsonConvert.SerializeObject(changeSet.ChangedPage, SerializerSettings));
                         break;
                     default:
                         throw new InvalidOperationException(
                             $"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPage)}");
                 }
+
+                Changes.RemoveAt(i);
             }
 
-            foreach (var changeSet in Changes.Where(c => c.ChangedCollection != null)) {
+            for (int i = Changes.Where(c => c.ChangedCollection != null).Count() - 1; i >= 0; i--) {
+                var changeSet = Changes.Where(c => c.ChangedCollection != null).ToList() [i];
+
                 var parts = FindParentsRecursive(changeSet.ChangedCollection.Parent, new List<string>());
                 parts.Reverse();
 
@@ -194,6 +213,8 @@ namespace Fabric.Data {
 
                 File.WriteAllText(collectionRootFilePath,
                     JsonConvert.SerializeObject(changeSet.ChangedCollection.Parent, SerializerSettings));
+
+                Changes.RemoveAt(i);
             }
         }
 
@@ -214,8 +235,7 @@ namespace Fabric.Data {
                 if (IsPathCollection(path))
                     throw new ArgumentException("Provided path points to a collection not a page.");
                 return await Task.Run(() => FindChildPageReccursive(Root, path));
-            }
-            catch (ItemNotFoundException ex) {
+            } catch (ItemNotFoundException ex) {
                 throw new ItemNotFoundException(ex.ItemName, path);
             }
         }
@@ -230,9 +250,9 @@ namespace Fabric.Data {
 
             if (root.Children.Any(c => c.Name == itemName)) {
                 var currentPage = root.Children.First(c => c.SchemaName == schemaName && c.Name == itemName);
-                return pathParts.Length > 2
-                    ? FindChildPageReccursive(currentPage, string.Join("/", pathParts.Skip(2)))
-                    : currentPage;
+                return pathParts.Length > 2 ?
+                    FindChildPageReccursive(currentPage, string.Join("/", pathParts.Skip(2))) :
+                    currentPage;
             }
 
             throw new ItemNotFoundException(itemName);
@@ -244,16 +264,14 @@ namespace Fabric.Data {
                 if (!IsPathCollection(path))
                     throw new ArgumentException("Provided path points to a page not a collection.");
                 return await Task.Run(() => FindChildCollectionReccursive(Root, path));
-            }
-            catch (ItemNotFoundException ex) {
+            } catch (ItemNotFoundException ex) {
                 throw new ItemNotFoundException(ex.ItemName, path);
             }
         }
 
         internal IEnumerable<DataPage> FindChildCollectionReccursive(DataPage root, string path) {
             path = path?.TrimEnd('/');
-            if (path == null || path.Equals(string.Empty)) throw new ItemNotFoundException(path);
-            ;
+            if (path == null || path.Equals(string.Empty)) throw new ItemNotFoundException(path);;
 
             var pathParts = path.Split('/');
             var currentPathRoot = pathParts[0];

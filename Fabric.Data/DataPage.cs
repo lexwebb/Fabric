@@ -3,8 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace Fabric.Data
-{
+namespace Fabric.Data {
     public class DataPage {
         public string Name { get; internal set; }
 
@@ -22,14 +21,13 @@ namespace Fabric.Data
 
         internal DataPageCollection Parent { get; set; }
 
-        internal bool Dirty { get; set; }
-
         protected DataPage(string name) {
             Name = name;
         }
 
         public void SaveChanges() {
             Parent.Database.AddChange(new ChangeSet(this, ChangeType.Update));
+            Parent.Database.SaveChanges();
         }
 
         public void AddChild(string name, string schemaName, string data) {

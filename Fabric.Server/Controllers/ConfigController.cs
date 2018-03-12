@@ -14,15 +14,19 @@ namespace Fabric.Server.Controllers {
 
         [HttpGet("{*pathInfo}")]
         public async Task<JsonResult> GetAsync(string pathInfo) {
-            //var querySwitches = Request.Query;
+            return _fabricStore.IsPathCollection(pathInfo) ?
+                Json(await _fabricStore.GetDataPageCollection(pathInfo), _fabricStore.Database.SerializerSettings) :
+                Json(await _fabricStore.GetDataPage(pathInfo), _fabricStore.Database.SerializerSettings);
+        }
 
-            //if (GetQueryValue("children") == "true") {
-            //    return Json(await _fabricStore.GetDataPage(pathInfo));
-            //}
+        [HttpPost("{*pathInfo}")]
+        public async Task<JsonResult> PostAsync(string pathInfo, [FromBody] string data) {
+            var page = await _fabricStore.GetDataPage(pathInfo);
 
-            return _fabricStore.IsPathCollection(pathInfo)
-                ? Json(await _fabricStore.GetDataPageCollection(pathInfo), _fabricStore.Database.SerializerSettings)
-                : Json(await _fabricStore.GetDataPage(pathInfo), _fabricStore.Database.SerializerSettings);
+            page.PageData = data;
+            page.SaveChanges();
+
+            return Json("Ok");
         }
 
         private string GetQueryValue(string key) {

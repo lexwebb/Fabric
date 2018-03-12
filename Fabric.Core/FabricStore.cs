@@ -15,13 +15,13 @@ namespace Fabric.Core {
             var directoryInfo = new DirectoryInfo(Database.FullDataBaseRoot);
 
             if (directoryInfo.Exists) {
-                foreach (var file in directoryInfo.GetFiles()) file.Delete();
-                foreach (var dir in directoryInfo.GetDirectories()) dir.Delete(true);
+                directoryInfo.DeleteDirectory();
+                directoryInfo.Create();
             }
 #endif
 
             Database.Initialise();
-            
+
 #if DEBUG
             DebugDataSeeder.SeedDebugData(Database);
 #endif

@@ -10,7 +10,7 @@
                 <pageEditor :model="currentEditItem"></pageEditor>
                 <div class="flex-row-right">
                     <md-button class="md-raised">Cancel</md-button>
-                    <md-button class="md-raised md-primary">Save</md-button>
+                    <md-button class="md-raised md-primary" @click="save">Save</md-button>
                 </div>
             </div>
         </div>
@@ -64,6 +64,12 @@
                             EventBus.$emit('show-error', 'Error loading config');
                         });
                 }
+            },
+            save() {
+                this.$store.dispatch('browse/save')
+                    .catch(() => {
+                        EventBus.$emit('show-error', 'Error saving config');
+                    });
             },
         },
         watch: {

@@ -6,6 +6,7 @@ const browse = {
     state: {
         rootNode: {},
         currentPage: undefined,
+        currentPath: undefined,
         editor: {
             schemaJson: '',
             schemaObj: {},
@@ -28,6 +29,9 @@ const browse = {
         setCurrentPage(state, value) {
             state.currentPage = undefined;
             state.currentPage = value;
+        },
+        setCurrentPath(state, value) {
+            state.currentPath = value;
         },
         setEditorSchamaJson(state, value) {
             state.editor.schemaJson = value;
@@ -60,6 +64,7 @@ const browse = {
         getPage({ commit }, path) {
             return services.config.get(path.replace(/^(root\/|root)/, '')).then((data) => {
                 commit('setCurrentPage', data);
+                commit('setCurrentPath', path);
             });
         },
         loadEditor({ commit, state }) {
@@ -91,6 +96,13 @@ const browse = {
         resetEditingFlags({ commit }) {
             commit('setEditorEditingCode', false);
             commit('setEditorEditingObj', false);
+        },
+        save({ dispatch, state }) {
+            return services.config
+                .post(state.currentPath.replace(/^(root\/|root)/, ''), state.editor.dataJson)
+                .then(() => {
+                    dispatch('browse/loadEditor');
+                });
         },
     },
 };
