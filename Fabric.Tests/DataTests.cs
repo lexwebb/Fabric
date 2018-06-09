@@ -48,7 +48,7 @@ namespace Fabric.Tests {
         }
 
         [Fact]
-        public void JsonPropertRemover_RemovesProperty_Correctly() {
+        public void JsonPropertyRemover_RemovesProperty_Correctly() {
             var input = GetFileContents("RecursivePropertyRemove_Input.json");
             var expected = GetFileContents("RecursivePropertyRemove_Result.json");
             var actual = JsonUtils.RemoveProperty(input, "ModifiedTimestamp", true);
@@ -77,10 +77,25 @@ namespace Fabric.Tests {
 
             database.Root.AddChild("TestItem1", "none", "{}");
             database.Root.AddChild("TestItem2", "none", "{}");
-            database.SaveChanges();
 
             Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
             Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
+        }
+
+        [Fact]
+        public void RootPageChild_ShouldDelete_Correctly()
+        {
+            var database = CreateTestingDb();
+
+            database.Root.AddChild("TestItem1", "none", "{}");
+            database.Root.AddChild("TestItem2", "none", "{}");
+
+            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
+            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
+
+            database.Root.DeleteChild("TestItem1", "none");
+
+            Assert.False(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
         }
     }
 }

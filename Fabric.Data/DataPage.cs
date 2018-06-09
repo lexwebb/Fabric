@@ -26,7 +26,7 @@ namespace Fabric.Data {
         }
 
         public void SaveChanges() {
-            Parent.Database.AddChange(new ChangeSet(this, ChangeType.Update));
+            Parent.Database.AddChange(ChangeSet.Update(this));
             Parent.Database.SaveChanges();
         }
 
@@ -37,6 +37,12 @@ namespace Fabric.Data {
             };
 
             Children.Add(page);
+            Parent.Database.SaveChanges();
+        }
+
+        public void DeleteChild(string name, string schemaName) {
+            var page = Children.FirstOrDefault(c => c.Name == name && c.SchemaName == schemaName);
+            Children.Delete(page);
             Parent.Database.SaveChanges();
         }
     }

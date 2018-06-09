@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fabric.Data
-{
-    internal struct ChangeSet
-    {
+﻿namespace Fabric.Data {
+    public struct ChangeSet {
         internal DataPage ChangedPage { get; }
-
-        internal DataPageCollection ChangedCollection { get; }
 
         internal ChangeType ChangeType { get; }
 
-        public ChangeSet(DataPage changedPage, ChangeType changeType) {
-            this.ChangedPage = changedPage;
-            this.ChangedCollection = null;
-            this.ChangeType = changeType;
+        public static ChangeSet Insert(DataPage changedPage) {
+            return new ChangeSet(changedPage, ChangeType.Insert);
         }
 
-        public ChangeSet(DataPageCollection changedCollection, ChangeType changeType) {
-            this.ChangedPage = null;
-            this.ChangedCollection = changedCollection;
-            this.ChangeType = changeType;
+        public static ChangeSet Update(DataPage changedPage) {
+            return new ChangeSet(changedPage, ChangeType.Update);
+        }
+
+        public static ChangeSet Delete(DataPage changedPage) {
+            return new ChangeSet(changedPage, ChangeType.Delete);
+        }
+
+        private ChangeSet(DataPage changedPage, ChangeType changeType) {
+            ChangedPage = changedPage;
+            ChangeType = changeType;
         }
     }
 }
