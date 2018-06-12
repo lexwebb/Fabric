@@ -43,7 +43,7 @@ namespace Fabric.Data {
 
         public Action<FabricDatabase> SeedDatabase { get; set; }
 
-        public RootPage Root { get; private set; }
+        public DataPage Root { get; private set; }
 
         public ISchemaManager SchemaManager { get; private set; }
 
@@ -91,8 +91,9 @@ namespace Fabric.Data {
                 Formatting = Formatting.Indented
             };
 
-            Root = new RootPage(this) {
-                ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds())
+            Root = new DataPage("root") {
+                ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds()),
+                Parent = new DataPageCollection(this, null)
             };
 
             Root.Children = new DataPageCollection(this, Root);
@@ -112,7 +113,8 @@ namespace Fabric.Data {
                 Formatting = Formatting.Indented
             };
 
-            Root = JsonConvert.DeserializeObject<RootPage>(File.ReadAllText(DatabaseFile), settings);
+            Root = JsonConvert.DeserializeObject<DataPage>(File.ReadAllText(DatabaseFile), settings);
+            Root.Parent = new DataPageCollection(this, null);
         }
 
         /// <summary>
@@ -172,6 +174,10 @@ namespace Fabric.Data {
 
         public Task<IEnumerable<DataPage>> FindChildCollection(string path) {
             return Utils.FindChildCollection(Root, path);
+        }
+
+        public DataPage LoadPage(string path) {
+            return JsonConvert.DeserializeObject<DataPage>(path, SerializerSettings);
         }
     }
 }

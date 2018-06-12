@@ -14,7 +14,7 @@ namespace Fabric.Data
 
         internal FabricDatabase Database { get; set; }
 
-        internal bool Dirty { get; set; }
+        internal bool Dirty { get; set; } = false;
 
         internal DataPageCollection(FabricDatabase database, DataPage parent) {
             this.Database = database;
@@ -28,7 +28,7 @@ namespace Fabric.Data
         internal void PopulateFromSerializer(Dictionary<string, List<string>> names) {
             _internalList.Clear();
             _internalNameList.Clear();
-            _internalNameList = names;
+            _internalNameList = names ?? new Dictionary<string, List<string>>();
         }
 
         private List<DataPage> _internalList = new List<DataPage>();
@@ -107,6 +107,14 @@ namespace Fabric.Data
         /// </summary>
         private void Load() {
             if(Dirty) return;
+
+            _internalList.Clear();
+            foreach (var childGroup in _internalNameList) {
+                foreach (var child in childGroup.Value) {
+                    // TODO Create a method for finding current path in utils from a collection or page
+                    _internalList.Add(Database.LoadPage());
+                }
+            }
 
             this._internalNameList.Clear();
 

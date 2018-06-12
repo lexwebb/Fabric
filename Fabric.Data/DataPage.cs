@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Fabric.Data {
     public class DataPage {
+        internal DataPage(string name) {
+            Name = name;
+        }
+
+        internal DataPage() { }
+
         public string Name { get; internal set; }
 
         public string ModifiedTimestamp { get; internal set; }
@@ -15,14 +19,26 @@ namespace Fabric.Data {
 
         public DataPageCollection Children { get; set; }
 
-        public IEnumerable<T> GetChildren<T>() where T : DataPage {
-            return Children.OfType<T>();
-        }
-
         internal DataPageCollection Parent { get; set; }
 
-        protected DataPage(string name) {
-            Name = name;
+        /// <summary>
+        /// Gets the children.
+        /// </summary>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <returns></returns>
+        public IEnumerable<DataPage> GetChildren(string schemaName = null) {
+            return schemaName != null ? Children.Where(c => c.SchemaName == schemaName) : Children;
+        }
+
+        /// <summary>
+        /// Gets the child.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <returns></returns>
+        /// <exception cref="ItemNotFoundException"></exception>
+        public DataPage GetChild(string name, string schemaName = "none") {
+            return GetChildren().FirstOrDefault(c => c.Name == name) ?? throw new ItemNotFoundException(name);
         }
 
         public void SaveChanges() {

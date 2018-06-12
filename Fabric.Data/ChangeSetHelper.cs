@@ -73,12 +73,12 @@ namespace Fabric.Data {
         public void SaveCollectionChanges(ChangeSet changeSet, string[] collectionPath, FabricDatabase database) {
             var collectionRootFilePath = Path.Combine(collectionPath.Append("dataPage.json").ToArray());
 
-            if (changeSet.ChangedPage.Parent.Parent is RootPage) {
+            if (changeSet.ChangedPage.Parent.Parent.Name == "root") {
                 collectionRootFilePath = Path.Combine(collectionPath.Append("FabricDatabase.json").ToArray());
             }
 
             File.WriteAllText(collectionRootFilePath,
-                JsonConvert.SerializeObject(changeSet.ChangedPage, database.SerializerSettings));
+                JsonConvert.SerializeObject(changeSet.ChangedPage.Parent.Parent, database.SerializerSettings));
         }
     }
 }
