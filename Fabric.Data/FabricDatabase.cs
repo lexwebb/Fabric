@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Fabric.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Unity;
 
 namespace Fabric.Data {
     public class FabricDatabase {
-        public FabricDatabase(string databaseRoot, IChangeSetHelper changeSetHelper = null) {
+        public FabricDatabase(string databaseRoot) {
             DatabaseRoot = databaseRoot;
 
             if (Path.IsPathRooted(DatabaseRoot)) {
@@ -21,6 +22,9 @@ namespace Fabric.Data {
                 FullDataBaseRoot = relativePath;
             }
 
+            Resolver = new UnityContainer();
+            Resolver.RegisterInstance(this);
+
             SerializerSettings = new JsonSerializerSettings {
                 Converters = new List<JsonConverter> {
                     new DataPageSerializer(this)
@@ -30,8 +34,14 @@ namespace Fabric.Data {
                     new CamelCasePropertyNamesContractResolver()
             };
 
-            ChangeSetHelper = changeSetHelper ?? new ChangeSetHelper();
+            Resolver.RegisterInstance(SerializerSettings);
+            Resolver.RegisterSingleton<IDataWriter, DataWriter>();
+            Resolver.RegisterSingleton<IDataReader, DataReader>();
+            Resolver.RegisterSingleton<IChangeSetHelper, ChangeSetHelper>();
+            Resolver.RegisterSingleton<ISchemaManager, SchemaManager>();
         }
+
+        public UnityContainer Resolver { get; }
 
         public JsonSerializerSettings SerializerSettings { get; }
 
@@ -39,15 +49,11 @@ namespace Fabric.Data {
 
         public string FullDataBaseRoot { get; }
 
-        public string DatabaseFile => Path.Combine(FullDataBaseRoot, "FabricDatabase.json");
+        public string DatabaseFilePath => Path.Combine(FullDataBaseRoot, "FabricDatabase.json");
 
         public Action<FabricDatabase> SeedDatabase { get; set; }
 
         public DataPage Root { get; private set; }
-
-        public ISchemaManager SchemaManager { get; private set; }
-
-        internal IChangeSetHelper ChangeSetHelper { get; set; }
 
         internal List<ChangeSet> Changes { get; } = new List<ChangeSet>();
 
@@ -58,11 +64,14 @@ namespace Fabric.Data {
         public void Initialise() {
             Global.Instance.Logger.Info("Initialising database");
 
-            if (!Directory.Exists(FullDataBaseRoot)) {
-                Directory.CreateDirectory(FullDataBaseRoot);
+            var reader = Resolver.Resolve<IDataReader>();
+            var writer = Resolver.Resolve<IDataWriter>();
+
+            if (!reader.FolderExists(FullDataBaseRoot)) {
+                writer.CreateFolder(FullDataBaseRoot);
             }
 
-            if (!File.Exists(DatabaseFile)) {
+            if (!reader.FileExists(DatabaseFilePath)) {
                 Global.Instance.Logger.Info("Database not found, performing first time setup");
                 CreateDatabase();
                 InternalSeedDatabase();
@@ -70,9 +79,8 @@ namespace Fabric.Data {
             else {
                 LoadDatabase();
             }
-
-            SchemaManager = new SchemaManager(this);
-            SchemaManager.LoadSchemas();
+            
+            Resolver.Resolve<ISchemaManager>().LoadSchemas();
 
             Global.Instance.Logger.Info("Finished initialising database");
         }
@@ -82,14 +90,10 @@ namespace Fabric.Data {
         /// </summary>
         private void CreateDatabase() {
             Global.Instance.Logger.Info("Creating database file");
-            File.Create(DatabaseFile).Close();
+            
+            var writer = Resolver.Resolve<IDataWriter>();
 
-            var settings = new JsonSerializerSettings {
-                Converters = new List<JsonConverter> {
-                    new DataPageSerializer(this)
-                },
-                Formatting = Formatting.Indented
-            };
+            writer.WriteFile(DatabaseFilePath);
 
             Root = new DataPage("root") {
                 ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds()),
@@ -98,22 +102,15 @@ namespace Fabric.Data {
 
             Root.Children = new DataPageCollection(this, Root);
 
-            var json = JsonConvert.SerializeObject(Root, settings);
-
-            File.WriteAllText(DatabaseFile, json);
+            writer.WritePage(Root, DatabaseFilePath);
         }
 
         private void LoadDatabase() {
             Global.Instance.Logger.Info("Loading database file");
 
-            var settings = new JsonSerializerSettings {
-                Converters = new List<JsonConverter> {
-                    new DataPageSerializer(this)
-                },
-                Formatting = Formatting.Indented
-            };
-
-            Root = JsonConvert.DeserializeObject<DataPage>(File.ReadAllText(DatabaseFile), settings);
+            var reader = Resolver.Resolve<IDataReader>();
+            
+            Root = reader.ReadPage(DatabaseFilePath);
             Root.Parent = new DataPageCollection(this, null);
         }
 
@@ -126,6 +123,7 @@ namespace Fabric.Data {
 
         public void SaveChanges() {
             var changesTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
 
             for (var i = Changes.Count(c => c.ChangedPage != null) - 1; i >= 0; i--) {
                 var changeSet = Changes.Where(c => c.ChangedPage != null).ToList()[i];
@@ -141,15 +139,15 @@ namespace Fabric.Data {
 
                 switch (changeSet.ChangeType) {
                     case ChangeType.Update:
-                        ChangeSetHelper.Update(this, changesTimestamp, changeSet);
+                        changeSetHelper.Update(changesTimestamp, changeSet);
                         break;
                     case ChangeType.Insert:
-                        ChangeSetHelper.Insert(this, changesTimestamp, changeSet, collectionPath);
-                        ChangeSetHelper.SaveCollectionChanges(changeSet, collectionPath, this);
+                        changeSetHelper.Insert(changesTimestamp, changeSet, collectionPath);
+                        changeSetHelper.SaveCollectionChanges(changeSet, collectionPath);
                         break;
                     case ChangeType.Delete:
-                        ChangeSetHelper.Delete(this, changesTimestamp, changeSet);
-                        ChangeSetHelper.SaveCollectionChanges(changeSet, collectionPath, this);
+                        changeSetHelper.Delete(changesTimestamp, changeSet);
+                        changeSetHelper.SaveCollectionChanges(changeSet, collectionPath);
                         break;
                     default:
                         throw new InvalidOperationException(

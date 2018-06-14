@@ -3,13 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Fabric.Data;
+using Unity;
 
 namespace Fabric.Core.DebugResources {
     internal static class DebugDataSeeder {
         internal static void SeedDebugData(FabricDatabase database) {
             var schemas = GetDebugSchemas();
 
-            foreach (var schema in schemas) database.SchemaManager.Add(schema.schemaName, schema.schemaRawJson);
+            foreach (var schema in schemas) {
+                database.Resolver.Resolve<ISchemaManager>().Add(schema.schemaName, schema.schemaRawJson);
+            }
 
             CreateTestProjects(database);
 

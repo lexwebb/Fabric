@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -97,6 +98,23 @@ namespace Fabric.Data {
             }
 
             throw new ItemNotFoundException(currentPathRoot);
+        }
+
+        internal static string GetDataPagePath(DataPage dataPage) {
+            var parts = Utils.FindParentsRecursive(dataPage.Parent.Parent, new List<string>());
+            parts.Reverse();
+
+            if (parts[0] == "root")
+            {
+                parts = parts.Skip(1).ToList();
+            }
+            
+            parts.Add(dataPage.SchemaName);
+            parts.Add(dataPage.Name);
+
+            var dirPath = Path.Combine(parts.ToArray());
+
+            return Path.Combine(dirPath, "dataPage.json");
         }
     }
 }

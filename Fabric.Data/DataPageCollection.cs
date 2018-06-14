@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Fabric.Data
@@ -111,8 +112,8 @@ namespace Fabric.Data
             _internalList.Clear();
             foreach (var childGroup in _internalNameList) {
                 foreach (var child in childGroup.Value) {
-                    // TODO Create a method for finding current path in utils from a collection or page
-                    _internalList.Add(Database.LoadPage());
+                    var childPath = Path.Combine(Utils.GetDataPagePath(Parent), childGroup.Key, child, "dataPage.json");
+                    _internalList.Add(Database.LoadPage(childPath));
                 }
             }
 
