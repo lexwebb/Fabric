@@ -102,7 +102,7 @@ namespace Fabric.Data {
 
             Root.Children = new DataPageCollection(this, Root);
 
-            writer.WritePage(Root, DatabaseFilePath);
+            writer.WritePage(Root);
         }
 
         private void LoadDatabase() {
@@ -121,6 +121,10 @@ namespace Fabric.Data {
             SeedDatabase?.Invoke(this);
         }
 
+        /// <summary>
+        /// Saves the changes.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
         public void SaveChanges() {
             var changesTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds());
             var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
@@ -143,11 +147,9 @@ namespace Fabric.Data {
                         break;
                     case ChangeType.Insert:
                         changeSetHelper.Insert(changesTimestamp, changeSet, collectionPath);
-                        changeSetHelper.SaveCollectionChanges(changeSet, collectionPath);
                         break;
                     case ChangeType.Delete:
                         changeSetHelper.Delete(changesTimestamp, changeSet);
-                        changeSetHelper.SaveCollectionChanges(changeSet, collectionPath);
                         break;
                     default:
                         throw new InvalidOperationException(
@@ -175,7 +177,12 @@ namespace Fabric.Data {
         }
 
         public DataPage LoadPage(string path) {
-            return JsonConvert.DeserializeObject<DataPage>(path, SerializerSettings);
+            if (!path.StartsWith(DatabaseRoot))
+            {
+                path = Path.Combine(DatabaseRoot, path);
+            }
+
+            return Resolver.Resolve<DataReader>().ReadPage(path);
         }
     }
 }

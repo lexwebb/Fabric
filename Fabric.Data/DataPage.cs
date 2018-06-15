@@ -38,7 +38,7 @@ namespace Fabric.Data {
         /// <returns></returns>
         /// <exception cref="ItemNotFoundException"></exception>
         public DataPage GetChild(string name, string schemaName = "none") {
-            return GetChildren().FirstOrDefault(c => c.Name == name) ?? throw new ItemNotFoundException(name);
+            return GetChildren(schemaName).FirstOrDefault(c => c.Name == name) ?? throw new ItemNotFoundException(name);
         }
 
         public void SaveChanges() {

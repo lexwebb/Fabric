@@ -37,11 +37,5 @@
         /// <param name="changeSet">The change set.</param>
         /// <param name="collectionPath">The collection path.</param>
         void Insert(string changesTimestamp, ChangeSet changeSet, string[] collectionPath);
-
-        /// <summary>
-        ///     Saves the collection changes.
-        /// </summary>
-        /// <param name="collectionPath">The collection path.</param>
-        void SaveCollectionChanges(ChangeSet changeSet, string[] collectionPath);
     }
 }

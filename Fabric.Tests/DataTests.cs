@@ -127,7 +127,7 @@ namespace Fabric.Tests {
         public void RootPageChild_ShouldDelete_Correctly()
         {
             var database = CreateTestingDb();
-
+                
             database.Root.AddChild("TestItem1", "none", "{}");
 
             Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));

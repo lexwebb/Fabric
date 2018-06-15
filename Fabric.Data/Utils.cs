@@ -101,6 +101,10 @@ namespace Fabric.Data {
         }
 
         internal static string GetDataPagePath(DataPage dataPage) {
+            if (dataPage.Name == "root" && dataPage.Parent.Parent == null) {
+                return "FabricDatabase.json";
+            }
+
             var parts = Utils.FindParentsRecursive(dataPage.Parent.Parent, new List<string>());
             parts.Reverse();
 

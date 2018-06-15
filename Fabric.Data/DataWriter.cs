@@ -25,17 +25,27 @@ namespace Fabric.Data {
             stream.Close();
         }
 
-        public void WritePage(DataPage data, string path = null) {
-            WriteFile(path ?? Path.Combine(DatabaseRoot, Utils.GetDataPagePath(data)), JsonConvert.SerializeObject(data, SerializerSettings));
+        public void WritePage(DataPage data) {
+            WriteFile(Path.Combine(DatabaseRoot, Utils.GetDataPagePath(data)), JsonConvert.SerializeObject(data, SerializerSettings));
         }
 
         public void DeleteFile(string path) {
+            if (!path.StartsWith(DatabaseRoot))
+            {
+                path = Path.Combine(DatabaseRoot, path);
+            }
+
             if (File.Exists(path)) {
                 File.Delete(path);
             }
         }
 
         public void DeleteFolder(string path) {
+            if (!path.StartsWith(DatabaseRoot))
+            {
+                path = Path.Combine(DatabaseRoot, path);
+            }
+
             if (Directory.Exists(path)) {
                 Directory.Delete(path, true);
             }

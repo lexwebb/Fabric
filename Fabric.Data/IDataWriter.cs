@@ -8,7 +8,7 @@ namespace Fabric.Data {
 
         void WriteFile(string path, string data = null);
 
-        void WritePage(DataPage data, string path = null);
+        void WritePage(DataPage data);
 
         void DeleteFile(string path);
 

@@ -15,7 +15,7 @@ namespace Fabric.Data {
         }
 
         public DataPage ReadPage(string path) {
-            return JsonConvert.DeserializeObject<DataPage>(ReadFile(path));
+            return JsonConvert.DeserializeObject<DataPage>(ReadFile(path), SerializerSettings);
         }
 
         public bool FileExists(string path) {

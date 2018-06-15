@@ -28,6 +28,7 @@ namespace Fabric.Data {
             }
 
             DataWriter.DeleteFolder(folderPath);
+            DataWriter.WritePage(changeSet.ChangedPage.Parent.Parent);
         }
 
         public void Insert(string changesTimestamp, ChangeSet changeSet,
@@ -56,16 +57,7 @@ namespace Fabric.Data {
             dataPage.ModifiedTimestamp = changesTimestamp;
 
             DataWriter.WritePage(dataPage);
-        }
-
-        public void SaveCollectionChanges(ChangeSet changeSet, string[] collectionPath) {
-            var collectionRootFilePath = Path.Combine(collectionPath.Append("dataPage.json").ToArray());
-
-            if (changeSet.ChangedPage.Parent.Parent.Name == "root") {
-                collectionRootFilePath = Path.Combine(collectionPath.Append("FabricDatabase.json").ToArray());
-            }
-
-            DataWriter.WritePage(changeSet.ChangedPage.Parent.Parent, collectionRootFilePath);
+            DataWriter.WritePage(changeSet.ChangedPage.Parent.Parent);
         }
     }
 }
