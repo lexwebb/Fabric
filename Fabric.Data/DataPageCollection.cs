@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Fabric.Data
@@ -14,7 +15,7 @@ namespace Fabric.Data
 
         internal FabricDatabase Database { get; set; }
 
-        internal bool Dirty { get; set; }
+        internal bool Dirty { get; set; } = false;
 
         internal DataPageCollection(FabricDatabase database, DataPage parent) {
             this.Database = database;
@@ -28,13 +29,11 @@ namespace Fabric.Data
         internal void PopulateFromSerializer(Dictionary<string, List<string>> names) {
             _internalList.Clear();
             _internalNameList.Clear();
-            _internalNameList = names;
+            _internalNameList = names ?? new Dictionary<string, List<string>>();
         }
 
         private List<DataPage> _internalList = new List<DataPage>();
         private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
-
-        public Func<DataPage, bool> CanDelete { get; set; }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -79,7 +78,7 @@ namespace Fabric.Data
             subList?.Add(item.Name);
 
             this.Dirty = true;
-            Database.AddChange(new ChangeSet(this, ChangeType.Insert));
+            Database.AddChange(ChangeSet.Insert(item));
         }
 
         /// <summary>
@@ -90,17 +89,15 @@ namespace Fabric.Data
         /// true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
         internal bool Delete(DataPage item) {
-            if (!CanDelete.Invoke(item)) return false;
-
             var result = _internalList.Remove(item);
 
-            _internalNameList.TryGetValue(item.GetType().Name, out var subList);
+            _internalNameList.TryGetValue(item.SchemaName, out var subList);
 
             var result2 = subList?.Remove(item.Name);
 
             if (result && result2.HasValue && result2.Value) {
                 this.Dirty = true;
-                Database.AddChange(new ChangeSet(this, ChangeType.Delete));
+                Database.AddChange(ChangeSet.Delete(item));
             }
 
             return result && result2.HasValue && result2.Value;
@@ -112,10 +109,13 @@ namespace Fabric.Data
         private void Load() {
             if(Dirty) return;
 
-            this._internalList = Database.Load(this.Parent).Select(i => {
-                i.Parent = this;
-                return i;
-            }).ToList();
+            _internalList.Clear();
+            foreach (var childGroup in _internalNameList) {
+                foreach (var child in childGroup.Value) {
+                    var childPath = Path.Combine(Path.GetDirectoryName(Utils.GetDataPagePath(Parent)), childGroup.Key, child, "dataPage.json");
+                    _internalList.Add(Database.LoadPage(childPath));
+                }
+            }
 
             this._internalNameList.Clear();
 

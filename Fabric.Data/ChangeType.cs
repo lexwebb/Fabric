@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Fabric.Data
 {
-    internal enum ChangeType : byte {
+    public enum ChangeType : byte {
         Insert,
         Update,
         Delete,

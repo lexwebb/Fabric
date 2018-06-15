@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fabric.Core;
+using Fabric.Data;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using Unity;
 
 namespace Fabric.Server.Controllers {
     [ExceptionHandlerFilter]
@@ -19,16 +21,16 @@ namespace Fabric.Server.Controllers {
         public async Task<JsonResult> GetAsync(string schemaName) {
             return Json(await Task.Run(new Func<object>(() => {
                 if (schemaName != null) {
-                    return _fabricStore.Database.SchemaManager.Schemas.FirstOrDefault(s => s.SchemaName == schemaName);
+                    return _fabricStore.Database.Resolver.Resolve<ISchemaManager>().Schemas.FirstOrDefault(s => s.SchemaName == schemaName);
                 }
-                return _fabricStore.Database.SchemaManager.Schemas;
+                return _fabricStore.Database.Resolver.Resolve<ISchemaManager>().Schemas;
             })));
         }
 
         [HttpPut("{schemaName}")]
         public async Task<JsonResult> UpdateAsync(string schemaName, [FromBody] JObject schemaRaw) {
             return Json(await Task.Run(new Func<object>(() => {
-                _fabricStore.Database.SchemaManager.Update(schemaName, schemaRaw.ToString());
+                _fabricStore.Database.Resolver.Resolve<ISchemaManager>().Update(schemaName, schemaRaw.ToString());
                 return "success";
             })));
         }
