@@ -1,14 +1,12 @@
 ﻿using System;
 
-namespace Fabric.Data
-{
+namespace Fabric.Data {
     [AttributeUsage(AttributeTargets.Property)]
-    public class RelationshipAttribute : System.Attribute
-    {
-        internal Type ChildType { get; set; }
-
+    public class RelationshipAttribute : Attribute {
         public RelationshipAttribute(Type childType) {
             ChildType = childType;
         }
+
+        internal Type ChildType { get; set; }
     }
 }

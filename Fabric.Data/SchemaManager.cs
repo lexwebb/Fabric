@@ -21,10 +21,10 @@ namespace Fabric.Data {
             }
         }
 
+        private string SchemaSubFolderPath => Path.Combine(_database.FullDataBaseRoot, SchemaSubFolderName);
+
         public IDataWriter DataWriter { get; }
         public IDataReader DataReader { get; }
-
-        private string SchemaSubFolderPath => Path.Combine(_database.FullDataBaseRoot, SchemaSubFolderName);
 
         public IEnumerator<DataPageSchema> GetEnumerator() {
             return Schemas.GetEnumerator();
@@ -73,7 +73,8 @@ namespace Fabric.Data {
 
             foreach (var schemaFile in schemaFiles) {
                 var json = DataReader.ReadFile(schemaFile);
-;                Schemas.Add(new DataPageSchema(Path.GetFileNameWithoutExtension(schemaFile), json));
+                ;
+                Schemas.Add(new DataPageSchema(Path.GetFileNameWithoutExtension(schemaFile), json));
             }
         }
     }

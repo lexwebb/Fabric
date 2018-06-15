@@ -22,7 +22,7 @@ namespace Fabric.Data {
         internal DataPageCollection Parent { get; set; }
 
         /// <summary>
-        /// Gets the children.
+        ///     Gets the children.
         /// </summary>
         /// <param name="schemaName">Name of the schema.</param>
         /// <returns></returns>
@@ -31,7 +31,7 @@ namespace Fabric.Data {
         }
 
         /// <summary>
-        /// Gets the child.
+        ///     Gets the child.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="schemaName">Name of the schema.</param>

@@ -2,12 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
-namespace Fabric.Data
-{
+namespace Fabric.Data {
     public class DataPageCollection : IEnumerable<DataPage> {
-        public Dictionary<string, List<string>> GetNames() => _internalNameList;
+        private readonly List<DataPage> _internalList = new List<DataPage>();
+        private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
+
+        internal DataPageCollection(FabricDatabase database, DataPage parent) {
+            Database = database;
+            Parent = parent;
+        }
 
         public string ModifiedTimestamp { get; internal set; }
 
@@ -15,15 +19,36 @@ namespace Fabric.Data
 
         internal FabricDatabase Database { get; set; }
 
-        internal bool Dirty { get; set; } = false;
+        internal bool Dirty { get; set; }
 
-        internal DataPageCollection(FabricDatabase database, DataPage parent) {
-            this.Database = database;
-            this.Parent = parent;
+        /// <summary>
+        ///     Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        ///     An enumerator that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<DataPage> GetEnumerator() {
+            Load();
+            return _internalList.GetEnumerator();
         }
 
         /// <summary>
-        /// Populates from serializer.
+        ///     Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator() {
+            Load();
+            return _internalList.GetEnumerator();
+        }
+
+        public Dictionary<string, List<string>> GetNames() {
+            return _internalNameList;
+        }
+
+        /// <summary>
+        ///     Populates from serializer.
         /// </summary>
         /// <param name="names">The names.</param>
         internal void PopulateFromSerializer(Dictionary<string, List<string>> names) {
@@ -32,33 +57,8 @@ namespace Fabric.Data
             _internalNameList = names ?? new Dictionary<string, List<string>>();
         }
 
-        private List<DataPage> _internalList = new List<DataPage>();
-        private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
-
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>
-        /// An enumerator that can be used to iterate through the collection.
-        /// </returns>
-        public IEnumerator<DataPage> GetEnumerator() {
-            Load();
-            return _internalList.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() {
-            Load();
-            return _internalList.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        ///     Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
         internal void Add(DataPage item) {
@@ -67,7 +67,7 @@ namespace Fabric.Data
             item.Children = new DataPageCollection(Database, Parent);
 
             _internalList.Add(item);
-            
+
             var exists = _internalNameList.TryGetValue(item.SchemaName, out var subList);
 
             if (!exists) {
@@ -77,16 +77,20 @@ namespace Fabric.Data
 
             subList?.Add(item.Name);
 
-            this.Dirty = true;
+            Dirty = true;
             Database.AddChange(ChangeSet.Insert(item));
         }
 
         /// <summary>
-        /// Deletes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        ///     Deletes the first occurrence of a specific object from the
+        ///     <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
         /// <returns>
-        /// true if <paramref name="item">item</paramref> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if <paramref name="item">item</paramref> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+        ///     true if <paramref name="item">item</paramref> was successfully removed from the
+        ///     <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if
+        ///     <paramref name="item">item</paramref> is not found in the original
+        ///     <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
         internal bool Delete(DataPage item) {
             var result = _internalList.Remove(item);
@@ -96,7 +100,7 @@ namespace Fabric.Data
             var result2 = subList?.Remove(item.Name);
 
             if (result && result2.HasValue && result2.Value) {
-                this.Dirty = true;
+                Dirty = true;
                 Database.AddChange(ChangeSet.Delete(item));
             }
 
@@ -104,20 +108,23 @@ namespace Fabric.Data
         }
 
         /// <summary>
-        /// Loads this instance.
+        ///     Loads this instance.
         /// </summary>
         private void Load() {
-            if(Dirty) return;
+            if (Dirty) {
+                return;
+            }
 
             _internalList.Clear();
             foreach (var childGroup in _internalNameList) {
                 foreach (var child in childGroup.Value) {
-                    var childPath = Path.Combine(Path.GetDirectoryName(Utils.GetDataPagePath(Parent)), childGroup.Key, child, "dataPage.json");
+                    var childPath = Path.Combine(Path.GetDirectoryName(Utils.GetDataPagePath(Parent)), childGroup.Key,
+                        child, "dataPage.json");
                     _internalList.Add(Database.LoadPage(childPath));
                 }
             }
 
-            this._internalNameList.Clear();
+            _internalNameList.Clear();
 
             foreach (var dataPage in _internalList) {
                 var name = dataPage.GetType().Name;

@@ -90,7 +90,7 @@ namespace Fabric.Data {
                         var collection = new DataPageCollection(_database, instance as DataPage);
                         var deserializedValue =
                             properties.FirstOrDefault(p =>
-                                string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase))
+                                    string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase))
                                 ?.Value.ToObject<Dictionary<string, List<string>>>();
 
                         type.GetMethod("PopulateFromSerializer", BindingFlags.Instance | BindingFlags.NonPublic)

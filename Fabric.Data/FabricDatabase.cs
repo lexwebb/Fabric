@@ -79,7 +79,7 @@ namespace Fabric.Data {
             else {
                 LoadDatabase();
             }
-            
+
             Resolver.Resolve<ISchemaManager>().LoadSchemas();
 
             Global.Instance.Logger.Info("Finished initialising database");
@@ -90,7 +90,7 @@ namespace Fabric.Data {
         /// </summary>
         private void CreateDatabase() {
             Global.Instance.Logger.Info("Creating database file");
-            
+
             var writer = Resolver.Resolve<IDataWriter>();
 
             writer.WriteFile(DatabaseFilePath);
@@ -109,7 +109,7 @@ namespace Fabric.Data {
             Global.Instance.Logger.Info("Loading database file");
 
             var reader = Resolver.Resolve<IDataReader>();
-            
+
             Root = reader.ReadPage(DatabaseFilePath);
             Root.Parent = new DataPageCollection(this, null);
         }
@@ -122,7 +122,7 @@ namespace Fabric.Data {
         }
 
         /// <summary>
-        /// Saves the changes.
+        ///     Saves the changes.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
         public void SaveChanges() {
@@ -177,8 +177,7 @@ namespace Fabric.Data {
         }
 
         public DataPage LoadPage(string path) {
-            if (!path.StartsWith(DatabaseRoot))
-            {
+            if (!path.StartsWith(DatabaseRoot)) {
                 path = Path.Combine(DatabaseRoot, path);
             }
 

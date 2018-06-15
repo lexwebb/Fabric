@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -16,8 +15,7 @@ namespace Fabric.Data {
         public void WriteFile(string path, string data = null) {
             var stream = File.Exists(path) ? File.Open(path, FileMode.Truncate) : File.Create(path);
 
-            if (data != null)
-            {
+            if (data != null) {
                 var info = new UTF8Encoding(true).GetBytes(data);
                 stream.Write(info, 0, info.Length);
             }
@@ -26,12 +24,12 @@ namespace Fabric.Data {
         }
 
         public void WritePage(DataPage data) {
-            WriteFile(Path.Combine(DatabaseRoot, Utils.GetDataPagePath(data)), JsonConvert.SerializeObject(data, SerializerSettings));
+            WriteFile(Path.Combine(DatabaseRoot, Utils.GetDataPagePath(data)),
+                JsonConvert.SerializeObject(data, SerializerSettings));
         }
 
         public void DeleteFile(string path) {
-            if (!path.StartsWith(DatabaseRoot))
-            {
+            if (!path.StartsWith(DatabaseRoot)) {
                 path = Path.Combine(DatabaseRoot, path);
             }
 
@@ -41,8 +39,7 @@ namespace Fabric.Data {
         }
 
         public void DeleteFolder(string path) {
-            if (!path.StartsWith(DatabaseRoot))
-            {
+            if (!path.StartsWith(DatabaseRoot)) {
                 path = Path.Combine(DatabaseRoot, path);
             }
 

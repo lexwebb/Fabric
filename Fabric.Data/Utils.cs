@@ -105,14 +105,13 @@ namespace Fabric.Data {
                 return "FabricDatabase.json";
             }
 
-            var parts = Utils.FindParentsRecursive(dataPage.Parent.Parent, new List<string>());
+            var parts = FindParentsRecursive(dataPage.Parent.Parent, new List<string>());
             parts.Reverse();
 
-            if (parts[0] == "root")
-            {
+            if (parts[0] == "root") {
                 parts = parts.Skip(1).ToList();
             }
-            
+
             parts.Add(dataPage.SchemaName);
             parts.Add(dataPage.Name);
 
