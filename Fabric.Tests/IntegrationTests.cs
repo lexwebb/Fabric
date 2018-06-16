@@ -65,12 +65,16 @@ namespace Fabric.Tests {
             var database = CreateTestingDb();
 
             database.Root.AddChild("TestItem1", "none", JsonConvert.SerializeObject(new { testProperty1 = 1, testProperty2 = "foo" }));
+            database.Root.AddChild("TestItem2", "none", JsonConvert.SerializeObject(new { testProperty1 = 2, testProperty2 = "bar" }));
 
             Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
+            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
 
             database.Root.DeleteChild("TestItem1", "none");
+            database.Root.GetChild("TestItem2").Delete();
 
             Assert.False(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
+            Assert.False(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
         }
 
         [Fact]

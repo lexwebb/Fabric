@@ -1,13 +1,18 @@
 ﻿<template>
-    <li>
+    <li class="item-row">
         <div class="item-title" @click="toggle">
             <md-icon v-if="!internalOpen">keyboard_arrow_right</md-icon>
             <md-icon v-else>keyboard_arrow_down</md-icon>
             <div class="title-name bold">
                 <b>{{currentModel.name}}</b>
             </div>
+            <a v-if="currentModel.name !== 'root'" class="noselect" @click="editItem" v-on:click.stop>
+                <md-icon class="item_button noselect">edit</md-icon>
+            </a>
+            <a v-if="currentModel.name !== 'root'" class="noselect" @click="deleteItem" v-on:click.stop>
+                <md-icon class="item_button noselect">delete</md-icon>
+            </a>
         </div>
-        <a v-if="currentModel.name !== 'root'" class="edit_button noselect" @click="edit">edit..</a>
         <div v-if="internalOpen" class="item-properties">
             <div v-for="property in nonChildProperties" :key="property.name">
                 {{property.displayName}} :
@@ -111,8 +116,11 @@
                         });
                 }
             },
-            edit() {
+            editItem() {
                 EventBus.$emit('browse-edit', this.currentPath);
+            },
+            deleteItem() {
+                EventBus.$emit('browse-delete', this.currentPath);
             },
         },
     };
@@ -122,33 +130,43 @@
     $color_1: rebeccapurple;
     $color_2: grey;
 
-    .item-title {
-        > * {
-            display: inline;
-            cursor: pointer;
-            position: relative;
+    .item-row {
+        display: flex;
+        flex-direction: column;
+        .item-title {
+            display: flex;
+            flex-direction: row;
+            transition: background-color 0.3s;
+            &:hover {
+                background-color: #eee;
+            }
+            > * {
+                display: inline;
+                cursor: pointer;
+            }
+            .title-name {
+                flex: 1;
+            }
+            .item_button {
+                color: $color_2;
+                text-decoration: none;
+                cursor: pointer;
+                color: lightgray;
+            }
         }
-    }
-    .item-properties {
-        > * {
-            display: block;
-            margin-left: 1.5em;
+        .item-properties {
+            > * {
+                display: block;
+                margin-left: 1.5em;
+            }
+            .child-list-item {
+                padding-left: 1em;
+                border-left: 1px dashed lightgrey;
+            }
+            .null-value {
+                color: $color_1;
+                font-style: oblique;
+            }
         }
-    }
-    .null-value {
-        color: $color_1;
-        font-style: oblique;
-    }
-    .child-list-item {
-        padding-left: 1em;
-        border-left: 1px dashed lightgrey;
-    }
-    .edit_button {
-        float: right;
-        margin-top: -1.5em;
-        margin-right: 0.5em;
-        color: $color_2;
-        text-decoration: none;
-        cursor: pointer;
     }
 </style>

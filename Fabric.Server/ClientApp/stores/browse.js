@@ -72,8 +72,8 @@ const browse = {
             return services.schemas.get(state.currentPage.schemaName).then((data) => {
                 commit('setEditorSchamaJson', data.schemaRaw);
                 commit('setEditorSchamaObj', JSON.parse(data.schemaRaw));
-                commit('setEditorDataJson', state.currentPage.pageData);
-                commit('setEditorDataObj', JSON.parse(state.currentPage.pageData));
+                commit('setEditorDataJson', JSON.stringify(state.currentPage.pageData, null, 2));
+                commit('setEditorDataObj', state.currentPage.pageData);
                 commit('setEditorSchemaLoaded', true);
             });
         },

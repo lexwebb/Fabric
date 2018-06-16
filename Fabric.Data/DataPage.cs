@@ -77,5 +77,12 @@ namespace Fabric.Data {
             Children.Delete(page);
             Parent.ChangeSetHelper.SaveChanges();
         }
+
+        /// <summary>
+        /// Deletes this page.
+        /// </summary>
+        public void Delete() {
+            ParentPage.DeleteChild(Name, SchemaName);
+        }
     }
 }

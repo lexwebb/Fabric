@@ -67,6 +67,9 @@
             },
             save() {
                 this.$store.dispatch('browse/save')
+                    .then(() => {
+                        EventBus.$emit('show-message', 'Saved sucessfully!');
+                    })
                     .catch(() => {
                         EventBus.$emit('show-error', 'Error saving config');
                     });

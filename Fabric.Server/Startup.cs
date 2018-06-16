@@ -22,7 +22,9 @@ namespace Fabric.Server {
         public void ConfigureServices(IServiceCollection services) {
             services.AddFabric(options => {
                 options.DataFolderName =
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+                    Path.Combine(
+                        Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase
+                            .Replace(@"file:///", string.Empty)), "FabricDatabase");
             });
             services.AddMvc(options => { options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter()); })
                 .AddJsonOptions(options => {

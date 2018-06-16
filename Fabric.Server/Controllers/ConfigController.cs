@@ -14,9 +14,9 @@ namespace Fabric.Server.Controllers {
 
         [HttpGet("{*pathInfo}")]
         public async Task<JsonResult> GetAsync(string pathInfo) {
-            return _fabricStore.IsPathCollection(pathInfo) ?
-                Json(await _fabricStore.GetDataPageCollection(pathInfo), _fabricStore.Database.SerializerSettings) :
-                Json(await _fabricStore.GetDataPage(pathInfo), _fabricStore.Database.SerializerSettings);
+            return _fabricStore.IsPathCollection(pathInfo)
+                ? Json(await _fabricStore.GetDataPageCollection(pathInfo), _fabricStore.Database.SerializerSettings)
+                : Json(await _fabricStore.GetDataPage(pathInfo), _fabricStore.Database.SerializerSettings);
         }
 
         [HttpPost("{*pathInfo}")]
@@ -29,10 +29,20 @@ namespace Fabric.Server.Controllers {
             return Json("Ok");
         }
 
+        [HttpDelete("{*pathInfo}")]
+        public async Task<JsonResult> DeleteAsync(string pathInfo) {
+            var page = await _fabricStore.GetDataPage(pathInfo);
+            page.Delete();
+
+            return Json("Ok");
+        }
+
         private string GetQueryValue(string key) {
             var querySwitches = Request.Query;
 
-            if (querySwitches.ContainsKey(key)) return querySwitches[key];
+            if (querySwitches.ContainsKey(key)) {
+                return querySwitches[key];
+            }
 
             return null;
         }
