@@ -9,18 +9,18 @@ using Unity;
 
 namespace Fabric.Data {
     public class DataPageSerializer : JsonConverter {
-        private readonly FabricDatabase _database;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DataPageSerializer" /> class.
+        /// Initializes a new instance of the <see cref="DataPageSerializer"/> class.
         /// </summary>
-        /// <param name="database">The database.</param>
+        /// <param name="resolver">The resolver.</param>
         /// <param name="partialChildPageSerialization">if set to <c>true</c> [partial child page serialization].</param>
-        public DataPageSerializer(FabricDatabase database, bool partialChildPageSerialization = true) {
+        public DataPageSerializer(UnityContainer resolver, bool partialChildPageSerialization = true) {
+            Resolver = resolver;
             PartialChildPageSerialization = partialChildPageSerialization;
-            _database = database;
         }
 
+        internal UnityContainer Resolver { get; }
         public bool PartialChildPageSerialization { get; set; }
 
         /// <summary>
@@ -75,7 +75,6 @@ namespace Fabric.Data {
         /// </returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer) {
-
             if (!PartialChildPageSerialization) {
                 return serializer.Deserialize(reader, objectType);
             }
@@ -93,7 +92,7 @@ namespace Fabric.Data {
 
                 if (type == typeof(DataPageCollection)) {
                     var collection = new DataPageCollection(instance as DataPage,
-                        _database.Resolver.Resolve<IChangeSetHelper>(), _database.Resolver.Resolve<IDataReader>());
+                        Resolver.Resolve<IChangeSetHelper>(), Resolver.Resolve<IDataReader>());
 
                     var deserializedValue =
                         properties.FirstOrDefault(p =>
@@ -119,7 +118,6 @@ namespace Fabric.Data {
             }
 
             return instance;
-
         }
 
         /// <summary>

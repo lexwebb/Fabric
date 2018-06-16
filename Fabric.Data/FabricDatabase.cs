@@ -31,7 +31,7 @@ namespace Fabric.Data {
 
             SerializerSettings = new JsonSerializerSettings {
                 Converters = new List<JsonConverter> {
-                    new DataPageSerializer(this)
+                    new DataPageSerializer(Resolver)
                 },
                 Formatting = Formatting.Indented,
                 ContractResolver =

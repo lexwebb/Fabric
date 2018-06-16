@@ -9,8 +9,7 @@ namespace Fabric.Tests {
         private JsonSerializerSettings _basicSerializerSettings;
 
         private readonly string _basicRootPageJson =
-                "{\"Name\":\"root\",\"SchemaName\":null,\"PageData\":null,\"Children\":{\"none\":[\"TestItem1\",\"TestItem2\"]}}"
-            ;
+                "{\"Name\":\"root\",\"SchemaName\":null,\"PageData\":null,\"Children\":{\"none\":[\"TestItem1\",\"TestItem2\"]}}";
 
         private FabricDatabase CreateTestingDb(bool deleteOld = true) {
             var databaseDir = Path.Combine(Directory.GetCurrentDirectory(), "TestingDB");
@@ -27,7 +26,7 @@ namespace Fabric.Tests {
 
             _basicSerializerSettings = new JsonSerializerSettings {
                 Converters = new List<JsonConverter> {
-                    new DataPageSerializer(database)
+                    new DataPageSerializer(database.Resolver)
                 }
             };
 
