@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 using Fabric.Core.Asp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,13 +20,16 @@ namespace Fabric.Server {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            services.AddFabric();
-            services.AddMvc(options => {
-                options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
-            }).AddJsonOptions(options => {
-                options.SerializerSettings.ContractResolver =
-                    new CamelCasePropertyNamesContractResolver();
-            });;
+            services.AddFabric(options => {
+                options.DataFolderName =
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+            });
+            services.AddMvc(options => { options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter()); })
+                .AddJsonOptions(options => {
+                    options.SerializerSettings.ContractResolver =
+                        new CamelCasePropertyNamesContractResolver();
+                });
+            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,7 +39,8 @@ namespace Fabric.Server {
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions {
                     HotModuleReplacement = true
                 });
-            } else {
+            }
+            else {
                 app.UseExceptionHandler("/Home/Error");
             }
 
@@ -46,8 +48,8 @@ namespace Fabric.Server {
 
             app.UseMvc(routes => {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
             });
 
             // this serves my index.html from the wwwroot folder when 

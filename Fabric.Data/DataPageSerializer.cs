@@ -13,14 +13,11 @@ namespace Fabric.Data {
         ///     Initializes a new instance of the <see cref="DataPageSerializer" /> class.
         /// </summary>
         /// <param name="resolver">The resolver.</param>
-        /// <param name="partialChildPageSerialization">if set to <c>true</c> [partial child page serialization].</param>
-        public DataPageSerializer(UnityContainer resolver, bool partialChildPageSerialization = true) {
+        public DataPageSerializer(UnityContainer resolver) {
             Resolver = resolver;
-            PartialChildPageSerialization = partialChildPageSerialization;
         }
 
         internal UnityContainer Resolver { get; }
-        public bool PartialChildPageSerialization { get; set; }
 
         /// <summary>
         ///     Writes the JSON representation of the object.
@@ -36,30 +33,30 @@ namespace Fabric.Data {
                 return;
             }
 
-            if (PartialChildPageSerialization) {
-                writer.WriteStartObject();
-                foreach (var property in value.GetType().GetProperties()) {
-                    var type = property.PropertyType;
-                    var propertyValue = property.GetValue(value);
+            writer.WriteStartObject();
+            foreach (var property in value.GetType().GetProperties()) {
+                var type = property.PropertyType;
+                var propertyValue = property.GetValue(value);
 
-                    var nameToWrite = property.Name;
-                    var valuetoWrite = propertyValue;
+                var nameToWrite = property.Name;
+                var valuetoWrite = propertyValue;
 
-                    if (type == typeof(DataPageCollection)
-                        && propertyValue != null) {
-                        nameToWrite = "Children";
-                        valuetoWrite = type.GetMethod("GetNames")?.Invoke(propertyValue, null);
-                    }
-
-                    writer.WritePropertyName(FirstLetterToLowerCase(nameToWrite));
-                    serializer.Serialize(writer, valuetoWrite);
+                if (type == typeof(DataPageCollection)
+                    && propertyValue != null) {
+                    nameToWrite = "Children";
+                    valuetoWrite = type.GetMethod("GetNames")?.Invoke(propertyValue, null);
                 }
 
-                writer.WriteEndObject();
+                if (string.Equals(nameToWrite, "pageData", StringComparison.InvariantCultureIgnoreCase) &&
+                    propertyValue != null) {
+                    valuetoWrite = JsonConvert.DeserializeObject((string) propertyValue);
+                }
+
+                writer.WritePropertyName(FirstLetterToLowerCase(nameToWrite));
+                serializer.Serialize(writer, valuetoWrite);
             }
-            else {
-                serializer.Serialize(writer, value);
-            }
+
+            writer.WriteEndObject();
         }
 
         /// <summary>
@@ -74,10 +71,6 @@ namespace Fabric.Data {
         /// </returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer) {
-            if (!PartialChildPageSerialization) {
-                return serializer.Deserialize(reader, objectType);
-            }
-
             const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
             var culture = CultureInfo.InvariantCulture;
             var instance = existingValue ?? Activator.CreateInstance(objectType, flags, null, null, culture);
@@ -90,7 +83,8 @@ namespace Fabric.Data {
                 object value;
 
                 if (type == typeof(DataPageCollection)) {
-                    var collection = new DataPageCollection(instance as DataPage, Resolver.Resolve<IChangeSetHelper>(), Resolver.Resolve<IDataReader>());
+                    var collection = new DataPageCollection(instance as DataPage, Resolver.Resolve<IChangeSetHelper>(),
+                        Resolver.Resolve<IDataReader>());
 
                     var deserializedValue =
                         properties.FirstOrDefault(p =>
@@ -100,6 +94,12 @@ namespace Fabric.Data {
                     collection.PopulateFromSerializer(deserializedValue);
 
                     value = collection;
+                }
+                else if (string.Equals(property.Name, "pageData", StringComparison.InvariantCultureIgnoreCase)) {
+                    var prop = properties.FirstOrDefault(p =>
+                        string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase));
+
+                    value = prop?.Value.ToString();
                 }
                 else {
                     var prop = properties.FirstOrDefault(p =>
