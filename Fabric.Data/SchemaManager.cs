@@ -8,12 +8,10 @@ namespace Fabric.Data {
     public class SchemaManager : ISchemaManager {
         private const string SchemaSubFolderName = "schemas";
 
-        private readonly FabricDatabase _database;
-
         public SchemaManager(FabricDatabase database, IDataWriter dataWriter, IDataReader dataReader) {
             DataWriter = dataWriter;
             DataReader = dataReader;
-            _database = database;
+            SchemaSubFolderPath = Path.Combine(database.FullDataBaseRoot, SchemaSubFolderName);
             Schemas = new List<DataPageSchema>();
 
             if (!Directory.Exists(SchemaSubFolderPath)) {
@@ -21,7 +19,7 @@ namespace Fabric.Data {
             }
         }
 
-        private string SchemaSubFolderPath => Path.Combine(_database.FullDataBaseRoot, SchemaSubFolderName);
+        private string SchemaSubFolderPath { get; }
 
         public IDataWriter DataWriter { get; }
         public IDataReader DataReader { get; }

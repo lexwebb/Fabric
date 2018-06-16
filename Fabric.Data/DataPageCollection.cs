@@ -8,6 +8,7 @@ namespace Fabric.Data {
         private readonly List<DataPage> _internalList = new List<DataPage>();
         private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
 
+        // TODO remove hard reference to database - ChangeSetHelper should deal with adding and holding changes
         internal DataPageCollection(FabricDatabase database, DataPage parent) {
             Database = database;
             Parent = parent;

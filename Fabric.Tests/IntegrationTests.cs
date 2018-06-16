@@ -1,22 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Fabric.Data;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace Fabric.Tests {
-    public class DataTests {
-        private static string GetFileContents(string sampleFile) {
-            var asm = Assembly.GetExecutingAssembly();
-            var resource = $"Fabric.Tests.TestAssets.{sampleFile}";
-            using (var stream = asm.GetManifestResourceStream(resource)) {
-                if (stream == null) return string.Empty;
-                var reader = new StreamReader(stream);
-                return reader.ReadToEnd();
-            }
-        }
-
+    public class IntegrationTests {
         private JsonSerializerSettings _basicSerializerSettings;
 
         private readonly string _basicRootPageJson =
@@ -43,15 +32,6 @@ namespace Fabric.Tests {
             };
 
             return database;
-        }
-
-        [Fact]
-        public void JsonPropertyRemover_RemovesProperty_Correctly() {
-            var input = GetFileContents("RecursivePropertyRemove_Input.json");
-            var expected = GetFileContents("RecursivePropertyRemove_Result.json");
-            var actual = JsonUtils.RemoveProperty(input, "ModifiedTimestamp", true);
-
-            Assert.Equal(JsonUtils.Uglify(expected), JsonUtils.Uglify(actual), true);
         }
 
         [Fact]
