@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Fabric.Data {
+﻿namespace Fabric.Data {
     public interface IChangeSetHelper {
         /// <summary>
         ///     Gets the data writer.

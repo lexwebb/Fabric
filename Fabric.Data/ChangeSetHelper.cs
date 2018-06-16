@@ -19,18 +19,33 @@ namespace Fabric.Data {
 
         public IDataReader DataReader { get; }
 
+        /// <summary>
+        ///     Adds the change.
+        /// </summary>
+        /// <param name="change">The change.</param>
         public void AddChange(ChangeSet change) {
             lock (_changeSetLock) {
                 Changes.Enqueue(change);
             }
         }
 
+        /// <summary>
+        ///     Updates the page in the database.
+        /// </summary>
+        /// <param name="changesTimestamp">The changes timestamp.</param>
+        /// <param name="changeSet">The change set.</param>
         public void Update(string changesTimestamp, ChangeSet changeSet) {
             changeSet.ChangedPage.ModifiedTimestamp = changesTimestamp;
 
             DataWriter.WritePage(changeSet.ChangedPage);
         }
 
+        /// <summary>
+        ///     Deletes the page from the database.
+        /// </summary>
+        /// <param name="changesTimestamp">The changes timestamp.</param>
+        /// <param name="changeSet">The change set.</param>
+        /// <exception cref="InvalidOperationException">Data page does not exist</exception>
         public void Delete(string changesTimestamp, ChangeSet changeSet) {
             var filePath = Utils.GetDataPagePath(changeSet.ChangedPage);
             var folderPath = Path.GetDirectoryName(filePath);
@@ -43,6 +58,11 @@ namespace Fabric.Data {
             DataWriter.WritePage(changeSet.ChangedParentPage);
         }
 
+        /// <summary>
+        ///     Inserts the page into the database.
+        /// </summary>
+        /// <param name="changesTimestamp">The changes timestamp.</param>
+        /// <param name="changeSet">The change set.</param>
         public void Insert(string changesTimestamp, ChangeSet changeSet) {
             var dataPage = changeSet.ChangedPage;
 

@@ -12,6 +12,11 @@ namespace Fabric.Data {
         public JsonSerializerSettings SerializerSettings { get; }
         public string DatabaseRoot { get; }
 
+        /// <summary>
+        ///     Writes the file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="data">The data.</param>
         public void WriteFile(string path, string data = null) {
             CreateFolder(Path.GetDirectoryName(path));
             var stream = File.Exists(path) ? File.Open(path, FileMode.Truncate) : File.Create(path);
@@ -24,11 +29,19 @@ namespace Fabric.Data {
             stream.Close();
         }
 
+        /// <summary>
+        ///     Writes the page.
+        /// </summary>
+        /// <param name="data">The data.</param>
         public void WritePage(DataPage data) {
             var path = Utils.GetDataPagePath(data);
             WriteFile(Path.Combine(DatabaseRoot, path), JsonConvert.SerializeObject(data, SerializerSettings));
         }
 
+        /// <summary>
+        ///     Deletes the file.
+        /// </summary>
+        /// <param name="path">The path.</param>
         public void DeleteFile(string path) {
             if (!path.StartsWith(DatabaseRoot)) {
                 path = Path.Combine(DatabaseRoot, path);
@@ -39,6 +52,10 @@ namespace Fabric.Data {
             }
         }
 
+        /// <summary>
+        ///     Deletes the folder.
+        /// </summary>
+        /// <param name="path">The path.</param>
         public void DeleteFolder(string path) {
             if (!path.StartsWith(DatabaseRoot)) {
                 path = Path.Combine(DatabaseRoot, path);
@@ -49,6 +66,10 @@ namespace Fabric.Data {
             }
         }
 
+        /// <summary>
+        ///     Creates the folder.
+        /// </summary>
+        /// <param name="path">The path.</param>
         public void CreateFolder(string path) {
             if (!Directory.Exists(path) && path != string.Empty) {
                 Directory.CreateDirectory(path);

@@ -2,14 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Unity;
 
 namespace Fabric.Data {
     public class DataPageCollection : IEnumerable<DataPage> {
         private readonly List<DataPage> _internalList = new List<DataPage>();
         private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
 
-        // TODO remove hard reference to database - ChangeSetHelper should deal with adding and holding changes
         internal DataPageCollection(DataPage parent, IChangeSetHelper changeSetHelper, IDataReader dataReader) {
             ChangeSetHelper = changeSetHelper;
             DataReader = dataReader;
@@ -48,6 +46,10 @@ namespace Fabric.Data {
             return _internalList.GetEnumerator();
         }
 
+        /// <summary>
+        ///     Gets the names.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, List<string>> GetNames() {
             return _internalNameList;
         }

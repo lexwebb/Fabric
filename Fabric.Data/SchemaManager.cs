@@ -24,16 +24,34 @@ namespace Fabric.Data {
         public IDataWriter DataWriter { get; }
         public IDataReader DataReader { get; }
 
+        /// <summary>
+        ///     Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>
+        ///     An enumerator that can be used to iterate through the collection.
+        /// </returns>
         public IEnumerator<DataPageSchema> GetEnumerator() {
             return Schemas.GetEnumerator();
         }
 
+        /// <summary>
+        ///     Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
+        /// </returns>
         IEnumerator IEnumerable.GetEnumerator() {
             return Schemas.GetEnumerator();
         }
 
         public List<DataPageSchema> Schemas { get; }
 
+        /// <summary>
+        ///     Adds the specified schema.
+        /// </summary>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <param name="schemaRawJson">The schema raw json.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Add(string schemaName, string schemaRawJson) {
             if (Schemas.Any(s => s.SchemaName == schemaName)) {
                 throw new InvalidOperationException(
@@ -45,6 +63,12 @@ namespace Fabric.Data {
                 JsonUtils.Prettify(schemaRawJson));
         }
 
+        /// <summary>
+        ///     Updates the specified schema.
+        /// </summary>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <param name="schemaRawJson">The schema raw json.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Update(string schemaName, string schemaRawJson) {
             if (Schemas.All(s => s.SchemaName != schemaName)) {
                 throw new InvalidOperationException(
@@ -56,6 +80,11 @@ namespace Fabric.Data {
                 JsonUtils.Prettify(schemaRawJson));
         }
 
+        /// <summary>
+        ///     Deletes the specified schema.
+        /// </summary>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <exception cref="InvalidOperationException"></exception>
         public void Delete(string schemaName) {
             if (Schemas.All(s => s.SchemaName != schemaName)) {
                 throw new InvalidOperationException(
@@ -66,6 +95,9 @@ namespace Fabric.Data {
             DataWriter.DeleteFile(Path.Combine(SchemaSubFolderPath, $"{schemaName}.json"));
         }
 
+        /// <summary>
+        ///     Loads the schemas.
+        /// </summary>
         public void LoadSchemas() {
             var schemaFiles = Directory.GetFiles(SchemaSubFolderPath);
 

@@ -9,9 +9,8 @@ using Unity;
 
 namespace Fabric.Data {
     public class DataPageSerializer : JsonConverter {
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataPageSerializer"/> class.
+        ///     Initializes a new instance of the <see cref="DataPageSerializer" /> class.
         /// </summary>
         /// <param name="resolver">The resolver.</param>
         /// <param name="partialChildPageSerialization">if set to <c>true</c> [partial child page serialization].</param>

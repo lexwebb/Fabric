@@ -43,11 +43,20 @@ namespace Fabric.Data {
             return GetChildren(schemaName).FirstOrDefault(c => c.Name == name) ?? throw new ItemNotFoundException(name);
         }
 
+        /// <summary>
+        ///     Saves the changes.
+        /// </summary>
         public void SaveChanges() {
             Parent.ChangeSetHelper.AddChange(ChangeSet.Update(this));
             Parent.ChangeSetHelper.SaveChanges();
         }
 
+        /// <summary>
+        ///     Adds the child.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <param name="data">The data.</param>
         public void AddChild(string name, string schemaName, string data) {
             var page = new DataPage(name) {
                 SchemaName = schemaName,
@@ -58,6 +67,11 @@ namespace Fabric.Data {
             Parent.ChangeSetHelper.SaveChanges();
         }
 
+        /// <summary>
+        ///     Deletes the child.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="schemaName">Name of the schema.</param>
         public void DeleteChild(string name, string schemaName) {
             var page = Children.FirstOrDefault(c => c.Name == name && c.SchemaName == schemaName);
             Children.Delete(page);

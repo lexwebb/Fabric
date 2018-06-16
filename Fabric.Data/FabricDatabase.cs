@@ -40,25 +40,33 @@ namespace Fabric.Data {
 
             Resolver.RegisterInstance(SerializerSettings);
 
-            if (dataWriter != null)
+            if (dataWriter != null) {
                 Resolver.RegisterInstance(dataWriter);
-            else
+            }
+            else {
                 Resolver.RegisterSingleton<IDataWriter, DataWriter>();
+            }
 
-            if (dataReader != null)
+            if (dataReader != null) {
                 Resolver.RegisterInstance(dataReader);
-            else
+            }
+            else {
                 Resolver.RegisterSingleton<IDataReader, DataReader>();
+            }
 
-            if (changeSetHelper != null)
+            if (changeSetHelper != null) {
                 Resolver.RegisterInstance(changeSetHelper);
-            else
+            }
+            else {
                 Resolver.RegisterSingleton<IChangeSetHelper, ChangeSetHelper>();
+            }
 
-            if (schemaManager != null)
+            if (schemaManager != null) {
                 Resolver.RegisterInstance(schemaManager);
-            else
+            }
+            else {
                 Resolver.RegisterSingleton<ISchemaManager, SchemaManager>();
+            }
         }
 
         public UnityContainer Resolver { get; }
@@ -126,7 +134,7 @@ namespace Fabric.Data {
         }
 
         /// <summary>
-        /// Loads the database.
+        ///     Loads the database.
         /// </summary>
         private void LoadDatabase() {
             Global.Instance.Logger.Info("Loading database file");
@@ -146,18 +154,18 @@ namespace Fabric.Data {
         }
 
         /// <summary>
-        /// Determines whether [is path collection] [the specified path].
+        ///     Determines whether [is path collection] [the specified path].
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>
-        ///   <c>true</c> if [is path collection] [the specified path]; otherwise, <c>false</c>.
+        ///     <c>true</c> if [is path collection] [the specified path]; otherwise, <c>false</c>.
         /// </returns>
         public bool IsPathCollection(string path) {
             return Utils.IsPathCollection(path);
         }
 
         /// <summary>
-        /// Finds the child page.
+        ///     Finds the child page.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns></returns>
@@ -166,7 +174,7 @@ namespace Fabric.Data {
         }
 
         /// <summary>
-        /// Finds the child collection.
+        ///     Finds the child collection.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns></returns>
