@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Fabric.Logging;
 using Newtonsoft.Json;
@@ -14,7 +13,8 @@ namespace Fabric.Data {
         public const string DataPageFileName = "dataPage.json";
         public const string RootPageName = "root";
 
-        public FabricDatabase(string databaseRoot) {
+        public FabricDatabase(string databaseRoot, IDataWriter dataWriter = null, IDataReader dataReader = null,
+            IChangeSetHelper changeSetHelper = null, ISchemaManager schemaManager = null) {
             DatabaseRoot = databaseRoot;
 
             if (Path.IsPathRooted(DatabaseRoot)) {
@@ -39,10 +39,26 @@ namespace Fabric.Data {
             };
 
             Resolver.RegisterInstance(SerializerSettings);
-            Resolver.RegisterSingleton<IDataWriter, DataWriter>();
-            Resolver.RegisterSingleton<IDataReader, DataReader>();
-            Resolver.RegisterSingleton<IChangeSetHelper, ChangeSetHelper>();
-            Resolver.RegisterSingleton<ISchemaManager, SchemaManager>();
+
+            if (dataWriter != null)
+                Resolver.RegisterInstance(dataWriter);
+            else
+                Resolver.RegisterSingleton<IDataWriter, DataWriter>();
+
+            if (dataReader != null)
+                Resolver.RegisterInstance(dataReader);
+            else
+                Resolver.RegisterSingleton<IDataReader, DataReader>();
+
+            if (changeSetHelper != null)
+                Resolver.RegisterInstance(changeSetHelper);
+            else
+                Resolver.RegisterSingleton<IChangeSetHelper, ChangeSetHelper>();
+
+            if (schemaManager != null)
+                Resolver.RegisterInstance(schemaManager);
+            else
+                Resolver.RegisterSingleton<ISchemaManager, SchemaManager>();
         }
 
         public UnityContainer Resolver { get; }
@@ -109,6 +125,9 @@ namespace Fabric.Data {
             writer.WritePage(Root);
         }
 
+        /// <summary>
+        /// Loads the database.
+        /// </summary>
         private void LoadDatabase() {
             Global.Instance.Logger.Info("Loading database file");
 
@@ -126,14 +145,31 @@ namespace Fabric.Data {
             SeedDatabase?.Invoke(this);
         }
 
+        /// <summary>
+        /// Determines whether [is path collection] [the specified path].
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>
+        ///   <c>true</c> if [is path collection] [the specified path]; otherwise, <c>false</c>.
+        /// </returns>
         public bool IsPathCollection(string path) {
             return Utils.IsPathCollection(path);
         }
 
+        /// <summary>
+        /// Finds the child page.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
         public Task<DataPage> FindChildPage(string path) {
             return Utils.FindChildPage(Root, path);
         }
 
+        /// <summary>
+        /// Finds the child collection.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
         public Task<IEnumerable<DataPage>> FindChildCollection(string path) {
             return Utils.FindChildCollection(Root, path);
         }
