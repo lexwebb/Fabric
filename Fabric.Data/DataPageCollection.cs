@@ -122,10 +122,13 @@ namespace Fabric.Data {
                 return;
             }
 
+            var path = Path.GetDirectoryName(Utils.GetDataPagePath(Parent));
+
             _internalList.Clear();
             foreach (var childGroup in _internalNameList) {
                 foreach (var child in childGroup.Value) {
-                    var childPath = Path.Combine(Path.GetDirectoryName(Utils.GetDataPagePath(Parent)), childGroup.Key,
+                    var childPath = Path.Combine(
+                        path ?? throw new InvalidOperationException("Could not find colleciton path"), childGroup.Key,
                         child, FabricDatabase.DataPageFileName);
 
                     _internalList.Add(DataReader.ReadPage(childPath));

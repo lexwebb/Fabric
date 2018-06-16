@@ -103,7 +103,6 @@ namespace Fabric.Data {
 
             foreach (var schemaFile in schemaFiles) {
                 var json = DataReader.ReadFile(schemaFile);
-                ;
                 Schemas.Add(new DataPageSchema(Path.GetFileNameWithoutExtension(schemaFile), json));
             }
         }

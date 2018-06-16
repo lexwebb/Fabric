@@ -48,7 +48,7 @@ namespace Fabric.Data {
                     if (type == typeof(DataPageCollection)
                         && propertyValue != null) {
                         nameToWrite = "Children";
-                        valuetoWrite = type.GetMethod("GetNames").Invoke(propertyValue, null);
+                        valuetoWrite = type.GetMethod("GetNames")?.Invoke(propertyValue, null);
                     }
 
                     writer.WritePropertyName(FirstLetterToLowerCase(nameToWrite));
@@ -87,11 +87,10 @@ namespace Fabric.Data {
 
             foreach (var property in objectType.GetProperties()) {
                 var type = property.PropertyType;
-                object value = null;
+                object value;
 
                 if (type == typeof(DataPageCollection)) {
-                    var collection = new DataPageCollection(instance as DataPage,
-                        Resolver.Resolve<IChangeSetHelper>(), Resolver.Resolve<IDataReader>());
+                    var collection = new DataPageCollection(instance as DataPage, Resolver.Resolve<IChangeSetHelper>(), Resolver.Resolve<IDataReader>());
 
                     var deserializedValue =
                         properties.FirstOrDefault(p =>
