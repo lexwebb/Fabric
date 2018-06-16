@@ -10,6 +10,10 @@ using Unity;
 
 namespace Fabric.Data {
     public class FabricDatabase {
+        public const string DatabaseFileName = "FabricDatabase.json";
+        public const string DataPageFileName = "dataPage.json";
+        public const string RootPageName = "root";
+
         public FabricDatabase(string databaseRoot) {
             DatabaseRoot = databaseRoot;
 
@@ -49,7 +53,7 @@ namespace Fabric.Data {
 
         public string FullDataBaseRoot { get; }
 
-        public string DatabaseFilePath => Path.Combine(FullDataBaseRoot, "FabricDatabase.json");
+        public string DatabaseFilePath => Path.Combine(FullDataBaseRoot, DatabaseFileName);
 
         public Action<FabricDatabase> SeedDatabase { get; set; }
 
@@ -95,7 +99,7 @@ namespace Fabric.Data {
 
             writer.WriteFile(DatabaseFilePath);
 
-            Root = new DataPage("root") {
+            Root = new DataPage(RootPageName) {
                 ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds()),
                 Parent = new DataPageCollection(this, null)
             };
@@ -135,7 +139,7 @@ namespace Fabric.Data {
                 var pathParts = Utils.FindParentsRecursive(changeSet.ChangedPage.Parent.Parent, new List<string>());
                 pathParts.Reverse();
 
-                if (pathParts[0] == "root") {
+                if (pathParts[0] == RootPageName) {
                     pathParts = pathParts.Skip(1).ToList();
                 }
 

@@ -101,14 +101,14 @@ namespace Fabric.Data {
         }
 
         internal static string GetDataPagePath(DataPage dataPage) {
-            if (dataPage.Name == "root" && dataPage.Parent.Parent == null) {
-                return "FabricDatabase.json";
+            if (dataPage.Name == FabricDatabase.RootPageName && dataPage.Parent.Parent == null) {
+                return FabricDatabase.DatabaseFileName;
             }
 
             var parts = FindParentsRecursive(dataPage.Parent.Parent, new List<string>());
             parts.Reverse();
 
-            if (parts[0] == "root") {
+            if (parts[0] == FabricDatabase.RootPageName) {
                 parts = parts.Skip(1).ToList();
             }
 
@@ -117,7 +117,7 @@ namespace Fabric.Data {
 
             var dirPath = Path.Combine(parts.ToArray());
 
-            return Path.Combine(dirPath, "dataPage.json");
+            return Path.Combine(dirPath, FabricDatabase.DataPageFileName);
         }
     }
 }

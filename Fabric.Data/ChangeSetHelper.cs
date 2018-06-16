@@ -48,7 +48,7 @@ namespace Fabric.Data {
                 DataWriter.CreateFolder(pageFolderPath);
             }
 
-            var filePath = Path.Combine(pageFolderPath, "dataPage.json");
+            var filePath = Path.Combine(pageFolderPath, FabricDatabase.DataPageFileName);
 
             if (!DataReader.FileExists(filePath)) {
                 DataWriter.WriteFile(filePath);

@@ -119,7 +119,7 @@ namespace Fabric.Data {
             foreach (var childGroup in _internalNameList) {
                 foreach (var child in childGroup.Value) {
                     var childPath = Path.Combine(Path.GetDirectoryName(Utils.GetDataPagePath(Parent)), childGroup.Key,
-                        child, "dataPage.json");
+                        child, FabricDatabase.DataPageFileName);
                     _internalList.Add(Database.LoadPage(childPath));
                 }
             }
