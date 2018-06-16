@@ -22,7 +22,7 @@ namespace Fabric.Data {
                 }
 
                 partsList.Add(parent.Name);
-                parent = parent.Parent.Parent;
+                parent = parent.ParentPage;
             }
         }
 
@@ -101,11 +101,11 @@ namespace Fabric.Data {
         }
 
         internal static string GetDataPagePath(DataPage dataPage) {
-            if (dataPage.Name == FabricDatabase.RootPageName && dataPage.Parent.Parent == null) {
+            if (dataPage.Name == FabricDatabase.RootPageName && dataPage.ParentPage == null) {
                 return FabricDatabase.DatabaseFileName;
             }
 
-            var parts = FindParentsRecursive(dataPage.Parent.Parent, new List<string>());
+            var parts = FindParentsRecursive(dataPage.ParentPage, new List<string>());
             parts.Reverse();
 
             if (parts[0] == FabricDatabase.RootPageName) {

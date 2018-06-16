@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Unity;
 
 namespace Fabric.Data {
     public class DataPageSerializer : JsonConverter {
@@ -74,48 +75,51 @@ namespace Fabric.Data {
         /// </returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer) {
-            if (PartialChildPageSerialization) {
-                const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
-                var culture = CultureInfo.InvariantCulture;
-                var instance = existingValue ?? Activator.CreateInstance(objectType, flags, null, null, culture);
 
-                var jsonObject = JObject.Load(reader);
-                var properties = jsonObject.Properties().ToList();
-
-                foreach (var property in objectType.GetProperties()) {
-                    var type = property.PropertyType;
-                    object value = null;
-
-                    if (type == typeof(DataPageCollection)) {
-                        var collection = new DataPageCollection(_database, instance as DataPage);
-                        var deserializedValue =
-                            properties.FirstOrDefault(p =>
-                                    string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase))
-                                ?.Value.ToObject<Dictionary<string, List<string>>>();
-
-                        type.GetMethod("PopulateFromSerializer", BindingFlags.Instance | BindingFlags.NonPublic)
-                            .Invoke(collection, new object[] {deserializedValue});
-
-                        value = collection;
-                    }
-                    else {
-                        var prop = properties.FirstOrDefault(p =>
-                            string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase));
-                        try {
-                            value = prop?.ToObject(type);
-                        }
-                        catch {
-                            value = null;
-                        }
-                    }
-
-                    property.SetValue(instance, value);
-                }
-
-                return instance;
+            if (!PartialChildPageSerialization) {
+                return serializer.Deserialize(reader, objectType);
             }
 
-            return serializer.Deserialize(reader, objectType);
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var culture = CultureInfo.InvariantCulture;
+            var instance = existingValue ?? Activator.CreateInstance(objectType, flags, null, null, culture);
+
+            var jsonObject = JObject.Load(reader);
+            var properties = jsonObject.Properties().ToList();
+
+            foreach (var property in objectType.GetProperties()) {
+                var type = property.PropertyType;
+                object value = null;
+
+                if (type == typeof(DataPageCollection)) {
+                    var collection = new DataPageCollection(instance as DataPage,
+                        _database.Resolver.Resolve<IChangeSetHelper>(), _database.Resolver.Resolve<IDataReader>());
+
+                    var deserializedValue =
+                        properties.FirstOrDefault(p =>
+                                string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase))
+                            ?.Value.ToObject<Dictionary<string, List<string>>>();
+
+                    collection.PopulateFromSerializer(deserializedValue);
+
+                    value = collection;
+                }
+                else {
+                    var prop = properties.FirstOrDefault(p =>
+                        string.Equals(p.Name, property.Name, StringComparison.CurrentCultureIgnoreCase));
+                    try {
+                        value = prop?.ToObject(type);
+                    }
+                    catch {
+                        value = null;
+                    }
+                }
+
+                property.SetValue(instance, value);
+            }
+
+            return instance;
+
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity;
 
 namespace Fabric.Data {
     public class DataPageCollection : IEnumerable<DataPage> {
@@ -9,8 +10,9 @@ namespace Fabric.Data {
         private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
 
         // TODO remove hard reference to database - ChangeSetHelper should deal with adding and holding changes
-        internal DataPageCollection(FabricDatabase database, DataPage parent) {
-            Database = database;
+        internal DataPageCollection(DataPage parent, IChangeSetHelper changeSetHelper, IDataReader dataReader) {
+            ChangeSetHelper = changeSetHelper;
+            DataReader = dataReader;
             Parent = parent;
         }
 
@@ -18,7 +20,9 @@ namespace Fabric.Data {
 
         internal DataPage Parent { get; set; }
 
-        internal FabricDatabase Database { get; set; }
+        internal IChangeSetHelper ChangeSetHelper { get; set; }
+
+        internal IDataReader DataReader { get; set; }
 
         internal bool Dirty { get; set; }
 
@@ -65,7 +69,7 @@ namespace Fabric.Data {
         internal void Add(DataPage item) {
             item.Parent = this;
             DateTime.Now.GetTimestamp();
-            item.Children = new DataPageCollection(Database, Parent);
+            item.Children = new DataPageCollection(Parent, ChangeSetHelper, DataReader);
 
             _internalList.Add(item);
 
@@ -79,7 +83,7 @@ namespace Fabric.Data {
             subList?.Add(item.Name);
 
             Dirty = true;
-            Database.AddChange(ChangeSet.Insert(item));
+            ChangeSetHelper.AddChange(ChangeSet.Insert(item));
         }
 
         /// <summary>
@@ -102,7 +106,7 @@ namespace Fabric.Data {
 
             if (result && result2.HasValue && result2.Value) {
                 Dirty = true;
-                Database.AddChange(ChangeSet.Delete(item));
+                ChangeSetHelper.AddChange(ChangeSet.Delete(item));
             }
 
             return result && result2.HasValue && result2.Value;
@@ -121,7 +125,8 @@ namespace Fabric.Data {
                 foreach (var child in childGroup.Value) {
                     var childPath = Path.Combine(Path.GetDirectoryName(Utils.GetDataPagePath(Parent)), childGroup.Key,
                         child, FabricDatabase.DataPageFileName);
-                    _internalList.Add(Database.LoadPage(childPath));
+
+                    _internalList.Add(DataReader.ReadPage(childPath));
                 }
             }
 

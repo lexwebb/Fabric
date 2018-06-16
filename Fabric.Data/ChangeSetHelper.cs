@@ -1,17 +1,29 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace Fabric.Data {
     public class ChangeSetHelper : IChangeSetHelper {
+        private readonly object _changeSetLock = new object();
+
         public ChangeSetHelper(IDataWriter dataWriter, IDataReader dataReader) {
             DataWriter = dataWriter;
             DataReader = dataReader;
+            Changes = new Queue<ChangeSet>();
         }
+
+        private Queue<ChangeSet> Changes { get; }
 
         public IDataWriter DataWriter { get; }
 
         public IDataReader DataReader { get; }
+
+        public void AddChange(ChangeSet change) {
+            lock (_changeSetLock) {
+                Changes.Enqueue(change);
+            }
+        }
 
         public void Update(string changesTimestamp, ChangeSet changeSet) {
             changeSet.ChangedPage.ModifiedTimestamp = changesTimestamp;
@@ -28,36 +40,45 @@ namespace Fabric.Data {
             }
 
             DataWriter.DeleteFolder(folderPath);
-            DataWriter.WritePage(changeSet.ChangedPage.Parent.Parent);
+            DataWriter.WritePage(changeSet.ChangedParentPage);
         }
 
-        public void Insert(string changesTimestamp, ChangeSet changeSet,
-            string[] collectionPath) {
+        public void Insert(string changesTimestamp, ChangeSet changeSet) {
             var dataPage = changeSet.ChangedPage;
-
-            var folderPath = Path.Combine(collectionPath.Append(dataPage.SchemaName).ToArray());
-
-            if (!DataReader.FolderExists(folderPath)) {
-                DataWriter.CreateFolder(folderPath);
-            }
-
-            var pageFolderPath =
-                Path.Combine(collectionPath.Append(dataPage.SchemaName).Append(dataPage.Name).ToArray());
-
-            if (!DataReader.FolderExists(pageFolderPath)) {
-                DataWriter.CreateFolder(pageFolderPath);
-            }
-
-            var filePath = Path.Combine(pageFolderPath, FabricDatabase.DataPageFileName);
-
-            if (!DataReader.FileExists(filePath)) {
-                DataWriter.WriteFile(filePath);
-            }
 
             dataPage.ModifiedTimestamp = changesTimestamp;
 
             DataWriter.WritePage(dataPage);
-            DataWriter.WritePage(changeSet.ChangedPage.Parent.Parent);
+            DataWriter.WritePage(changeSet.ChangedParentPage);
+        }
+
+        /// <summary>
+        ///     Saves the changes.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void SaveChanges() {
+            var changesTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds());
+
+            lock (_changeSetLock) {
+                while (Changes.Any()) {
+                    var changeSet = Changes.Dequeue();
+
+                    switch (changeSet.ChangeType) {
+                        case ChangeType.Update:
+                            Update(changesTimestamp, changeSet);
+                            break;
+                        case ChangeType.Insert:
+                            Insert(changesTimestamp, changeSet);
+                            break;
+                        case ChangeType.Delete:
+                            Delete(changesTimestamp, changeSet);
+                            break;
+                        default:
+                            throw new InvalidOperationException(
+                                $"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPage)}");
+                    }
+                }
+            }
         }
     }
 }

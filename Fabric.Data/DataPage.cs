@@ -21,6 +21,8 @@ namespace Fabric.Data {
 
         internal DataPageCollection Parent { get; set; }
 
+        internal DataPage ParentPage => Parent.Parent;
+
         /// <summary>
         ///     Gets the children.
         /// </summary>
@@ -42,8 +44,8 @@ namespace Fabric.Data {
         }
 
         public void SaveChanges() {
-            Parent.Database.AddChange(ChangeSet.Update(this));
-            Parent.Database.SaveChanges();
+            Parent.ChangeSetHelper.AddChange(ChangeSet.Update(this));
+            Parent.ChangeSetHelper.SaveChanges();
         }
 
         public void AddChild(string name, string schemaName, string data) {
@@ -53,13 +55,13 @@ namespace Fabric.Data {
             };
 
             Children.Add(page);
-            Parent.Database.SaveChanges();
+            Parent.ChangeSetHelper.SaveChanges();
         }
 
         public void DeleteChild(string name, string schemaName) {
             var page = Children.FirstOrDefault(c => c.Name == name && c.SchemaName == schemaName);
             Children.Delete(page);
-            Parent.Database.SaveChanges();
+            Parent.ChangeSetHelper.SaveChanges();
         }
     }
 }

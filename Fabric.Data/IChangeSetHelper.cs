@@ -1,4 +1,7 @@
-﻿namespace Fabric.Data {
+﻿using System;
+using System.Collections.Generic;
+
+namespace Fabric.Data {
     public interface IChangeSetHelper {
         /// <summary>
         ///     Gets the data writer.
@@ -15,6 +18,12 @@
         ///     The data reader.
         /// </value>
         IDataReader DataReader { get; }
+
+        /// <summary>
+        ///     Adds the change.
+        /// </summary>
+        /// <param name="change">The change.</param>
+        void AddChange(ChangeSet change);
 
         /// <summary>
         ///     Updates the page in the database.
@@ -35,7 +44,11 @@
         /// </summary>
         /// <param name="changesTimestamp">The changes timestamp.</param>
         /// <param name="changeSet">The change set.</param>
-        /// <param name="collectionPath">The collection path.</param>
-        void Insert(string changesTimestamp, ChangeSet changeSet, string[] collectionPath);
+        void Insert(string changesTimestamp, ChangeSet changeSet);
+
+        /// <summary>
+        ///     Saves the changes.
+        /// </summary>
+        void SaveChanges();
     }
 }

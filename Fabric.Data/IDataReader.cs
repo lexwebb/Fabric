@@ -4,6 +4,8 @@ namespace Fabric.Data {
     public interface IDataReader {
         JsonSerializerSettings SerializerSettings { get; }
 
+        string DatabaseRoot { get; }
+
         string ReadFile(string path);
 
         DataPage ReadPage(string path);

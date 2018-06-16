@@ -2,6 +2,8 @@
     public struct ChangeSet {
         internal DataPage ChangedPage { get; }
 
+        internal DataPage ChangedParentPage => ChangedPage.ParentPage;
+
         internal ChangeType ChangeType { get; }
 
         public static ChangeSet Insert(DataPage changedPage) {

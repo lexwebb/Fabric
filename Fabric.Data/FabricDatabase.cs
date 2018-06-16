@@ -59,8 +59,6 @@ namespace Fabric.Data {
 
         public DataPage Root { get; private set; }
 
-        internal List<ChangeSet> Changes { get; } = new List<ChangeSet>();
-
         /// <summary>
         ///     Initialises this instance.
         /// </summary>
@@ -96,15 +94,17 @@ namespace Fabric.Data {
             Global.Instance.Logger.Info("Creating database file");
 
             var writer = Resolver.Resolve<IDataWriter>();
+            var reader = Resolver.Resolve<IDataReader>();
+            var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
 
             writer.WriteFile(DatabaseFilePath);
 
             Root = new DataPage(RootPageName) {
                 ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds()),
-                Parent = new DataPageCollection(this, null)
+                Parent = new DataPageCollection(null, changeSetHelper, reader)
             };
 
-            Root.Children = new DataPageCollection(this, Root);
+            Root.Children = new DataPageCollection(Root, changeSetHelper, reader);
 
             writer.WritePage(Root);
         }
@@ -113,9 +113,10 @@ namespace Fabric.Data {
             Global.Instance.Logger.Info("Loading database file");
 
             var reader = Resolver.Resolve<IDataReader>();
+            var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
 
             Root = reader.ReadPage(DatabaseFilePath);
-            Root.Parent = new DataPageCollection(this, null);
+            Root.Parent = new DataPageCollection(null, changeSetHelper, reader);
         }
 
         /// <summary>
@@ -123,49 +124,6 @@ namespace Fabric.Data {
         /// </summary>
         private void InternalSeedDatabase() {
             SeedDatabase?.Invoke(this);
-        }
-
-        /// <summary>
-        ///     Saves the changes.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"></exception>
-        public void SaveChanges() {
-            var changesTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds());
-            var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
-
-            for (var i = Changes.Count(c => c.ChangedPage != null) - 1; i >= 0; i--) {
-                var changeSet = Changes.Where(c => c.ChangedPage != null).ToList()[i];
-
-                var pathParts = Utils.FindParentsRecursive(changeSet.ChangedPage.Parent.Parent, new List<string>());
-                pathParts.Reverse();
-
-                if (pathParts[0] == RootPageName) {
-                    pathParts = pathParts.Skip(1).ToList();
-                }
-
-                var collectionPath = pathParts.Prepend(FullDataBaseRoot).ToArray();
-
-                switch (changeSet.ChangeType) {
-                    case ChangeType.Update:
-                        changeSetHelper.Update(changesTimestamp, changeSet);
-                        break;
-                    case ChangeType.Insert:
-                        changeSetHelper.Insert(changesTimestamp, changeSet, collectionPath);
-                        break;
-                    case ChangeType.Delete:
-                        changeSetHelper.Delete(changesTimestamp, changeSet);
-                        break;
-                    default:
-                        throw new InvalidOperationException(
-                            $"Invalid changeset type: {changeSet.ChangeType} for {nameof(DataPage)}");
-                }
-
-                Changes.RemoveAt(i);
-            }
-        }
-
-        internal void AddChange(ChangeSet changeSet) {
-            Changes.Add(changeSet);
         }
 
         public bool IsPathCollection(string path) {
@@ -178,14 +136,6 @@ namespace Fabric.Data {
 
         public Task<IEnumerable<DataPage>> FindChildCollection(string path) {
             return Utils.FindChildCollection(Root, path);
-        }
-
-        public DataPage LoadPage(string path) {
-            if (!path.StartsWith(DatabaseRoot)) {
-                path = Path.Combine(DatabaseRoot, path);
-            }
-
-            return Resolver.Resolve<DataReader>().ReadPage(path);
         }
     }
 }

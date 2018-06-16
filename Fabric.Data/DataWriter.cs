@@ -13,6 +13,7 @@ namespace Fabric.Data {
         public string DatabaseRoot { get; }
 
         public void WriteFile(string path, string data = null) {
+            CreateFolder(Path.GetDirectoryName(path));
             var stream = File.Exists(path) ? File.Open(path, FileMode.Truncate) : File.Create(path);
 
             if (data != null) {
@@ -24,8 +25,8 @@ namespace Fabric.Data {
         }
 
         public void WritePage(DataPage data) {
-            WriteFile(Path.Combine(DatabaseRoot, Utils.GetDataPagePath(data)),
-                JsonConvert.SerializeObject(data, SerializerSettings));
+            var path = Utils.GetDataPagePath(data);
+            WriteFile(Path.Combine(DatabaseRoot, path), JsonConvert.SerializeObject(data, SerializerSettings));
         }
 
         public void DeleteFile(string path) {
@@ -49,7 +50,7 @@ namespace Fabric.Data {
         }
 
         public void CreateFolder(string path) {
-            if (!Directory.Exists(path)) {
+            if (!Directory.Exists(path) && path != string.Empty) {
                 Directory.CreateDirectory(path);
             }
         }

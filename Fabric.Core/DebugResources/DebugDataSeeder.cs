@@ -40,8 +40,6 @@ namespace Fabric.Core.DebugResources {
                 var json = GetJsonFromResourcePath($"{schemaPath}{projectName}.json");
                 database.Root.AddChild(projectName, "project", json);
             }
-
-            database.SaveChanges();
         }
 
         private static void CreateTestDoors(FabricDatabase database) {
@@ -52,8 +50,6 @@ namespace Fabric.Core.DebugResources {
                 var json = GetJsonFromResourcePath($"{schemaPath}{doorName}.json");
                 database.Root.AddChild(doorName, "door", json);
             }
-
-            database.SaveChanges();
         }
 
         private static void CreateTestWorkflows(FabricDatabase database) {
@@ -64,8 +60,6 @@ namespace Fabric.Core.DebugResources {
                 var json = GetJsonFromResourcePath($"{schemaPath}{workflowName}.json");
                 database.Root.AddChild(workflowName, "workflow", json);
             }
-
-            database.SaveChanges();
         }
 
         private static string GetJsonFromResourcePath(string resourcePath) {
