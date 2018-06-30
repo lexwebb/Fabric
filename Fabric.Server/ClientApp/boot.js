@@ -14,6 +14,8 @@ import moment from 'moment';
 import './css/site.css';
 import ajvPlugin from './ajv-plugin';
 
+import { EventBus } from './event-bus';
+
 // Plugins
 import app from './app.vue';
 import router from './routes';
@@ -55,3 +57,14 @@ new Vue({
         app,
     },
 });
+
+Vue.config.errorHandler = (err) => {
+    // handle error
+    // TODO pipe to actual error handler
+    if (webpackHotUpdate) {
+        console.log('In Dev mode, showing error');
+        EventBus.$emit('show-error', `Error: ${err}`);
+    } else {
+        EventBus.$emit('show-error', 'An unexpected error occured');
+    }
+};

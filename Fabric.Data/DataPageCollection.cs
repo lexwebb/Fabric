@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Fabric.Data {
     public class DataPageCollection : IEnumerable<DataPage> {
@@ -100,18 +101,22 @@ namespace Fabric.Data {
         ///     <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
         internal bool Delete(DataPage item) {
-            var result = _internalList.Remove(item);
+            var itemRemoveResult = _internalList.Remove(item);
 
-            _internalNameList.TryGetValue(item.SchemaName, out var subList);
+            _internalNameList.TryGetValue(item.SchemaName, out var nameListFiltered);
 
-            var result2 = subList?.Remove(item.Name);
+            var nameListRemoveResult = nameListFiltered?.Remove(item.Name);
 
-            if (result && result2.HasValue && result2.Value) {
+            if (itemRemoveResult && nameListRemoveResult.HasValue && nameListRemoveResult.Value) {
                 Dirty = true;
                 ChangeSetHelper.AddChange(ChangeSet.Delete(item));
             }
 
-            return result && result2.HasValue && result2.Value;
+            if (nameListFiltered?.Count == 0) {
+                _internalNameList.Remove(item.SchemaName);
+            }
+
+            return itemRemoveResult && nameListRemoveResult.HasValue && nameListRemoveResult.Value;
         }
 
         /// <summary>
@@ -149,6 +154,17 @@ namespace Fabric.Data {
 
                 subList.Add(name);
             }
+        }
+
+        /// <summary>
+        /// Determines whether the data page collection contains any pages that have the given schema name.
+        /// </summary>
+        /// <param name="schemaName">Name of the schema.</param>
+        /// <returns>
+        ///   <c>true</c> if the data page collection contains any pages that have the given schema name; otherwise, <c>false</c>.
+        /// </returns>
+        public bool ContainsAnyOfSchema(string schemaName) {
+            return _internalNameList.Any(s => s.Key == schemaName);
         }
     }
 }

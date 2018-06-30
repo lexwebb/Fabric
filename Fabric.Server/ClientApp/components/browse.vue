@@ -14,6 +14,13 @@
                 </div>
             </div>
         </div>
+        <md-dialog-confirm :md-active.sync="deleteDialogOpen"
+                           md-title="Are you sure you want to delete this page?"
+                           md-content="Deleteing this page will also delete any child pages it may have, this can be undone by reverting to a previous version."
+                           md-confirm-text="Delete"
+                           md-cancel-text="Cancel"
+                           @md-cancel="onDeleteCancel"
+                           @md-confirm="onDeleteConfirm" />
     </div>
 </template>
 
@@ -27,6 +34,12 @@
 
     export default {
         name: 'browse',
+        data() {
+            return {
+                deleteDialogOpen: false,
+                deletePath: '',
+            };
+        },
         components: {
             treeView,
             pageEditor,
@@ -41,6 +54,10 @@
             this.onRoute();
             EventBus.$on('browse-edit', (path) => {
                 this.$router.push({ name: 'browse', params: { path: this.$utils.trim(path, 'root/') } });
+            });
+            EventBus.$on('browse-delete', (path) => {
+                this.deletePath = this.$utils.trim(path, 'root/');
+                this.deleteDialogOpen = true;
             });
         },
         methods: {
@@ -72,6 +89,23 @@
                     })
                     .catch(() => {
                         EventBus.$emit('show-error', 'Error saving config');
+                    });
+            },
+            onDeleteCancel() {
+                this.deletePath = '';
+                this.deleteDialogOpen = false;
+            },
+            onDeleteConfirm() {
+                this.$store.dispatch('browse/deletePage', `root/${this.deletePath}`)
+                    .then(() => {
+                        EventBus.$emit('show-message', 'Deleted sucessfully!');
+                    })
+                    .catch(() => {
+                        EventBus.$emit('show-error', 'Error deleting page');
+                    })
+                    .finally(() => {
+                        this.deletePath = '';
+                        this.deleteDialogOpen = false;
                     });
             },
         },

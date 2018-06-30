@@ -67,6 +67,12 @@ const browse = {
                 commit('setCurrentPath', path);
             });
         },
+        deletePage({ commit }, path) {
+            return services.config.delete(path.replace(/^(root\/|root)/, '')).then(() =>
+                services.config.get().then((data) => {
+                    commit('setRootNode', data);
+                }));
+        },
         loadEditor({ commit, state }) {
             commit('setEditorSchemaLoaded', false);
             return services.schemas.get(state.currentPage.schemaName).then((data) => {

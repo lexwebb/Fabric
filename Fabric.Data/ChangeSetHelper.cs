@@ -56,6 +56,10 @@ namespace Fabric.Data {
 
             DataWriter.DeleteFolder(folderPath);
             DataWriter.WritePage(changeSet.ChangedParentPage);
+            
+            if (!changeSet.ChangedPage.Parent.ContainsAnyOfSchema(changeSet.ChangedPage.SchemaName)) {
+                DataWriter.DeleteFolder(Directory.GetParent(folderPath).Name);
+            }
         }
 
         /// <summary>
