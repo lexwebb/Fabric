@@ -31,7 +31,17 @@ const routes = [
     },
 ];
 
-export default new Router({
+const router = new Router({
     mode: 'history',
     routes,
 });
+
+router.beforeEach((to, from, next) => {
+    // hack to allow for forward slashes in path ids
+    if (to.fullPath.includes('%2F')) {
+        next(to.fullPath.replace('%2F', '/'));
+    }
+    next();
+});
+
+export default router;
