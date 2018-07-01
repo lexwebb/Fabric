@@ -11,12 +11,12 @@
                     <span v-else class="title-text">Fabric > {{this.$route.meta.title}}</span>
                 </div>
             </md-app-toolbar>
-            <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini" class="nav-draw">
-                <md-toolbar class="md-transparent" md-elevation="0">
+            <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
+                <md-toolbar class="md-transparent" md-elevation="0" style="color: white">
                     Navigation
                     <div class="md-toolbar-section-end">
                         <md-button class="md-icon-button md-dense" @click="toggleMenu">
-                            <md-icon>keyboard_arrow_left</md-icon>
+                            <md-icon style="color: white">keyboard_arrow_left</md-icon>
                         </md-button>
                     </div>
                 </md-toolbar>
@@ -92,6 +92,7 @@
     body,
     #app-root {
         height: 100%;
+        padding: 0 !important;
     }
     #app-root .md-app {
         height: 100%;
@@ -132,6 +133,7 @@
             #222 10px,
             #222 20px
         );
+        min-height: 64px !important;
     }
     .md-app-content > * {
         display: flex;
