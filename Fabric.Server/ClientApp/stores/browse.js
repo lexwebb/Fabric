@@ -8,6 +8,7 @@ const browse = {
         currentPage: undefined,
         currentPath: undefined,
         editor: {
+            pageName: '',
             schemaJson: '',
             schemaObj: {},
             dataJson: '',
@@ -32,6 +33,9 @@ const browse = {
         },
         setCurrentPath(state, value) {
             state.currentPath = value;
+        },
+        setEditorPageName(state, value) {
+            state.editor.pageName = value;
         },
         setEditorSchamaJson(state, value) {
             state.editor.schemaJson = value;
@@ -76,6 +80,7 @@ const browse = {
         loadEditor({ commit, state }) {
             commit('setEditorSchemaLoaded', false);
             return services.schemas.get(state.currentPage.schemaName).then((data) => {
+                commit('setEditorPageName', state.currentPage.name);
                 commit('setEditorSchamaJson', data.schemaRaw);
                 commit('setEditorSchamaObj', JSON.parse(data.schemaRaw));
                 commit('setEditorDataJson', JSON.stringify(state.currentPage.pageData, null, 2));

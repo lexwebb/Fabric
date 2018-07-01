@@ -23,39 +23,39 @@
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
         <div v-else-if="type === 'object'">
-            <md-toolbar :md-elevation="1" :style="{ 'border-color': borderColor}" style="border-left: 3px solid;">
-                <span class="md-title">
+            <div class="block" :style="{ 'border-left-color': borderColor}" style="border-left: 2px solid;">
+                <div class="block-header">
                     <md-button class="md-icon-button" @click="toggleOpen">
                         <md-icon v-if="open">keyboard_arrow_down</md-icon>
                         <md-icon v-else>keyboard_arrow_right</md-icon>
                     </md-button>
                     <span>{{compName}}</span>
-                </span>
-            </md-toolbar>
-            <md-list class="md-elevation-1" v-if="open">
-                <md-list-item v-for="element in children" :key="element.name">
-                    <jsonElement :name="element.name" :path="element.name" :required="element.required" :schema="element.schema" :data="element.data" :depth="childDepth" @dataChanged="childDataChanged"></jsonElement>
-                </md-list-item>
-            </md-list>
+                </div>
+                <md-list v-if="open">
+                    <md-list-item v-for="element in children" :key="element.name">
+                        <jsonElement :name="element.name" :path="element.name" :required="element.required" :schema="element.schema" :data="element.data" :depth="childDepth" @dataChanged="childDataChanged"></jsonElement>
+                    </md-list-item>
+                </md-list>
+            </div>
         </div>
         <div v-else-if="type === 'array'">
-            <md-toolbar :md-elevation="1" :style="{ 'border-color': borderColor}" style="border-left: 3px solid;">
-                <span class="md-title">
+            <div class="block" :style="{ 'border-left-color': borderColor}" style="border-left: 2px solid;">
+                <div class="block-header">
                     <md-button class="md-icon-button" @click="toggleOpen">
                         <md-icon v-if="open">keyboard_arrow_down</md-icon>
                         <md-icon v-else>keyboard_arrow_right</md-icon>
                     </md-button>
                     <span>{{compName}}</span>
-                    <md-button class="md-icon-button md-dense md-raised md-primary" @click="arrayAdd">
+                    <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="arrayAdd">
                         <md-icon>add</md-icon>
                     </md-button>
-                </span>
-            </md-toolbar>
-            <md-list class="md-elevation-1" v-if="open">
-                <md-list-item v-for="(element, index) in internalData" :key="element.name">
-                    <jsonElement :schema="schema.items" :path="index" :data="element" :depth="childDepth" :isParentArray=true @dataChanged="childDataChanged"></jsonElement>
-                </md-list-item>
-            </md-list>
+                </div>
+                <md-list v-if="open">
+                    <md-list-item v-for="(element, index) in internalData" :key="element.name">
+                        <jsonElement :schema="schema.items" :path="index" :data="element" :depth="childDepth" :isParentArray=true @dataChanged="childDataChanged"></jsonElement>
+                    </md-list-item>
+                </md-list>
+            </div>
         </div>
     </div>
 </template>
@@ -200,12 +200,35 @@
     .md-toolbar {
         min-height: 40px;
     }
+    .block {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        .block-header {
+            display: flex;
+            align-items: center;
+            background-color: #fafbfc;
+            border-bottom: 1px solid #e1e4e8;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            span {
+                flex: 1;
+            }
+        }
+    }
 </style>
 
 <style lang=scss>
     .md-field {
         .md-checkbox-label {
             top: 0 !important;
+        }
+    }
+    .block {
+        .md-list-item {
+            padding: 0 0.5em;
+            .md-list-item-content {
+                padding: 0;
+            }
         }
     }
 </style>

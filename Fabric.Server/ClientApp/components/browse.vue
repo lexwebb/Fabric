@@ -1,19 +1,17 @@
 <template>
     <div>
-        <div class="md-layout">
-            <div class="md-layout-item md-size-30 right-border">
-                <h3>Data Tree</h3>
+        <navContentLayout navHeaderText="Data Tree" contentHeaderText="Edit Page">
+            <div slot="nav">
                 <treeView :treeData="rootNode"></treeView>
             </div>
-            <div class="md-layout-item edit-container" v-if="currentEditItem">
-                <h3>Edit page - {{currentEditItem.name}}</h3>
+            <div slot="content" class="edit-container" v-if="currentEditItem">
                 <pageEditor :model="currentEditItem"></pageEditor>
                 <div class="flex-row-right">
                     <md-button class="md-raised">Cancel</md-button>
                     <md-button class="md-raised md-primary" @click="save">Save</md-button>
                 </div>
             </div>
-        </div>
+        </navContentLayout>
         <md-dialog-confirm :md-active.sync="deleteDialogOpen"
                            md-title="Are you sure you want to delete this page?"
                            md-content="Deleteing this page will also delete any child pages it may have, this can be undone by reverting to a previous version."
@@ -28,6 +26,7 @@
     import { mapState } from 'vuex';
     import treeView from './treeView/treeView.vue';
     import pageEditor from './pageEditor.vue';
+    import navContentLayout from './layouts/navContentLayout.vue';
 
     // Import the EventBus.
     import { EventBus } from '../event-bus';
@@ -41,6 +40,7 @@
             };
         },
         components: {
+            navContentLayout,
             treeView,
             pageEditor,
         },

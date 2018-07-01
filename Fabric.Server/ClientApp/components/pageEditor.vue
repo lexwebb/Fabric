@@ -1,16 +1,23 @@
 ﻿<template>
-    <md-tabs>
-        <md-tab id="edit-page" md-label="Edit page">
+    <div class="editor">
+        <div class="editor-header">
+            <h4>Editing: {{pageName}}</h4>
+            <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="showEditView"">
+                <md-icon>list</md-icon>
+            </md-button>
+            <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="showRawView">
+                <md-icon>code</md-icon>
+            </md-button>
+        </div>
+        <div class="editor-content">
             <transition name="fade">
-                <jsonEditor v-if="isSchemaLoaded" :schema="schemaObj" :data="dataObj" :name="dataObj.name" @changed="editorChanged" />
+                <jsonEditor v-if="isSchemaLoaded && !showRaw" :schema="schemaObj" :data="dataObj" :name="dataObj.name" @changed="editorChanged" />
             </transition>
-        </md-tab>
-        <md-tab id="edit-raw" md-label="Edit raw">
             <transition name="fade">
-                <codemirror v-if="isSchemaLoaded" :code="dataJson" :options="cmOptions" @input="textEditorChanged" @beforeChange="beforeEditorChange"></codemirror>
+                <codemirror v-if="isSchemaLoaded && showRaw" :code="dataJson" :options="cmOptions" @input="textEditorChanged" @beforeChange="beforeEditorChange"></codemirror>
             </transition>
-        </md-tab>
-    </md-tabs>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -31,6 +38,7 @@
                     lineNumbers: true,
                     line: true,
                 },
+                showRaw: false,
             };
         },
         mounted() {
@@ -38,12 +46,12 @@
         },
         computed: {
             ...mapState('browse', {
+                pageName: state => state.editor.pageName,
                 schemaJson: state => state.editor.schemaJson,
                 schemaObj: state => state.editor.schemaObj,
                 dataJson: state => state.editor.dataJson,
                 dataObj: state => state.editor.dataObj,
                 rootNode: state => state.editor.rootNode,
-                currentEditItem: state => state.editor.currentPage,
             }),
             ...mapGetters('browse', [
                 'isEditingCode',
@@ -52,6 +60,12 @@
             ]),
         },
         methods: {
+            showRawView() {
+                this.showRaw = true;
+            },
+            showEditView() {
+                this.showRaw = false;
+            },
             editorChanged(data) {
                 if (!this.isEditingCode) {
                     this.$store.dispatch('browse/onEditorChanged', data);
@@ -86,9 +100,28 @@
     };
 </script>
 
-<style scopred lang="scss">
+<style scoped lang="scss">
     .main > h3 {
         display: none;
+    }
+    .editor {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        .editor-header {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: #fafbfc;
+            border-bottom: 1px solid #e1e4e8;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            h4 {
+                flex: 1;
+            }
+        }
+    }
+    .editor-content {
+        margin: 0.5em;
     }
 </style>
 <style lang=scss>
