@@ -52,6 +52,7 @@ namespace Fabric.Server {
                 routes.MapRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute("Spa", "{*url}", defaults: new { controller = "Home", action = "Index" });
             });
 
             // this serves my index.html from the wwwroot folder when 
