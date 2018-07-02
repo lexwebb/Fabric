@@ -1,15 +1,15 @@
 ﻿<template>
-    <div class="editor">
-        <div class="editor-header">
-            <h4>Editing: {{pageName}}</h4>
-            <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="showEditView"">
+    <div class="block">
+        <div class="block-header">
+            <h4 class="block-header-text">Editing: {{pageName}}</h4>
+            <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="showEditView">
                 <md-icon>list</md-icon>
             </md-button>
             <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="showRawView">
                 <md-icon>code</md-icon>
             </md-button>
         </div>
-        <div class="editor-content">
+        <div class="block-content">
             <transition name="fade">
                 <jsonEditor v-if="isSchemaLoaded && !showRaw" :schema="schemaObj" :data="dataObj" :name="dataObj.name" @changed="editorChanged" />
             </transition>
@@ -103,25 +103,6 @@
 <style scoped lang="scss">
     .main > h3 {
         display: none;
-    }
-    .editor {
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        .editor-header {
-            display: flex;
-            align-items: center;
-            padding: 5px 10px;
-            background-color: #fafbfc;
-            border-bottom: 1px solid #e1e4e8;
-            border-top-left-radius: 2px;
-            border-top-right-radius: 2px;
-            h4 {
-                flex: 1;
-            }
-        }
-    }
-    .editor-content {
-        margin: 0.5em;
     }
 </style>
 <style lang=scss>

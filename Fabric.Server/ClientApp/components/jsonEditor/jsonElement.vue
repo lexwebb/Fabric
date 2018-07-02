@@ -23,13 +23,13 @@
             <span v-if="schema.description" class="md-helper-text">{{schema.description}}</span>
         </md-field>
         <div v-else-if="type === 'object'">
-            <div class="block" :style="{ 'border-left-color': borderColor}" style="border-left: 2px solid;">
+            <div class="block block-dense" :style="{ 'border-left-color': borderColor}" style="border-left: 2px solid;">
                 <div class="block-header">
                     <md-button class="md-icon-button" @click="toggleOpen">
                         <md-icon v-if="open">keyboard_arrow_down</md-icon>
                         <md-icon v-else>keyboard_arrow_right</md-icon>
                     </md-button>
-                    <span>{{compName}}</span>
+                    <span class="block-header-text">{{compName}}</span>
                 </div>
                 <md-list v-if="open">
                     <md-list-item v-for="element in children" :key="element.name">
@@ -39,13 +39,13 @@
             </div>
         </div>
         <div v-else-if="type === 'array'">
-            <div class="block" :style="{ 'border-left-color': borderColor}" style="border-left: 2px solid;">
+            <div class="block block-dense" :style="{ 'border-left-color': borderColor}" style="border-left: 2px solid;">
                 <div class="block-header">
                     <md-button class="md-icon-button" @click="toggleOpen">
                         <md-icon v-if="open">keyboard_arrow_down</md-icon>
                         <md-icon v-else>keyboard_arrow_right</md-icon>
                     </md-button>
-                    <span>{{compName}}</span>
+                    <span class="block-header-text">{{compName}}</span>
                     <md-button class="md-icon-button md-dense md-raised md-primary add-button" @click="arrayAdd">
                         <md-icon>add</md-icon>
                     </md-button>
@@ -199,21 +199,6 @@
     }
     .md-toolbar {
         min-height: 40px;
-    }
-    .block {
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        .block-header {
-            display: flex;
-            align-items: center;
-            background-color: #fafbfc;
-            border-bottom: 1px solid #e1e4e8;
-            border-top-left-radius: 2px;
-            border-top-right-radius: 2px;
-            span {
-                flex: 1;
-            }
-        }
     }
 </style>
 

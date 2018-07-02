@@ -81,10 +81,7 @@
     @import '~vue-material/dist/theme/engine';
 
     // Import the theme engine
-    @include md-register-theme('default', ( 
-                                            primary: #1c8d7d,
-                                            accent: #21b6a4
-                                        ));
+    @include md-register-theme('default', (primary: #1c8d7d, accent: #21b6a4));
 
     @import '~vue-material/dist/theme/all';
     // Apply the theme
@@ -188,5 +185,32 @@
     }
     .scrollable {
         overflow: auto;
+    }
+    .block {
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        .block-header {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            background-color: #fafbfc;
+            border-bottom: 1px solid #e1e4e8;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            .block-header-text {
+                flex: 1;
+            }
+        }
+        .block-header.block-dense {
+            padding: 0;
+        }
+        .block-content {
+            margin: 0.5em;
+        }
+    }
+    .block.block-dense {
+        .block-header {
+            padding: 0;
+        }
     }
 </style>
