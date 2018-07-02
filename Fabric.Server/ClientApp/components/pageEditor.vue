@@ -9,7 +9,7 @@
                 <md-icon>code</md-icon>
             </md-button>
         </div>
-        <div class="block-content">
+        <div class="block-content block-scrollable">
             <transition name="fade">
                 <jsonEditor v-if="isSchemaLoaded && !showRaw" :schema="schemaObj" :data="dataObj" :name="dataObj.name" @changed="editorChanged" />
             </transition>

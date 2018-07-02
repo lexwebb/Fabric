@@ -189,6 +189,7 @@
     .block {
         border: 1px solid #ddd;
         border-radius: 3px;
+        height: 100%;
         .block-header {
             display: flex;
             align-items: center;
@@ -198,14 +199,17 @@
             border-top-left-radius: 2px;
             border-top-right-radius: 2px;
             .block-header-text {
-                flex: 1;
+                flex-grow: 1;
             }
         }
         .block-header.block-dense {
             padding: 0;
         }
         .block-content {
-            margin: 0.5em;
+            padding: 0.5em;
+        }
+        .block-content.block-scrollable {
+            overflow-y: scroll;
         }
     }
     .block.block-dense {

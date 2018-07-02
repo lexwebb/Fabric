@@ -4,9 +4,14 @@
             <h3>{{navHeaderText}}</h3>
             <slot name="nav"></slot>
         </div>
-        <div class="md-layout-item">
+        <div class="md-layout-item scrollable inner-content">
             <h3>{{contentHeaderText}}</h3>
-            <slot name="content"></slot>
+            <div class="content">
+                <slot name="content"></slot>
+            </div>
+            <div class="footer">
+                <slot name="footer"></slot>
+            </div>
         </div>
     </div>
     <md-tabs md-alignment="fixed" v-else>
@@ -60,5 +65,13 @@
     .right-border {
         border-right: 1px solid #ddd;
         min-width: 300px;
+    }
+    .inner-content {
+        display: flex;
+        flex-direction: column;
+        .content {
+            flex-grow: 1;
+            overflow-y: scroll;
+        }
     }
 </style>

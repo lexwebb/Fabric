@@ -4,21 +4,17 @@
             <div slot="nav">
                 <treeView :treeData="rootNode"></treeView>
             </div>
-            <div slot="content" class="edit-container" v-if="currentEditItem">
+            <div slot="content" v-if="currentEditItem">
                 <pageEditor :model="currentEditItem"></pageEditor>
+            </div>
+            <div slot="footer">
                 <div class="flex-row-right">
                     <md-button class="md-raised">Cancel</md-button>
                     <md-button class="md-raised md-primary" @click="save">Save</md-button>
                 </div>
             </div>
         </navContentLayout>
-        <md-dialog-confirm :md-active.sync="deleteDialogOpen"
-                           md-title="Are you sure you want to delete this page?"
-                           md-content="Deleteing this page will also delete any child pages it may have, this can be undone by reverting to a previous version."
-                           md-confirm-text="Delete"
-                           md-cancel-text="Cancel"
-                           @md-cancel="onDeleteCancel"
-                           @md-confirm="onDeleteConfirm" />
+        <md-dialog-confirm :md-active.sync="deleteDialogOpen" md-title="Are you sure you want to delete this page?" md-content="Deleteing this page will also delete any child pages it may have, this can be undone by reverting to a previous version." md-confirm-text="Delete" md-cancel-text="Cancel" @md-cancel="onDeleteCancel" @md-confirm="onDeleteConfirm" />
     </div>
 </template>
 
@@ -125,24 +121,4 @@
 </style>
 
 <style lang="scss">
-    .edit-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        .md-tabs {
-            flex-grow: 1;
-            min-height: 100px;
-            .md-content {
-                height: 100% !important;
-                max-height: 100%;
-                .md-tabs-container {
-                    height: 100%;
-                    .md-tab {
-                        height: 100%;
-                        overflow: auto;
-                    }
-                }
-            }
-        }
-    }
 </style>
