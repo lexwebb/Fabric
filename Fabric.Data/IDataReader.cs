@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.IO;
+using Newtonsoft.Json;
 
 namespace Fabric.Data {
     public interface IDataReader {
@@ -12,6 +13,13 @@ namespace Fabric.Data {
         /// <param name="path">The path.</param>
         /// <returns></returns>
         string ReadFile(string path);
+
+        /// <summary>
+        /// Opens the file stream.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns></returns>
+        FileStream OpenFileStream(string path);
 
         /// <summary>
         ///     Reads the page.

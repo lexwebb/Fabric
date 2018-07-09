@@ -14,10 +14,24 @@ namespace Fabric.Data {
         void WriteFile(string path, string data = null);
 
         /// <summary>
+        /// Appends the file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="data">The data.</param>
+        void AppendFile(string path, string data);
+
+        /// <summary>
         ///     Writes the page.
         /// </summary>
         /// <param name="data">The data.</param>
         void WritePage(DataPage data);
+
+        /// <summary>
+        ///     Writes the page.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="data">The data.</param>
+        void WritePage(string path,  DataPage data);
 
         /// <summary>
         ///     Deletes the file.

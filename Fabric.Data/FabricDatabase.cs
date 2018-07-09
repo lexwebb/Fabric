@@ -11,10 +11,12 @@ namespace Fabric.Data {
     public class FabricDatabase {
         public const string DatabaseFileName = "FabricDatabase.json";
         public const string DataPageFileName = "dataPage.json";
+        public const string DataPageVersionDirName = ".versions";
+        public const string DataPageVersionFileName = "versions.dat";
         public const string RootPageName = "root";
 
         public FabricDatabase(string databaseRoot, IDataWriter dataWriter = null, IDataReader dataReader = null,
-            IChangeSetHelper changeSetHelper = null, ISchemaManager schemaManager = null) {
+            IChangeSetHelper changeSetHelper = null, ISchemaManager schemaManager = null, IVersionHelper versionHelper = null) {
             DatabaseRoot = databaseRoot;
 
             if (Path.IsPathRooted(DatabaseRoot)) {
@@ -40,33 +42,11 @@ namespace Fabric.Data {
 
             Resolver.RegisterInstance(SerializerSettings);
 
-            if (dataWriter != null) {
-                Resolver.RegisterInstance(dataWriter);
-            }
-            else {
-                Resolver.RegisterSingleton<IDataWriter, DataWriter>();
-            }
-
-            if (dataReader != null) {
-                Resolver.RegisterInstance(dataReader);
-            }
-            else {
-                Resolver.RegisterSingleton<IDataReader, DataReader>();
-            }
-
-            if (changeSetHelper != null) {
-                Resolver.RegisterInstance(changeSetHelper);
-            }
-            else {
-                Resolver.RegisterSingleton<IChangeSetHelper, ChangeSetHelper>();
-            }
-
-            if (schemaManager != null) {
-                Resolver.RegisterInstance(schemaManager);
-            }
-            else {
-                Resolver.RegisterSingleton<ISchemaManager, SchemaManager>();
-            }
+            Resolver.RegisterInstanceOrDefault<IDataWriter, DataWriter>(dataWriter);
+            Resolver.RegisterInstanceOrDefault<IDataReader, DataReader>(dataReader);
+            Resolver.RegisterInstanceOrDefault<IChangeSetHelper, ChangeSetHelper>(changeSetHelper);
+            Resolver.RegisterInstanceOrDefault<ISchemaManager, SchemaManager>(schemaManager);
+            Resolver.RegisterInstanceOrDefault<IVersionHelper, VersionHelper>(versionHelper);
         }
 
         public UnityContainer Resolver { get; }

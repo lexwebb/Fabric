@@ -7,9 +7,10 @@ namespace Fabric.Data {
     public class ChangeSetHelper : IChangeSetHelper {
         private readonly object _changeSetLock = new object();
 
-        public ChangeSetHelper(IDataWriter dataWriter, IDataReader dataReader) {
+        public ChangeSetHelper(IDataWriter dataWriter, IDataReader dataReader, IVersionHelper versionHelper) {
             DataWriter = dataWriter;
             DataReader = dataReader;
+            VersionHelper = versionHelper;
             Changes = new Queue<ChangeSet>();
         }
 
@@ -18,6 +19,8 @@ namespace Fabric.Data {
         public IDataWriter DataWriter { get; }
 
         public IDataReader DataReader { get; }
+
+        public IVersionHelper VersionHelper { get; }
 
         /// <summary>
         ///     Adds the change.
@@ -38,6 +41,7 @@ namespace Fabric.Data {
             changeSet.ChangedPage.ModifiedTimestamp = changesTimestamp;
 
             DataWriter.WritePage(changeSet.ChangedPage);
+            VersionHelper.SaveVersion(changeSet.ChangedPage);
         }
 
         /// <summary>
@@ -74,6 +78,7 @@ namespace Fabric.Data {
 
             DataWriter.WritePage(dataPage);
             DataWriter.WritePage(changeSet.ChangedParentPage);
+            VersionHelper.SaveVersion(dataPage);
         }
 
         /// <summary>

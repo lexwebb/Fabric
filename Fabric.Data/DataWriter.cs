@@ -30,12 +30,30 @@ namespace Fabric.Data {
         }
 
         /// <summary>
+        /// Appends the file.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="data">The data.</param>
+        public void AppendFile(string path, string data) {
+            File.AppendAllLines(path, new[] {data});
+        }
+
+        /// <summary>
         ///     Writes the page.
         /// </summary>
         /// <param name="data">The data.</param>
         public void WritePage(DataPage data) {
             var path = Utils.GetDataPagePath(data);
             WriteFile(Path.Combine(DatabaseRoot, path), JsonConvert.SerializeObject(data, SerializerSettings));
+        }
+
+        /// <summary>
+        /// Writes the page.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="data">The data.</param>
+        public void WritePage(string path, DataPage data) {
+            WriteFile(path, JsonConvert.SerializeObject(data, SerializerSettings));
         }
 
         /// <summary>

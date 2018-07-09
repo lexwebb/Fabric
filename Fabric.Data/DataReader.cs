@@ -20,6 +20,10 @@ namespace Fabric.Data {
             return File.ReadAllText(path);
         }
 
+        public FileStream OpenFileStream(string path) {
+            return File.OpenRead(path);
+        }
+
         /// <summary>
         ///     Reads the page.
         /// </summary>
