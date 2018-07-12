@@ -7,18 +7,15 @@ namespace Fabric.Data {
     public class ChangeSetHelper : IChangeSetHelper {
         private readonly object _changeSetLock = new object();
 
-        public ChangeSetHelper(IDataWriter dataWriter, IDataReader dataReader, IVersionHelper versionHelper) {
-            DataWriter = dataWriter;
-            DataReader = dataReader;
+        public ChangeSetHelper(IDatabaseHelper databaseHelper, IVersionHelper versionHelper) {
+            DatabaseHelper = databaseHelper;
             VersionHelper = versionHelper;
             Changes = new Queue<ChangeSet>();
         }
 
         private Queue<ChangeSet> Changes { get; }
 
-        public IDataWriter DataWriter { get; }
-
-        public IDataReader DataReader { get; }
+        public IDatabaseHelper DatabaseHelper { get; }
 
         public IVersionHelper VersionHelper { get; }
 
@@ -40,7 +37,7 @@ namespace Fabric.Data {
         public void Update(string changesTimestamp, ChangeSet changeSet) {
             changeSet.ChangedPage.ModifiedTimestamp = changesTimestamp;
 
-            DataWriter.WritePage(changeSet.ChangedPage);
+            DatabaseHelper.WritePage(changeSet.ChangedPage);
             VersionHelper.SaveVersion(changeSet.ChangedPage);
         }
 
@@ -58,12 +55,12 @@ namespace Fabric.Data {
                 throw new InvalidOperationException("Data page does not exist");
             }
 
-            DataWriter.DeleteFolder(folderPath);
-            DataWriter.WritePage(changeSet.ChangedParentPage);
+            DatabaseHelper.DeletePage(folderPath);
+            DatabaseHelper.WritePage(changeSet.ChangedParentPage);
             
-            if (!changeSet.ChangedPage.Parent.ContainsAnyOfSchema(changeSet.ChangedPage.SchemaName)) {
-                DataWriter.DeleteFolder(Directory.GetParent(folderPath).Name);
-            }
+            //if (!changeSet.ChangedPage.Parent.ContainsAnyOfSchema(changeSet.ChangedPage.SchemaName)) {
+            //    DataWriter.DeleteFolder(Directory.GetParent(folderPath).Name);
+            //}
         }
 
         /// <summary>
@@ -76,8 +73,8 @@ namespace Fabric.Data {
 
             dataPage.ModifiedTimestamp = changesTimestamp;
 
-            DataWriter.WritePage(dataPage);
-            DataWriter.WritePage(changeSet.ChangedParentPage);
+            DatabaseHelper.WritePage(dataPage);
+            DatabaseHelper.WritePage(changeSet.ChangedParentPage);
             VersionHelper.SaveVersion(dataPage);
         }
 

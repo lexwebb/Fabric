@@ -102,7 +102,7 @@ namespace Fabric.Data {
 
         internal static string GetDataPagePath(DataPage dataPage) {
             if (dataPage.Name == FabricDatabase.RootPageName && dataPage.ParentPage == null) {
-                return FabricDatabase.DatabaseFileName;
+                return String.Empty;
             }
 
             var parts = FindParentsRecursive(dataPage.ParentPage, new List<string>());
@@ -117,7 +117,7 @@ namespace Fabric.Data {
 
             var dirPath = Path.Combine(parts.ToArray());
 
-            return Path.Combine(dirPath, FabricDatabase.DataPageFileName);
+            return dirPath;
         }
     }
 }

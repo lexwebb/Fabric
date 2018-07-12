@@ -1,20 +1,5 @@
 ﻿namespace Fabric.Data {
     public interface IChangeSetHelper {
-        /// <summary>
-        ///     Gets the data writer.
-        /// </summary>
-        /// <value>
-        ///     The data writer.
-        /// </value>
-        IDataWriter DataWriter { get; }
-
-        /// <summary>
-        ///     Gets the data reader.
-        /// </summary>
-        /// <value>
-        ///     The data reader.
-        /// </value>
-        IDataReader DataReader { get; }
 
         /// <summary>
         ///     Adds the change.

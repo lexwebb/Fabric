@@ -8,9 +8,8 @@ namespace Fabric.Data {
     public class SchemaManager : ISchemaManager {
         private const string SchemaSubFolderName = "schemas";
 
-        public SchemaManager(FabricDatabase database, IDataWriter dataWriter, IDataReader dataReader) {
-            DataWriter = dataWriter;
-            DataReader = dataReader;
+        public SchemaManager(FabricDatabase database, IDatabaseHelper databaseHelper) {
+            DatabaseHelper = databaseHelper;
             SchemaSubFolderPath = Path.Combine(database.FullDataBaseRoot, SchemaSubFolderName);
             Schemas = new List<DataPageSchema>();
 
@@ -20,9 +19,8 @@ namespace Fabric.Data {
         }
 
         private string SchemaSubFolderPath { get; }
-
-        public IDataWriter DataWriter { get; }
-        public IDataReader DataReader { get; }
+        
+        public IDatabaseHelper DatabaseHelper { get; }
 
         /// <summary>
         ///     Returns an enumerator that iterates through the collection.
@@ -58,9 +56,9 @@ namespace Fabric.Data {
                     $"Unable to add schema. A schema with the name '{schemaName}' already exists");
             }
 
-            Schemas.Add(new DataPageSchema(schemaName, schemaRawJson));
-            DataWriter.WriteFile(Path.Combine(SchemaSubFolderPath, $"{schemaName}.json"),
-                JsonUtils.Prettify(schemaRawJson));
+            var schema = new DataPageSchema(schemaName, schemaRawJson);
+            Schemas.Add(schema);
+            DatabaseHelper.WriteSchema(schema);
         }
 
         /// <summary>
@@ -74,10 +72,10 @@ namespace Fabric.Data {
                 throw new InvalidOperationException(
                     $"Unable to update schema. No schema with the name '{schemaName}' exists");
             }
-
-            Schemas[Schemas.FindIndex(s => s.SchemaName == schemaName)] = new DataPageSchema(schemaName, schemaRawJson);
-            DataWriter.WriteFile(Path.Combine(SchemaSubFolderPath, $"{schemaName}.json"),
-                JsonUtils.Prettify(schemaRawJson));
+            
+            var schema = new DataPageSchema(schemaName, schemaRawJson);
+            Schemas[Schemas.FindIndex(s => s.SchemaName == schemaName)] = schema;
+            DatabaseHelper.WriteSchema(schema);
         }
 
         /// <summary>
@@ -92,7 +90,7 @@ namespace Fabric.Data {
             }
 
             Schemas.RemoveAt(Schemas.FindIndex(s => s.SchemaName == schemaName));
-            DataWriter.DeleteFile(Path.Combine(SchemaSubFolderPath, $"{schemaName}.json"));
+            DatabaseHelper.DeleteSchema(schemaName);
         }
 
         /// <summary>
@@ -102,8 +100,8 @@ namespace Fabric.Data {
             var schemaFiles = Directory.GetFiles(SchemaSubFolderPath);
 
             foreach (var schemaFile in schemaFiles) {
-                var json = DataReader.ReadFile(schemaFile);
-                Schemas.Add(new DataPageSchema(Path.GetFileNameWithoutExtension(schemaFile), json));
+                var schema = DatabaseHelper.ReadSchema(Path.GetFileNameWithoutExtension(schemaFile));
+                Schemas.Add(schema);
             }
         }
     }

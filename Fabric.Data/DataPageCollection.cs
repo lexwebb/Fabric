@@ -9,9 +9,9 @@ namespace Fabric.Data {
         private readonly List<DataPage> _internalList = new List<DataPage>();
         private Dictionary<string, List<string>> _internalNameList = new Dictionary<string, List<string>>();
 
-        internal DataPageCollection(DataPage parent, IChangeSetHelper changeSetHelper, IDataReader dataReader) {
+        internal DataPageCollection(DataPage parent, IChangeSetHelper changeSetHelper, IDatabaseHelper databaseHelper) {
             ChangeSetHelper = changeSetHelper;
-            DataReader = dataReader;
+            DatabaseHelper = databaseHelper;
             Parent = parent;
         }
 
@@ -21,7 +21,7 @@ namespace Fabric.Data {
 
         internal IChangeSetHelper ChangeSetHelper { get; set; }
 
-        internal IDataReader DataReader { get; set; }
+        internal IDatabaseHelper DatabaseHelper { get; set; }
 
         internal bool Dirty { get; set; }
 
@@ -52,7 +52,7 @@ namespace Fabric.Data {
         /// </summary>
         /// <returns></returns>
         public Dictionary<string, List<string>> GetNames() {
-            return _internalNameList;
+            return _internalNameList.Count == 0 ? null : _internalNameList;
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Fabric.Data {
         internal void Add(DataPage item) {
             item.Parent = this;
             DateTime.Now.GetTimestamp();
-            item.Children = new DataPageCollection(Parent, ChangeSetHelper, DataReader);
+            item.Children = new DataPageCollection(Parent, ChangeSetHelper, DatabaseHelper);
 
             _internalList.Add(item);
 
@@ -127,16 +127,16 @@ namespace Fabric.Data {
                 return;
             }
 
-            var path = Path.GetDirectoryName(Utils.GetDataPagePath(Parent));
+            var path = Utils.GetDataPagePath(Parent);
 
             _internalList.Clear();
             foreach (var childGroup in _internalNameList) {
                 foreach (var child in childGroup.Value) {
                     var childPath = Path.Combine(
                         path ?? throw new InvalidOperationException("Could not find colleciton path"), childGroup.Key,
-                        child, FabricDatabase.DataPageFileName);
+                        child);
 
-                    _internalList.Add(DataReader.ReadPage(childPath));
+                    _internalList.Add(DatabaseHelper.ReadPage(childPath));
                 }
             }
 

@@ -3,9 +3,8 @@
 namespace Fabric.Data {
     public interface ISchemaManager : IEnumerable<DataPageSchema> {
         List<DataPageSchema> Schemas { get; }
-
-        IDataWriter DataWriter { get; }
-        IDataReader DataReader { get; }
+        
+        IDatabaseHelper DatabaseHelper { get; }
 
         /// <summary>
         ///     Adds the specified schema.

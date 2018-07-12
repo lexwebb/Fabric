@@ -7,28 +7,14 @@ using Newtonsoft.Json.Linq;
 
 namespace Fabric.Data {
     public class VersionHelper : IVersionHelper {
-        public VersionHelper(FabricDatabase fabricDatabase, IDataWriter dataWriter, IDataReader dataReader) {
-            DataWriter = dataWriter;
-            DataReader = dataReader;
+        public VersionHelper(FabricDatabase fabricDatabase, IDatabaseHelper databaseHelper) {
+            DatabaseHelper = databaseHelper;
             DatabaseRoot = fabricDatabase.DatabaseRoot;
-
-            Initialise();
         }
-
-        public IDataWriter DataWriter { get; }
-        public IDataReader DataReader { get; }
+        
+        public IDatabaseHelper DatabaseHelper { get; }
 
         public string DatabaseRoot { get; }
-
-        public string VersionsRootPath => Path.Combine(DatabaseRoot, FabricDatabase.DataPageVersionDirName);
-        public string VersionsFilePath => Path.Combine(VersionsRootPath, FabricDatabase.DataPageVersionFileName);
-
-        /// <summary>
-        /// Initialises this instance.
-        /// </summary>
-        public void Initialise() {
-            DataWriter.WriteFile(VersionsFilePath);
-        }
 
         /// <summary>
         /// Saves the version.
@@ -42,13 +28,10 @@ namespace Fabric.Data {
                 Guid.NewGuid(),
                 Utils.GetDataPagePath(page),
                 DateTime.Now,
-                versionNumber);
+                versionNumber,
+                page);
 
-            var versionJson = JObject.FromObject(versionObject);
-
-            var value = versionJson.ToString(Formatting.None);
-            DataWriter.AppendFile(VersionsFilePath, $"{versionObject.DataPagePath}:{value}");
-            DataWriter.WritePage(Path.Combine(VersionsRootPath, $"{versionObject.VersionGuid}.json"), page);
+            DatabaseHelper.WritePageVersion(versionObject);
         }
 
         /// <summary>
@@ -57,17 +40,7 @@ namespace Fabric.Data {
         /// <param name="page">The page.</param>
         /// <returns></returns>
         public IEnumerable<DataPageVersion> GetVersions(DataPage page) {
-            using (var fileStream = DataReader.OpenFileStream(VersionsFilePath)) {
-                using (var streamReader = new StreamReader(fileStream)) {
-                    while (!streamReader.EndOfStream) {
-                        var line = streamReader.ReadLine();
-                        if (line != null && line.StartsWith(Utils.GetDataPagePath(page))) {
-                            var data = line.Substring(line.IndexOf(":", StringComparison.Ordinal) + 1);
-                            yield return JsonConvert.DeserializeObject<DataPageVersion>(data);
-                        }
-                    }
-                }
-            }
+            return DatabaseHelper.GetPageVersions(page);
         }
 
         /// <summary>
@@ -78,22 +51,7 @@ namespace Fabric.Data {
         /// <returns></returns>
         /// <exception cref="ItemNotFoundException"></exception>
         public DataPageVersion GetVersionInformation(DataPage page, Guid versionGuid) {
-            using (var fileStream = DataReader.OpenFileStream(VersionsFilePath)) {
-                using (var streamReader = new StreamReader(fileStream)) {
-                    while (!streamReader.EndOfStream) {
-                        var line = streamReader.ReadLine();
-                        if (line != null && line.StartsWith(Utils.GetDataPagePath(page))) {
-                            var data = line.Substring(line.IndexOf(":", StringComparison.Ordinal));
-                            var version = JsonConvert.DeserializeObject<DataPageVersion>(data);
-                            if (version.VersionGuid == versionGuid) {
-                                return version;
-                            }
-                        }
-                    }
-                }
-            }
-
-            throw new ItemNotFoundException(versionGuid.ToString(), Utils.GetDataPagePath(page));
+            return DatabaseHelper.GetPageVersion(page, versionGuid);
         }
     }
 }

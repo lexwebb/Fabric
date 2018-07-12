@@ -84,7 +84,7 @@ namespace Fabric.Data {
 
                 if (type == typeof(DataPageCollection)) {
                     var collection = new DataPageCollection(instance as DataPage, Resolver.Resolve<IChangeSetHelper>(),
-                        Resolver.Resolve<IDataReader>());
+                        Resolver.Resolve<IDatabaseHelper>());
 
                     var deserializedValue =
                         properties.FirstOrDefault(p =>

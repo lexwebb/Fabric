@@ -9,14 +9,12 @@ using Unity;
 
 namespace Fabric.Data {
     public class FabricDatabase {
-        public const string DatabaseFileName = "FabricDatabase.json";
-        public const string DataPageFileName = "dataPage.json";
-        public const string DataPageVersionDirName = ".versions";
-        public const string DataPageVersionFileName = "versions.dat";
+        public const string DatabaseName = "FabricDatabase";
         public const string RootPageName = "root";
 
-        public FabricDatabase(string databaseRoot, IDataWriter dataWriter = null, IDataReader dataReader = null,
-            IChangeSetHelper changeSetHelper = null, ISchemaManager schemaManager = null, IVersionHelper versionHelper = null) {
+        public FabricDatabase(string databaseRoot, IDatabaseHelper databaseHelper = null,
+            IChangeSetHelper changeSetHelper = null, ISchemaManager schemaManager = null,
+            IVersionHelper versionHelper = null) {
             DatabaseRoot = databaseRoot;
 
             if (Path.IsPathRooted(DatabaseRoot)) {
@@ -42,8 +40,7 @@ namespace Fabric.Data {
 
             Resolver.RegisterInstance(SerializerSettings);
 
-            Resolver.RegisterInstanceOrDefault<IDataWriter, DataWriter>(dataWriter);
-            Resolver.RegisterInstanceOrDefault<IDataReader, DataReader>(dataReader);
+            Resolver.RegisterInstanceOrDefault<IDatabaseHelper, FileSystemDatabaseHelper>(databaseHelper);
             Resolver.RegisterInstanceOrDefault<IChangeSetHelper, ChangeSetHelper>(changeSetHelper);
             Resolver.RegisterInstanceOrDefault<ISchemaManager, SchemaManager>(schemaManager);
             Resolver.RegisterInstanceOrDefault<IVersionHelper, VersionHelper>(versionHelper);
@@ -57,8 +54,6 @@ namespace Fabric.Data {
 
         public string FullDataBaseRoot { get; }
 
-        public string DatabaseFilePath => Path.Combine(FullDataBaseRoot, DatabaseFileName);
-
         public Action<FabricDatabase> SeedDatabase { get; set; }
 
         public DataPage Root { get; private set; }
@@ -70,14 +65,9 @@ namespace Fabric.Data {
         public void Initialise() {
             Global.Instance.Logger.Info("Initialising database");
 
-            var reader = Resolver.Resolve<IDataReader>();
-            var writer = Resolver.Resolve<IDataWriter>();
+            var databaseHelper = Resolver.Resolve<IDatabaseHelper>();
 
-            if (!reader.FolderExists(FullDataBaseRoot)) {
-                writer.CreateFolder(FullDataBaseRoot);
-            }
-
-            if (!reader.FileExists(DatabaseFilePath)) {
+            if (databaseHelper.Initialise()) {
                 Global.Instance.Logger.Info("Database not found, performing first time setup");
                 CreateDatabase();
                 InternalSeedDatabase();
@@ -97,20 +87,17 @@ namespace Fabric.Data {
         private void CreateDatabase() {
             Global.Instance.Logger.Info("Creating database file");
 
-            var writer = Resolver.Resolve<IDataWriter>();
-            var reader = Resolver.Resolve<IDataReader>();
+            var databaseHelper = Resolver.Resolve<IDatabaseHelper>();
             var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
-
-            writer.WriteFile(DatabaseFilePath);
 
             Root = new DataPage(RootPageName) {
                 ModifiedTimestamp = Convert.ToString(DateTimeOffset.Now.ToUnixTimeMilliseconds()),
-                Parent = new DataPageCollection(null, changeSetHelper, reader)
+                Parent = new DataPageCollection(null, changeSetHelper, databaseHelper)
             };
 
-            Root.Children = new DataPageCollection(Root, changeSetHelper, reader);
+            Root.Children = new DataPageCollection(Root, changeSetHelper, databaseHelper);
 
-            writer.WritePage(Root);
+            databaseHelper.WritePage(Root);
         }
 
         /// <summary>
@@ -119,11 +106,11 @@ namespace Fabric.Data {
         private void LoadDatabase() {
             Global.Instance.Logger.Info("Loading database file");
 
-            var reader = Resolver.Resolve<IDataReader>();
+            var databaseHelper = Resolver.Resolve<IDatabaseHelper>();
             var changeSetHelper = Resolver.Resolve<IChangeSetHelper>();
 
-            Root = reader.ReadPage(DatabaseFilePath);
-            Root.Parent = new DataPageCollection(null, changeSetHelper, reader);
+            Root = databaseHelper.ReadPage(null);
+            Root.Parent = new DataPageCollection(null, changeSetHelper, databaseHelper);
         }
 
         /// <summary>
