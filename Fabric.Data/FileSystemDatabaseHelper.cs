@@ -284,5 +284,7 @@ namespace Fabric.Data {
 
             return Directory.Exists(path);
         }
+
+        public void Dispose() { }
     }
 }

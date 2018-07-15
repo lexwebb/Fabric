@@ -8,13 +8,11 @@ using Newtonsoft.Json.Serialization;
 using Unity;
 
 namespace Fabric.Data {
-    public class FabricDatabase {
+    public class FabricDatabase : IDisposable{
         public const string DatabaseName = "FabricDatabase";
         public const string RootPageName = "root";
 
-        public FabricDatabase(string databaseRoot, IDatabaseHelper databaseHelper = null,
-            IChangeSetHelper changeSetHelper = null, ISchemaManager schemaManager = null,
-            IVersionHelper versionHelper = null) {
+        public FabricDatabase(string databaseRoot) {
             DatabaseRoot = databaseRoot;
 
             if (Path.IsPathRooted(DatabaseRoot)) {
@@ -40,10 +38,10 @@ namespace Fabric.Data {
 
             Resolver.RegisterInstance(SerializerSettings);
 
-            Resolver.RegisterInstanceOrDefault<IDatabaseHelper, FileSystemDatabaseHelper>(databaseHelper);
-            Resolver.RegisterInstanceOrDefault<IChangeSetHelper, ChangeSetHelper>(changeSetHelper);
-            Resolver.RegisterInstanceOrDefault<ISchemaManager, SchemaManager>(schemaManager);
-            Resolver.RegisterInstanceOrDefault<IVersionHelper, VersionHelper>(versionHelper);
+            Resolver.RegisterSingleton<IDatabaseHelper, FileSystemDatabaseHelper>();
+            Resolver.RegisterSingleton<IChangeSetHelper, ChangeSetHelper>();
+            Resolver.RegisterSingleton<ISchemaManager, SchemaManager>();
+            Resolver.RegisterSingleton<IVersionHelper, VersionHelper>();
         }
 
         public UnityContainer Resolver { get; }
@@ -147,6 +145,10 @@ namespace Fabric.Data {
         /// <returns></returns>
         public Task<IEnumerable<DataPage>> FindChildCollection(string path) {
             return Utils.FindChildCollection(Root, path);
+        }
+
+        public void Dispose() {
+            Resolver?.Dispose();
         }
     }
 }

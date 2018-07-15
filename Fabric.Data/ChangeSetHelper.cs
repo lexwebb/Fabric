@@ -55,7 +55,7 @@ namespace Fabric.Data {
                 throw new InvalidOperationException("Data page does not exist");
             }
 
-            DatabaseHelper.DeletePage(folderPath);
+            DatabaseHelper.DeletePage(filePath);
             DatabaseHelper.WritePage(changeSet.ChangedParentPage);
             
             //if (!changeSet.ChangedPage.Parent.ContainsAnyOfSchema(changeSet.ChangedPage.SchemaName)) {

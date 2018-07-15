@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Fabric.Data {
-    public interface IDatabaseHelper {
+    public interface IDatabaseHelper : IDisposable {
 
         /// <summary>
         /// Initialises this instance.

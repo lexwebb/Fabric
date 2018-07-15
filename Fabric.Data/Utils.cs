@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fabric.Data {
-    internal static class Utils {
+    public static class Utils {
         internal static bool IsPathCollection(string path) {
             path = path?.TrimEnd('/');
             if (string.IsNullOrEmpty(path)) {
@@ -100,7 +100,7 @@ namespace Fabric.Data {
             throw new ItemNotFoundException(currentPathRoot);
         }
 
-        internal static string GetDataPagePath(DataPage dataPage) {
+        public static string GetDataPagePath(DataPage dataPage) {
             if (dataPage.Name == FabricDatabase.RootPageName && dataPage.ParentPage == null) {
                 return String.Empty;
             }

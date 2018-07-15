@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Couchbase.Lite;
+using Couchbase.Lite.Support;
 using Newtonsoft.Json;
 
 namespace Fabric.Data {
-    internal class CouchbaseDatabaseHelper : IDatabaseHelper {
-        private const string NameSeperator = "::";
-        private const string DataObjectName = "data";
+    public class CouchbaseDatabaseHelper : IDatabaseHelper {
+        public const string NameSeperator = "::";
+        public const string DataObjectName = "data";
 
         public CouchbaseDatabaseHelper(FabricDatabase database, JsonSerializerSettings serializerSettings) {
             SerializerSettings = serializerSettings;
@@ -23,7 +24,8 @@ namespace Fabric.Data {
 
         /// <inheritdoc />
         public bool Initialise() {
-            var isNew = !Directory.Exists(DatabaseRoot);
+            var isNew = !Directory.Exists(DatabaseRoot) || 
+                        (!Directory.GetFiles(DatabaseRoot).Any() && !Directory.GetDirectories(DatabaseRoot).Any());
 
             CouchbaseDatabase = new Database(FabricDatabase.DatabaseName, new DatabaseConfiguration {
                 Directory = DatabaseRoot
@@ -35,6 +37,11 @@ namespace Fabric.Data {
         /// <inheritdoc />
         public void WritePage(DataPage page) {
             var path = Utils.GetDataPagePath(page);
+
+            if (page.ParentPage == null && page.Name == "root") {
+                path = "root";
+            }
+
             var pagePathSaveName = ConvertPagePathToSaveName(path);
 
             using (var doc = CouchbaseDatabase.GetDocument(pagePathSaveName)) {
@@ -46,13 +53,16 @@ namespace Fabric.Data {
 
         /// <inheritdoc />
         public DataPage ReadPage(string path) {
+            if (string.IsNullOrEmpty(path))
+                path = "root";
+
             var pagePathSaveName = ConvertPagePathToSaveName(path);
 
             using (var doc = CouchbaseDatabase.GetDocument(pagePathSaveName)) {
                 var mutableDoc = doc?.ToMutable();
 
                 if (mutableDoc != null) {
-                    return JsonConvert.DeserializeObject<DataPage>(mutableDoc.GetString("data"));
+                    return JsonConvert.DeserializeObject<DataPage>(mutableDoc.GetString("data"), SerializerSettings);
                 }
 
                 throw new ItemNotFoundException(path);
@@ -174,7 +184,7 @@ namespace Fabric.Data {
         /// </summary>
         /// <param name="pagePath"></param>
         /// <returns></returns>
-        private string ConvertPagePathToSaveName(string pagePath) {
+        public string ConvertPagePathToSaveName(string pagePath) {
             return $"page{NameSeperator}{pagePath}";
         }
 
@@ -184,7 +194,7 @@ namespace Fabric.Data {
         /// <param name="pagePath"></param>
         /// <param name="versionGuid"></param>
         /// <returns></returns>
-        private string ConvertPagePathToVersionSaveName(string pagePath, Guid versionGuid) {
+        public string ConvertPagePathToVersionSaveName(string pagePath, Guid versionGuid) {
             return $"pageVersion{NameSeperator}{versionGuid.ToString()}{NameSeperator}{pagePath}";
         }
 
@@ -193,7 +203,7 @@ namespace Fabric.Data {
         /// </summary>
         /// <param name="pagePath"></param>
         /// <returns></returns>
-        private string ConvertPagePathToVersionLogSaveName(string pagePath) {
+        public string ConvertPagePathToVersionLogSaveName(string pagePath) {
             return $"pageVersionLog{NameSeperator}{pagePath}";
         }
 
@@ -202,7 +212,7 @@ namespace Fabric.Data {
         /// </summary>
         /// <param name="schemaName"></param>
         /// <returns></returns>
-        private string ConvertSchemaNameToSaveName(string schemaName) {
+        public string ConvertSchemaNameToSaveName(string schemaName) {
             return $"schema{NameSeperator}{schemaName}";
         }
 
@@ -212,7 +222,7 @@ namespace Fabric.Data {
         /// <param name="schemaName"></param>
         /// <param name="versionGuid"></param>
         /// <returns></returns>
-        private string ConvertSchemaNameToVersionSaveName(string schemaName, Guid versionGuid) {
+        public string ConvertSchemaNameToVersionSaveName(string schemaName, Guid versionGuid) {
             return $"schemaVersion{NameSeperator}{versionGuid.ToString()}{NameSeperator}{schemaName}";
         }
 
@@ -221,8 +231,12 @@ namespace Fabric.Data {
         /// </summary>
         /// <param name="schemaName"></param>
         /// <returns></returns>
-        private string ConvertSchemaNameToVersionLogSaveName(string schemaName) {
+        public string ConvertSchemaNameToVersionLogSaveName(string schemaName) {
             return $"schemaVersionLog{NameSeperator}{schemaName}";
+        }
+
+        public void Dispose() {
+            CouchbaseDatabase?.Dispose();
         }
     }
 }

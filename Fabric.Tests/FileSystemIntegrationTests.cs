@@ -8,9 +8,7 @@ namespace Fabric.Tests
 {
     public class FileSystemIntegrationTests : IntegrationTestsBase
     {
-        public override FabricDatabase CreateTestingDbImpl(bool deleteOld = true) {
-            var databaseDir = Path.Combine(Directory.GetCurrentDirectory(), "TestingDB");
-
+        public override FabricDatabase CreateTestingDbImpl(string databaseDir, bool deleteOld = true) {
             if (deleteOld) {
                 if (Directory.Exists(databaseDir)) {
                     Directory.Delete(databaseDir, true);
