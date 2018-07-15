@@ -5,24 +5,15 @@ using Newtonsoft.Json;
 using Xunit;
 
 namespace Fabric.Tests {
-    public class IntegrationTests {
+    public abstract class IntegrationTestsBase {
         private JsonSerializerSettings _basicSerializerSettings;
 
         private readonly string _basicRootPageJson =
             "{\"Name\":\"root\",\"SchemaName\":null,\"PageData\":null,\"Children\":{\"none\":[\"TestItem1\",\"TestItem2\"]}}";
 
         private FabricDatabase CreateTestingDb(bool deleteOld = true) {
-            var databaseDir = Path.Combine(Directory.GetCurrentDirectory(), "TestingDB");
+            var database = CreateTestingDbImpl(deleteOld);
 
-            if (deleteOld) {
-                if (Directory.Exists(databaseDir)) {
-                    Directory.Delete(databaseDir, true);
-                }
-
-                Directory.CreateDirectory(databaseDir);
-            }
-
-            var database = new FabricDatabase(databaseDir);
             database.Initialise();
 
             _basicSerializerSettings = new JsonSerializerSettings {
@@ -33,6 +24,12 @@ namespace Fabric.Tests {
 
             return database;
         }
+
+        public abstract FabricDatabase CreateTestingDbImpl(bool deleteOld = true);
+
+        protected abstract bool CheckPageExistsForPath(string path, FabricDatabase database);
+
+        protected abstract string ReadPageRaw(string path, FabricDatabase database);
 
         [Fact]
         public void RootPage_ShouldSerialise_Correctly() {
@@ -56,8 +53,8 @@ namespace Fabric.Tests {
             database.Root.AddChild("TestItem1", "none", JsonConvert.SerializeObject(new { testProperty1 = 1, testProperty2 = "foo" }));
             database.Root.AddChild("TestItem2", "none", JsonConvert.SerializeObject(new { testProperty1 = 2, testProperty2 = "bar" }));
 
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem1"), database));
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem2"), database));
         }
 
         [Fact]
@@ -67,31 +64,44 @@ namespace Fabric.Tests {
             database.Root.AddChild("TestItem1", "none", JsonConvert.SerializeObject(new { testProperty1 = 1, testProperty2 = "foo" }));
             database.Root.AddChild("TestItem2", "none", JsonConvert.SerializeObject(new { testProperty1 = 2, testProperty2 = "bar" }));
 
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem1"), database));
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem2"), database));
 
             database.Root.DeleteChild("TestItem1", "none");
             database.Root.GetChild("TestItem2").Delete();
 
-            Assert.False(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
-            Assert.False(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
+            Assert.False(CheckPageExistsForPath(Path.Combine("none", "TestItem1"), database));
+            Assert.False(CheckPageExistsForPath(Path.Combine("none", "TestItem2"), database));
         }
 
         [Fact]
         public void RootPageChild_ShouldLoad_Correctly() {
             var database = CreateTestingDb();
 
-            database.Root.AddChild("TestItem1", "none", JsonConvert.SerializeObject(new { testProperty1 = 1, testProperty2 = "foo" }));
-            database.Root.AddChild("TestItem2", "none", JsonConvert.SerializeObject(new { testProperty1 = 2, testProperty2 = "bar" }));
+            var testItem1Data = JsonConvert.SerializeObject(new {testProperty1 = 1, testProperty2 = "foo"});
+            var testItem2Data = JsonConvert.SerializeObject(new {testProperty1 = 2, testProperty2 = "bar"});
 
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem2", "dataPage.json")));
+            database.Root.AddChild("TestItem1", "none", testItem1Data);
+            database.Root.AddChild("TestItem2", "none", testItem2Data);
+
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem1"), database));
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem2"), database));
 
             // clear database reference
             database = null;
             database = CreateTestingDb(false);
 
-            var item = database.Root.GetChild("TestItem1");
+            var item1 = database.Root.GetChild("TestItem1");
+            var item2 = database.Root.GetChild("TestItem2");
+
+            var item1Actual = JsonUtils.Uglify(JsonUtils.RemoveProperty(item1.PageData, "modifiedTimestamp", true));
+            var item1Expected = JsonUtils.Uglify(JsonUtils.RemoveProperty(testItem1Data, "modifiedTimestamp", true));
+
+            var item2Actual = JsonUtils.Uglify(JsonUtils.RemoveProperty(item2.PageData, "modifiedTimestamp", true));
+            var item2Expected = JsonUtils.Uglify(JsonUtils.RemoveProperty(testItem2Data, "modifiedTimestamp", true));
+
+            Assert.Equal(item1Expected, item1Actual);
+            Assert.Equal(item2Expected, item2Actual);
         }
 
         [Fact]
@@ -99,18 +109,18 @@ namespace Fabric.Tests {
             var database = CreateTestingDb();
 
             database.Root.AddChild("TestItem1", "none", JsonConvert.SerializeObject(new { testProperty1 = 1, testProperty2 = "foo" }));
-
-            Assert.True(File.Exists(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json")));
+            
+            Assert.True(CheckPageExistsForPath(Path.Combine("none", "TestItem1"), database));
 
             var child = database.Root.GetChild("TestItem1");
 
             Assert.Equal(JsonConvert.SerializeObject(new { testProperty1 = 1, testProperty2 = "foo" }), child.PageData);
 
-            var data = JsonConvert.SerializeObject(new {test = "TestObject"});
+            var data = JsonConvert.SerializeObject(new { test = "TestObject" });
             child.PageData = data;
             child.SaveChanges();
 
-            var text = File.ReadAllText(Path.Combine(database.DatabaseRoot, "none", "TestItem1", "dataPage.json"));
+            var text = ReadPageRaw(Path.Combine("none", "TestItem1"), database);
             var node = JsonConvert.DeserializeObject<DataPage>(text, database.SerializerSettings);
 
             var actual = JsonUtils.Uglify(JsonUtils.RemoveProperty(node.PageData, "modifiedTimestamp", true));

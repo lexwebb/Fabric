@@ -143,16 +143,16 @@ namespace Fabric.Data {
             _internalNameList.Clear();
 
             foreach (var dataPage in _internalList) {
-                var name = dataPage.GetType().Name;
+                var schemaName = dataPage.SchemaName;
 
-                var exists = _internalNameList.TryGetValue(name, out var subList);
+                var exists = _internalNameList.TryGetValue(schemaName, out var subList);
 
                 if (!exists) {
                     subList = new List<string>();
-                    _internalNameList.Add(name, subList);
+                    _internalNameList.Add(schemaName, subList);
                 }
 
-                subList.Add(name);
+                subList.Add(dataPage.Name);
             }
         }
 
